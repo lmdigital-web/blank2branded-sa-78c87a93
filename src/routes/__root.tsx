@@ -72,19 +72,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
+      {
+        name: "description",
+        content:
+          "Trade supplier of DTF transfers & blank apparel. Nationwide shipping. Print, press, or supply for SA clothing brands.",
+      },
+      { name: "author", content: "Blank2Branded" },
+      { property: "og:title", content: "Blank2Branded — DTF Prints + Blank Tees, SA-Wide" },
+      {
+        property: "og:description",
+        content:
+          "Trade supplier of DTF transfers & blank apparel. Nationwide shipping for SA clothing brands.",
+      },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Blank2Branded" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
       },
     ],
   }),
