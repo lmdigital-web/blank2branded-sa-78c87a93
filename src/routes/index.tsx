@@ -36,15 +36,15 @@ function Home() {
       <Header />
 
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="relative flex min-h-[90vh] items-center overflow-hidden border-b border-border">
         {/* Geometric accents */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
           <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-primary blur-3xl" />
           <div className="absolute left-10 bottom-0 h-64 w-64 rotate-45 bg-charcoal" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
-          <div className="max-w-3xl">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-20">
+          <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-primary" />
               Trade Supplier — South Africa
@@ -82,6 +82,11 @@ function Home() {
             <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Trade accounts only · MOQ 10 units
             </p>
+          </div>
+
+          {/* Visual: Blank → Branded */}
+          <div className="relative hidden md:block" aria-hidden="true">
+            <TeeTransform />
           </div>
         </div>
       </section>
