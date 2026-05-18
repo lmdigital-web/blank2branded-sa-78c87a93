@@ -36,15 +36,15 @@ function Home() {
       <Header />
 
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="relative flex min-h-[90vh] items-center overflow-hidden border-b border-border">
         {/* Geometric accents */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
           <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-primary blur-3xl" />
           <div className="absolute left-10 bottom-0 h-64 w-64 rotate-45 bg-charcoal" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
-          <div className="max-w-3xl">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-20">
+          <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-primary" />
               Trade Supplier — South Africa
@@ -82,6 +82,11 @@ function Home() {
             <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Trade accounts only · MOQ 10 units
             </p>
+          </div>
+
+          {/* Visual: Blank → Branded */}
+          <div className="relative hidden md:block" aria-hidden="true">
+            <TeeTransform />
           </div>
         </div>
       </section>
@@ -254,6 +259,79 @@ function Home() {
       </section>
 
       <Footer />
+    </div>
+  );
+}
+
+function Tee({ printed = false }: { printed?: boolean }) {
+  return (
+    <svg viewBox="0 0 200 220" className="h-full w-full" fill="none">
+      <path
+        d="M40 30 L70 15 Q100 35 130 15 L160 30 L185 60 L160 75 L150 65 L150 200 Q100 210 50 200 L50 65 L40 75 L15 60 Z"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        className="text-charcoal"
+        fill={printed ? "var(--surface)" : "transparent"}
+      />
+      {printed && (
+        <g>
+          <rect x="70" y="90" width="60" height="60" rx="4" className="fill-primary" />
+          <text
+            x="100"
+            y="126"
+            textAnchor="middle"
+            className="fill-primary-foreground"
+            style={{ fontSize: "18px", fontWeight: 900, letterSpacing: "-0.04em" }}
+          >
+            B2B
+          </text>
+        </g>
+      )}
+    </svg>
+  );
+}
+
+function TeeTransform() {
+  return (
+    <div className="relative mx-auto flex max-w-lg items-center justify-between gap-4">
+      <div className="relative h-56 w-44 opacity-70">
+        <Tee />
+        <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          Blank
+        </span>
+      </div>
+
+      <div className="relative flex h-20 flex-1 items-center justify-center">
+        <svg viewBox="0 0 120 24" className="h-6 w-full overflow-visible" fill="none">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" className="fill-primary" />
+            </marker>
+          </defs>
+          <line
+            x1="0"
+            y1="12"
+            x2="108"
+            y2="12"
+            strokeWidth="2"
+            strokeDasharray="6 6"
+            strokeLinecap="round"
+            markerEnd="url(#arrowhead)"
+            className="stroke-primary animate-dash-flow"
+          />
+        </svg>
+        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+          DTF Press
+        </span>
+      </div>
+
+      <div className="relative h-56 w-44">
+        <Tee printed />
+        <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em] text-charcoal">
+          Branded
+        </span>
+      </div>
     </div>
   );
 }
