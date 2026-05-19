@@ -11,8 +11,8 @@ export function Footer() {
               Blank<span className="text-primary">2</span>Branded
             </div>
             <p className="mt-3 max-w-sm text-sm text-background/60">
-              From Blank to Branded. Nationwide. Trade supplier of DTF transfers
-              & blank apparel for South African clothing brands.
+              From Blank to Branded. Nationwide. Supplier of DTF transfers
+              & blank apparel for South African brands, businesses and individuals. Minimum 5 pieces per order.
             </p>
             <div className="mt-6 flex gap-3">
               <a href="#" aria-label="Instagram" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
