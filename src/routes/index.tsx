@@ -261,7 +261,7 @@ function Home() {
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={blankApparelImg}
-                  alt="Stacked premium blank t-shirts in trade warehouse, ready for printing"
+                  alt="Stacked premium blank t-shirts in the warehouse, ready for printing"
                   width={1280}
                   height={960}
                   loading="lazy"
