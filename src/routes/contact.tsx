@@ -5,6 +5,9 @@ import { useState } from "react";
 import { MessageCircle, Mail, Clock, MapPin, Upload, Send } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    subject: typeof search.subject === "string" ? search.subject : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Contact — Get a Quote or Trade Account | Blank2Branded" },
@@ -23,6 +26,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const { subject } = Route.useSearch();
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
