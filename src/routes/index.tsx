@@ -208,53 +208,95 @@ function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="relative overflow-hidden border-b border-border bg-surface py-24">
-        <div className="mx-auto max-w-7xl px-6">
+      <section className="relative overflow-hidden border-b border-border bg-charcoal py-28 text-background">
+        {/* ink-splash colour field */}
+        <div className="pointer-events-none absolute inset-0 opacity-60">
+          <div className="animate-float-blob absolute -left-32 top-10 h-96 w-96 rounded-full bg-magenta opacity-30 blur-3xl" />
+          <div className="animate-float-blob absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-cyan opacity-25 blur-3xl [animation-delay:-6s]" />
+          <div className="animate-float-blob absolute left-1/2 bottom-0 h-80 w-80 -translate-x-1/2 rounded-full bg-lime opacity-25 blur-3xl [animation-delay:-3s]" />
+          <div className="animate-float-blob absolute right-1/4 -bottom-10 h-72 w-72 rounded-full bg-primary opacity-30 blur-3xl [animation-delay:-9s]" />
+        </div>
+        {/* dotted grid texture */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-dtf" />
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-dtf" />
+
+        <div className="relative mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-purple">
+            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-background/60">
+              <span className="h-px w-8 bg-gradient-dtf" />
               Process
             </p>
-            <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
-              How it works.
+            <h2 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">
+              From DM to{" "}
+              <span className="text-gradient-dtf">doorstep</span> in 4 steps.
             </h2>
+            <p className="mt-5 max-w-xl text-base text-background/70 md:text-lg">
+              No middlemen, no guesswork. Here's exactly how your order moves
+              through the workshop.
+            </p>
           </div>
 
-          <div className="mt-14 grid gap-8 md:grid-cols-4">
-            {[
-              { icon: FileText, title: "Quote", desc: "Tell us your order. Get pricing in hours.", color: "cyan" },
-              { icon: Palette, title: "Artwork", desc: "Send files. We prep for production.", color: "magenta" },
-              { icon: Factory, title: "Production", desc: "Print, press, or pack — fast turnaround.", color: "primary" },
-              { icon: Truck, title: "Courier", desc: "Tracked nationwide delivery to your door.", color: "lime" },
-            ].map((step, i) => (
-              <div key={step.title} className="relative">
-                <div className="flex items-center gap-3">
-                  <span
-                    className="text-xs font-black tracking-widest"
-                    style={{ color: `var(--${step.color})` }}
-                  >
-                    0{i + 1}
-                  </span>
-                  <div
-                    className="h-px flex-1"
-                    style={{ backgroundColor: `color-mix(in oklab, var(--${step.color}) 40%, transparent)` }}
-                  />
+          {/* connector line */}
+          <div className="relative mt-20">
+            <div className="pointer-events-none absolute left-0 right-0 top-10 hidden h-px bg-gradient-to-r from-cyan via-magenta to-lime opacity-50 md:block" />
+
+            <div className="grid gap-12 md:grid-cols-4 md:gap-6">
+              {[
+                { icon: FileText, title: "Quote", desc: "Drop us your order details on WhatsApp. Pricing back in hours, not days.", color: "cyan" },
+                { icon: Palette, title: "Artwork", desc: "Send your files. We prep, proof and lock in colours for production.", color: "magenta" },
+                { icon: Factory, title: "Production", desc: "Print, press or pack — fast turnaround from our Mbombela workshop.", color: "primary" },
+                { icon: Truck, title: "Courier", desc: "Tracked nationwide delivery, straight to your door.", color: "lime" },
+              ].map((step, i) => (
+                <div key={step.title} className="group relative">
+                  {/* numbered badge */}
+                  <div className="relative z-10 mx-auto flex h-20 w-20 items-center justify-center md:mx-0">
+                    <span
+                      className="absolute inset-0 rounded-full opacity-60 blur-xl transition-opacity group-hover:opacity-100"
+                      style={{ backgroundColor: `var(--${step.color})` }}
+                    />
+                    <span
+                      className="relative flex h-20 w-20 items-center justify-center rounded-full border-2 text-3xl font-black text-background"
+                      style={{
+                        borderColor: `var(--${step.color})`,
+                        backgroundColor: "var(--charcoal)",
+                      }}
+                    >
+                      0{i + 1}
+                    </span>
+                  </div>
+
+                  <div className="mt-8 text-center md:text-left">
+                    <div
+                      className="inline-flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-110 group-hover:-rotate-6"
+                      style={{
+                        backgroundColor: `color-mix(in oklab, var(--${step.color}) 18%, transparent)`,
+                        color: `var(--${step.color})`,
+                      }}
+                    >
+                      <step.icon className="h-6 w-6" strokeWidth={2} />
+                    </div>
+                    <h3 className="mt-5 text-2xl font-bold text-background">
+                      {step.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-background/65">
+                      {step.desc}
+                    </p>
+                  </div>
                 </div>
-                <div
-                  className="mt-6 inline-flex h-12 w-12 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `color-mix(in oklab, var(--${step.color}) 15%, transparent)`,
-                    color: `var(--${step.color})`,
-                  }}
-                >
-                  <step.icon className="h-6 w-6" strokeWidth={1.75} />
-                </div>
-                <h3 className="mt-4 text-lg font-bold text-charcoal">{step.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
+
 
       {/* IN THE WORKSHOP */}
       <section className="border-b border-border py-24">
