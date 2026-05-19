@@ -333,7 +333,7 @@ function BlanksPage() {
       <div className="border-b border-border bg-background py-6">
         <div className="mx-auto max-w-7xl px-6">
           <p className="text-xs leading-relaxed text-muted-foreground">
-            All garments are supplied blank for trade customers only. No retail sales. Colors subject to availability. We recommend samples before bulk orders.
+            All garments are supplied blank. Minimum order of 5 pieces. Colors subject to availability. We recommend samples before bulk orders.
           </p>
         </div>
       </div>
