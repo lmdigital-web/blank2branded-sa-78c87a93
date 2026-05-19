@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import dtfPrintingImg from "@/assets/dtf-printing.jpg";
 import blankApparelImg from "@/assets/blank-apparel.jpg";
+import heroBg from "@/assets/hero-bg.jpg";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import {
@@ -39,11 +40,24 @@ function Home() {
 
       {/* HERO */}
       <section className="relative flex min-h-[90vh] items-center overflow-hidden border-b border-border">
+        {/* Background image */}
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src={heroBg}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full scale-105 object-cover blur-[6px]"
+          />
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
+        </div>
+
         {/* Geometric accents */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
           <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-primary blur-3xl" />
           <div className="absolute left-10 bottom-0 h-64 w-64 rotate-45 bg-charcoal" />
         </div>
+
 
         <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-20">
           <div>
