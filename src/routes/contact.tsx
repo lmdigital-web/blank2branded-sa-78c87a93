@@ -10,14 +10,14 @@ export const Route = createFileRoute("/contact")({
   }),
   head: () => ({
     meta: [
-      { title: "Contact — Get a Quote or Trade Account | Blank2Branded" },
+      { title: "Contact — Get a Quote | Blank2Branded" },
       {
         name: "description",
         content:
-          "Request a quote or open a trade account for DTF prints and blank apparel. We reply within 4 business hours.",
+          "Request a quote for DTF prints and blank apparel. Open to brands, businesses and individuals — minimum 5 pieces. We reply within 4 business hours.",
       },
       { property: "og:title", content: "Contact Blank2Branded" },
-      { property: "og:description", content: "Get a quote or open a trade account. Reply within 4 business hours." },
+      { property: "og:description", content: "Get a quote on DTF prints and blanks. Min 5 pieces. Reply within 4 business hours." },
       { property: "og:url", content: "/contact" },
     ],
     links: [{ rel: "canonical", href: "/contact" }],
@@ -49,10 +49,10 @@ function ContactPage() {
             Contact
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Get a Quote or Open a Trade Account.
+            Get a Quote.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            We reply to all trade enquiries within 4 business hours.
+            Open to brands, businesses and individuals — minimum 5 pieces per order. We reply to all enquiries within 4 business hours.
           </p>
         </div>
       </section>

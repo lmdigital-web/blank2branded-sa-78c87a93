@@ -10,10 +10,10 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Blank2Branded is a Mbombela-based trade supplier of DTF transfers and blank apparel, serving clothing brands across South Africa.",
+          "Blank2Branded is a Mbombela-based supplier of DTF transfers and blank apparel, serving brands, businesses and individuals across South Africa. Minimum 5 pieces per order.",
       },
       { property: "og:title", content: "About Blank2Branded" },
-      { property: "og:description", content: "Trade supplier of DTF + blanks, built by printers and brand builders." },
+      { property: "og:description", content: "Supplier of DTF + blanks, built by printers and brand builders. Min 5 pieces per order." },
       { property: "og:url", content: "/about" },
     ],
     links: [{ rel: "canonical", href: "/about" }],
@@ -39,7 +39,8 @@ function AboutPage() {
               Blank2Branded started to solve the gap between expensive retail
               blanks and unreliable print suppliers. We're printers and brand
               builders ourselves, so we know what matters: quality, speed, and
-              pricing that lets you actually profit.
+              pricing that lets you actually profit. We supply brands, businesses
+              and individuals from just 5 pieces per order.
             </p>
             <p>
               Based in Mbombela, serving all of South Africa — we ship
@@ -70,8 +71,8 @@ function AboutPage() {
               },
               {
                 icon: Handshake,
-                title: "Trade Partners, Not Gatekeepers",
-                desc: "Real pricing, real support. We help new brands set up. No minimum-spend gates or attitude.",
+                title: "Partners, Not Gatekeepers",
+                desc: "Real pricing, real support. Brands, businesses or individuals — order from 5 pieces. We help new brands set up. No attitude, no gatekeeping.",
               },
             ].map((p) => (
               <div
@@ -102,7 +103,7 @@ function AboutPage() {
             to="/contact"
             className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
           >
-            Get Your Trade Account <ArrowRight className="h-4 w-4" />
+            Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

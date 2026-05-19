@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Trade supplier of DTF transfers & blank apparel. Nationwide shipping. Print, press, or supply for SA clothing brands.",
+          "DTF transfers & blank apparel for brands, businesses and individuals. Minimum 5 pieces per order. Nationwide shipping across SA.",
       },
       { property: "og:title", content: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
       { property: "og:url", content: "/" },
@@ -64,7 +64,7 @@ function Home() {
           <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-primary" />
-              Trade Supplier — South Africa
+              DTF + Apparel Supplier — South Africa
             </div>
 
             <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-7xl">
@@ -97,7 +97,7 @@ function Home() {
             </div>
 
             <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Trade accounts only · MOQ 10 units
+              Open to brands, businesses & individuals · Minimum 5 pieces per order
             </p>
           </div>
 
@@ -149,7 +149,7 @@ function Home() {
               {
                 icon: Shirt,
                 title: "Blank Apparel",
-                desc: "Premium tees, hoodies, sweats at trade pricing. Quality blanks ready for your brand.",
+                desc: "Premium tees, hoodies, sweats at honest pricing. Quality blanks ready for your brand. Min 5 pieces.",
                 num: "02",
               },
               {
@@ -261,7 +261,7 @@ function Home() {
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={blankApparelImg}
-                  alt="Stacked premium blank t-shirts in trade warehouse, ready for printing"
+                  alt="Stacked premium blank t-shirts in the warehouse, ready for printing"
                   width={1280}
                   height={960}
                   loading="lazy"
@@ -273,11 +273,11 @@ function Home() {
                   Blank Apparel
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
-                  Stocked, sorted, trade-ready.
+                  Stocked, sorted, ready to ship.
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Premium tees, polos, hoodies and more — held in stock at our
-                  Mbombela facility and couriered nationwide on trade terms.
+                  Mbombela facility and couriered nationwide. Minimum 5 pieces per order.
                 </p>
               </div>
             </div>
@@ -297,14 +297,15 @@ function Home() {
               Why Blank2Branded?
             </h2>
             <p className="mt-6 text-lg text-muted-foreground">
-              We built this for the brands and shops we wish existed when we
-              started. Trade-first, no retail nonsense.
+              We built this for the brands, businesses and individuals we wish
+              had a supplier like this when we started. Honest pricing, no gatekeeping.
             </p>
           </div>
 
           <ul className="space-y-5">
             {[
-              "Trade-only pricing — no retail markups.",
+              "Honest pricing — no retail markups.",
+              "Open to brands, businesses and individuals (min 5 pieces).",
               "No middlemen. Direct supplier relationship.",
               "Tech support for new brands getting set up.",
               "SA-based. Real humans on WhatsApp.",
@@ -332,13 +333,13 @@ function Home() {
             <span className="text-primary">Blank to Branded?</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-background/70">
-            Open a trade account and get bulk pricing on DTF prints and blanks.
+            Order from 5 pieces and up — DTF prints and blank apparel, shipped nationwide.
           </p>
           <Link
             to="/contact"
             className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
           >
-            Request Trade Access <ArrowRight className="h-4 w-4" />
+            Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

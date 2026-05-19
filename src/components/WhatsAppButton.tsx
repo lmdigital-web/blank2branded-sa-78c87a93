@@ -5,7 +5,7 @@ const WHATSAPP_NUMBER = "27000000000";
 
 export function WhatsAppButton() {
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    "Hi Blank2Branded, I'd like a trade quote.",
+    "Hi Blank2Branded, I'd like a quote (min 5 pieces).",
   )}`;
 
   return (
