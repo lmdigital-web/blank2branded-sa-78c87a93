@@ -149,7 +149,7 @@ function Home() {
               {
                 icon: Shirt,
                 title: "Blank Apparel",
-                desc: "Premium tees, hoodies, sweats at trade pricing. Quality blanks ready for your brand.",
+                desc: "Premium tees, hoodies, sweats at honest pricing. Quality blanks ready for your brand. Min 5 pieces.",
                 num: "02",
               },
               {
