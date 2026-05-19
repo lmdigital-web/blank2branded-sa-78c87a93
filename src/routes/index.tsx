@@ -273,11 +273,11 @@ function Home() {
                   Blank Apparel
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
-                  Stocked, sorted, trade-ready.
+                  Stocked, sorted, ready to ship.
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Premium tees, polos, hoodies and more — held in stock at our
-                  Mbombela facility and couriered nationwide on trade terms.
+                  Mbombela facility and couriered nationwide. Minimum 5 pieces per order.
                 </p>
               </div>
             </div>
