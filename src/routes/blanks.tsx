@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import blanksHeroBg from "@/assets/blanks-hero-bg.jpg";
 import {
   Shirt,
   UserRound,
@@ -207,7 +208,17 @@ function BlanksPage() {
 
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-border pt-40 pb-20 md:pt-48 md:pb-24">
-        <div className="pointer-events-none absolute inset-0 opacity-30">
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src={blanksHeroBg}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full scale-105 object-cover blur-[2px]"
+          />
+          <div className="absolute inset-0 bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 opacity-25">
           <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
           <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
