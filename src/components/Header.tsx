@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -10,14 +11,9 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded bg-charcoal text-primary-foreground">
-            <span className="text-sm font-black text-primary">B2</span>
-          </span>
-          <span className="text-lg font-bold tracking-tight text-charcoal">
-            Blank<span className="text-primary">2</span>Branded
-          </span>
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+        <Link to="/" className="flex items-center gap-2" aria-label="Blank2Branded home">
+          <img src={logo} alt="Blank2Branded — DTF, Blanks, Print & Press" className="h-12 w-auto md:h-14" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
