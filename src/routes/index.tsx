@@ -297,14 +297,15 @@ function Home() {
               Why Blank2Branded?
             </h2>
             <p className="mt-6 text-lg text-muted-foreground">
-              We built this for the brands and shops we wish existed when we
-              started. Trade-first, no retail nonsense.
+              We built this for the brands, businesses and individuals we wish
+              had a supplier like this when we started. Honest pricing, no gatekeeping.
             </p>
           </div>
 
           <ul className="space-y-5">
             {[
-              "Trade-only pricing — no retail markups.",
+              "Honest pricing — no retail markups.",
+              "Open to brands, businesses and individuals (min 5 pieces).",
               "No middlemen. Direct supplier relationship.",
               "Tech support for new brands getting set up.",
               "SA-based. Real humans on WhatsApp.",
