@@ -103,7 +103,7 @@ function AboutPage() {
             to="/contact"
             className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
           >
-            Get Your Trade Account <ArrowRight className="h-4 w-4" />
+            Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
