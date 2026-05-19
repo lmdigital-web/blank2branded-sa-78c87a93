@@ -43,13 +43,18 @@ function ContactPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <section className="border-b border-border py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+      <section className="relative overflow-hidden border-b border-border py-20 md:py-24">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -right-20 top-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute right-1/3 bottom-0 h-72 w-72 rounded-full bg-primary blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-6">
+          <p className="text-sm font-semibold uppercase tracking-wider text-cyan">
             Contact
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Get a Quote.
+            Get a <span className="text-gradient-dtf">Quote.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
             Open to brands, businesses and individuals — minimum 5 pieces per order. We reply to all enquiries within 4 business hours.
