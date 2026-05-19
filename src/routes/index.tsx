@@ -62,7 +62,7 @@ function Home() {
         </div>
 
 
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-20">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 pt-40 pb-16 md:grid-cols-2 md:pt-48 md:pb-20">
           <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-charcoal backdrop-blur">
               <span className="inline-flex h-2 w-2 rounded-full bg-gradient-dtf" />
