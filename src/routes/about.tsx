@@ -71,8 +71,8 @@ function AboutPage() {
               },
               {
                 icon: Handshake,
-                title: "Trade Partners, Not Gatekeepers",
-                desc: "Real pricing, real support. We help new brands set up. No minimum-spend gates or attitude.",
+                title: "Partners, Not Gatekeepers",
+                desc: "Real pricing, real support. Brands, businesses or individuals — order from 5 pieces. We help new brands set up. No attitude, no gatekeeping.",
               },
             ].map((p) => (
               <div
