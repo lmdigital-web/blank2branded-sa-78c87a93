@@ -13,7 +13,7 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         <Link to="/" className="flex items-center gap-2" aria-label="Blank2Branded home">
-          <img src={logo} alt="Blank2Branded — DTF, Blanks, Print & Press" className="h-12 w-auto md:h-14" />
+          <img src={logo} alt="Blank2Branded — DTF, Blanks, Print & Press" className="h-20 w-auto md:h-28" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
