@@ -324,7 +324,7 @@ function BlanksPage() {
             search={{ subject: "Custom Blank Sourcing Enquiry" }}
             className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
           >
-            Contact Our Trade Team <ArrowRight className="h-4 w-4" />
+            Contact Our Team <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
