@@ -27,6 +27,9 @@ export function Header() {
           <Link to="/about" className={linkCls} activeProps={{ className: "text-primary" }}>
             About
           </Link>
+          <Link to="/blanks" className={linkCls} activeProps={{ className: "text-primary" }}>
+            Blanks
+          </Link>
           <Link to="/contact" className={linkCls} activeProps={{ className: "text-primary" }}>
             Contact
           </Link>
@@ -52,6 +55,7 @@ export function Header() {
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4">
             <Link to="/" className={linkCls} onClick={() => setOpen(false)}>Home</Link>
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
+            <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>Blanks</Link>
             <Link to="/contact" className={linkCls} onClick={() => setOpen(false)}>Contact</Link>
             <Link
               to="/contact"
