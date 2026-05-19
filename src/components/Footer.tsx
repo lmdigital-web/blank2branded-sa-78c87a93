@@ -51,7 +51,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-background/10 pt-6 text-xs text-background/50">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <p>© 2026 Blank2Branded. Trade supplier of DTF + apparel. Separate from Lifestyle Apparel (retail streetwear).</p>
+            <p>© 2026 Blank2Branded. Supplier of DTF + apparel. Minimum 5 pieces per order. Separate from Lifestyle Apparel (retail streetwear).</p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-primary">Privacy</a>
               <a href="#" className="hover:text-primary">Terms</a>
