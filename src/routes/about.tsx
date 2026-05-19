@@ -40,11 +40,11 @@ function AboutPage() {
         </div>
 
         <div className="relative mx-auto max-w-4xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
             About Us
           </p>
           <h1 className="mt-4 text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            The Backend for SA's Clothing Brands.
+            The Backend for SA's <span className="text-gradient-dtf">Clothing Brands.</span>
           </h1>
           <div className="mt-10 space-y-6 text-lg leading-relaxed text-charcoal/80">
             <p>
