@@ -62,6 +62,16 @@
   --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
   --ring: oklch(0.685 0.222 38);
+
+  /* DTF print palette — inspired by ink splash */
+  --magenta: oklch(0.66 0.27 350);
+  --cyan: oklch(0.74 0.15 210);
+  --lime: oklch(0.85 0.20 130);
+  --yellow: oklch(0.86 0.18 90);
+  --purple: oklch(0.55 0.24 295);
+
+  --gradient-dtf: linear-gradient(135deg, var(--magenta), var(--primary) 35%, var(--yellow) 65%, var(--cyan));
+  --gradient-splash: linear-gradient(120deg, var(--cyan), var(--purple) 40%, var(--magenta) 70%, var(--primary));
 }
 
 @layer base {
