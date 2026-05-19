@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Award, Zap, Handshake, ArrowRight } from "lucide-react";
+import aboutHeroBg from "@/assets/about-hero-bg.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -26,15 +27,26 @@ function AboutPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <section className="border-b border-border py-24 md:py-32">
-        <div className="mx-auto max-w-4xl px-6">
+      <section className="relative overflow-hidden border-b border-border py-24 md:py-32">
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src={aboutHeroBg}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full scale-105 object-cover blur-[2px]"
+          />
+          <div className="absolute inset-0 bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl px-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             About Us
           </p>
           <h1 className="mt-4 text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             The Backend for SA's Clothing Brands.
           </h1>
-          <div className="mt-10 space-y-6 text-lg leading-relaxed text-muted-foreground">
+          <div className="mt-10 space-y-6 text-lg leading-relaxed text-charcoal/80">
             <p>
               Blank2Branded started to solve the gap between expensive retail
               blanks and unreliable print suppliers. We're printers and brand
