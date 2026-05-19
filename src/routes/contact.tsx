@@ -107,6 +107,18 @@ function ContactPage() {
                   </select>
                 </div>
 
+                {subject && (
+                  <div className="space-y-2">
+                    <label className={labelCls} htmlFor="subject">Subject</label>
+                    <input
+                      id="subject"
+                      name="subject"
+                      defaultValue={subject}
+                      className={inputCls}
+                    />
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label className={labelCls} htmlFor="message">Message</label>
                   <textarea
@@ -115,6 +127,7 @@ function ContactPage() {
                     required
                     rows={5}
                     className={inputCls}
+                    defaultValue={subject ? `Re: ${subject}\n\n` : ""}
                     placeholder="Tell us about your order — quantity, sizes, deadline."
                   />
                 </div>
