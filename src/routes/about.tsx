@@ -154,14 +154,18 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="mx-auto max-w-4xl px-6 text-center">
+      <section className="relative overflow-hidden py-24">
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-cyan/30 blur-3xl" />
+          <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-magenta/30 blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-4xl px-6 text-center">
           <h2 className="text-4xl font-black tracking-tight text-charcoal md:text-5xl">
-            Let's build your brand together.
+            Let's build your <span className="text-gradient-dtf">brand</span> together.
           </h2>
           <Link
             to="/contact"
-            className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
+            className="mt-10 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-8 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03]"
           >
             Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>
