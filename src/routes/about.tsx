@@ -10,10 +10,10 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Blank2Branded is a Mbombela-based trade supplier of DTF transfers and blank apparel, serving clothing brands across South Africa.",
+          "Blank2Branded is a Mbombela-based supplier of DTF transfers and blank apparel, serving brands, businesses and individuals across South Africa. Minimum 5 pieces per order.",
       },
       { property: "og:title", content: "About Blank2Branded" },
-      { property: "og:description", content: "Trade supplier of DTF + blanks, built by printers and brand builders." },
+      { property: "og:description", content: "Supplier of DTF + blanks, built by printers and brand builders. Min 5 pieces per order." },
       { property: "og:url", content: "/about" },
     ],
     links: [{ rel: "canonical", href: "/about" }],
