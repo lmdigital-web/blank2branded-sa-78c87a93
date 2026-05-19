@@ -375,18 +375,26 @@ function Home() {
       </section>
 
       {/* CTA */}
-      <section className="bg-charcoal py-24 text-background">
-        <div className="mx-auto max-w-5xl px-6 text-center">
+      <section className="relative overflow-hidden bg-charcoal py-28 text-background">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute right-0 top-20 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute left-1/3 bottom-0 h-72 w-72 rounded-full bg-lime blur-3xl" />
+          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-primary blur-3xl" />
+        </div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-dtf" />
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-dtf" />
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
           <h2 className="text-4xl font-black tracking-tight md:text-6xl">
             Ready to go from{" "}
-            <span className="text-primary">Blank to Branded?</span>
+            <span className="text-gradient-dtf">Blank to Branded?</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-background/70">
             Order from 5 pieces and up — DTF prints and blank apparel, shipped nationwide.
           </p>
           <Link
             to="/contact"
-            className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
+            className="mt-10 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-8 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03] hover:shadow-2xl"
           >
             Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>
