@@ -151,7 +151,7 @@ function ContactPage() {
 
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 md:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] md:w-auto"
                 >
                   Send Enquiry <Send className="h-4 w-4" />
                 </button>
@@ -161,50 +161,38 @@ function ContactPage() {
 
           {/* DETAILS */}
           <div className="lg:col-span-2">
-            <div className="rounded-lg bg-charcoal p-8 text-background">
-              <h2 className="text-xl font-bold">Talk to us directly.</h2>
-              <ul className="mt-8 space-y-6">
-                <li className="flex items-start gap-4">
-                  <div className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-background/5 text-primary">
-                    <MessageCircle className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-background/50">WhatsApp Business</p>
-                    <a href="https://wa.me/27000000000" className="mt-1 block text-base font-semibold hover:text-primary">
-                      +27 00 000 0000
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-background/5 text-primary">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-background/50">Email</p>
-                    <a href="mailto:hello@blank2branded.co.za" className="mt-1 block text-base font-semibold hover:text-primary">
-                      hello@blank2branded.co.za
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-background/5 text-primary">
-                    <Clock className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-background/50">Hours</p>
-                    <p className="mt-1 text-base font-semibold">Mon–Fri · 8am–5pm</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-background/5 text-primary">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-background/50">Location</p>
-                    <p className="mt-1 text-base font-semibold">Mbombela, SA</p>
-                    <p className="text-sm text-background/60">Courier nationwide</p>
-                  </div>
-                </li>
+            <div className="relative overflow-hidden rounded-2xl bg-charcoal p-8 text-background">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-dtf" />
+              <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-magenta opacity-20 blur-3xl" />
+              <div className="pointer-events-none absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-cyan opacity-20 blur-3xl" />
+              <h2 className="relative text-xl font-bold">Talk to us directly.</h2>
+              <ul className="relative mt-8 space-y-6">
+                {[
+                  { icon: MessageCircle, color: "lime", label: "WhatsApp Business", value: "+27 00 000 0000", href: "https://wa.me/27000000000" },
+                  { icon: Mail, color: "cyan", label: "Email", value: "hello@blank2branded.co.za", href: "mailto:hello@blank2branded.co.za" },
+                  { icon: Clock, color: "magenta", label: "Hours", value: "Mon–Fri · 8am–5pm" },
+                  { icon: MapPin, color: "primary", label: "Location", value: "Mbombela, SA", sub: "Courier nationwide" },
+                ].map((item) => (
+                  <li key={item.label} className="flex items-start gap-4">
+                    <div
+                      className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md text-white"
+                      style={{ backgroundColor: `var(--${item.color})` }}
+                    >
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-background/50">{item.label}</p>
+                      {item.href ? (
+                        <a href={item.href} className="mt-1 block text-base font-semibold hover:text-primary">
+                          {item.value}
+                        </a>
+                      ) : (
+                        <p className="mt-1 text-base font-semibold">{item.value}</p>
+                      )}
+                      {item.sub && <p className="text-sm text-background/60">{item.sub}</p>}
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
 
