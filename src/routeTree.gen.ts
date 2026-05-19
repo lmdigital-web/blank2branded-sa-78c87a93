@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as DtfRouteImport } from './routes/dtf'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlanksRouteImport } from './routes/blanks'
 import { Route as AboutRouteImport } from './routes/about'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DtfRoute = DtfRouteImport.update({
+  id: '/dtf',
+  path: '/dtf',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/blanks': typeof BlanksRoute
   '/contact': typeof ContactRoute
+  '/dtf': typeof DtfRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/blanks': typeof BlanksRoute
   '/contact': typeof ContactRoute
+  '/dtf': typeof DtfRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,22 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/blanks': typeof BlanksRoute
   '/contact': typeof ContactRoute
+  '/dtf': typeof DtfRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/blanks' | '/contact' | '/sitemap.xml'
+  fullPaths: '/' | '/about' | '/blanks' | '/contact' | '/dtf' | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/blanks' | '/contact' | '/sitemap.xml'
-  id: '__root__' | '/' | '/about' | '/blanks' | '/contact' | '/sitemap.xml'
+  to: '/' | '/about' | '/blanks' | '/contact' | '/dtf' | '/sitemap.xml'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/blanks'
+    | '/contact'
+    | '/dtf'
+    | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +92,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BlanksRoute: typeof BlanksRoute
   ContactRoute: typeof ContactRoute
+  DtfRoute: typeof DtfRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -86,6 +103,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dtf': {
+      id: '/dtf'
+      path: '/dtf'
+      fullPath: '/dtf'
+      preLoaderRoute: typeof DtfRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -124,8 +148,19 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   BlanksRoute: BlanksRoute,
   ContactRoute: ContactRoute,
+  DtfRoute: DtfRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
