@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Trade supplier of DTF transfers & blank apparel. Nationwide shipping. Print, press, or supply for SA clothing brands.",
+          "Supplier of DTF transfers & blank apparel for brands, businesses and individuals. Minimum 5 pieces per order. Nationwide shipping.",
       },
       { name: "author", content: "Blank2Branded" },
       { property: "og:title", content: "Blank2Branded — DTF Prints + Blank Tees, SA-Wide" },
       {
         property: "og:description",
         content:
-          "Trade supplier of DTF transfers & blank apparel. Nationwide shipping for SA clothing brands.",
+          "DTF transfers & blank apparel for brands, businesses and individuals. Min 5 pieces. Nationwide shipping.",
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Blank2Branded" },
