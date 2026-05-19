@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, Mail } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export function Footer() {
   return (
@@ -7,9 +8,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="text-2xl font-bold">
-              Blank<span className="text-primary">2</span>Branded
-            </div>
+            <img src={logo} alt="Blank2Branded" className="h-16 w-auto rounded bg-background/5 p-2" />
+          </div>
             <p className="mt-3 max-w-sm text-sm text-background/60">
               From Blank to Branded. Nationwide. Supplier of DTF transfers
               & blank apparel for South African brands, businesses and individuals. Minimum 5 pieces per order.
