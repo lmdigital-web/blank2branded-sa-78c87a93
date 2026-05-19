@@ -1,19 +1,43 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const linkCls =
     "text-sm font-medium text-charcoal hover:text-primary transition-colors";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-        <Link to="/" className="flex items-center gap-2" aria-label="Blank2Branded home">
-          <img src={logo} alt="Blank2Branded — DTF, Blanks, Print & Press" className="h-20 w-auto md:h-28" />
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-border bg-background/95 backdrop-blur shadow-sm"
+          : "border-b border-transparent bg-transparent"
+      }`}
+    >
+      <div
+        className={`mx-auto flex max-w-7xl items-center justify-between px-6 transition-all duration-300 ${
+          scrolled ? "py-2" : "py-4"
+        }`}
+      >
+        <Link to="/" className="flex items-center" aria-label="Blank2Branded home">
+          <img
+            src={logo}
+            alt="Blank2Branded — DTF, Blanks, Print & Press"
+            className={`w-auto transition-all duration-300 ${
+              scrolled ? "h-14 md:h-16" : "h-24 md:h-40"
+            }`}
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
