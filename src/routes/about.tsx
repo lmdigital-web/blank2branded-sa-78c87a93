@@ -27,7 +27,7 @@ function AboutPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <section className="relative overflow-hidden border-b border-border py-24 md:py-32">
+      <section className="relative overflow-hidden border-b border-border pt-40 pb-24 md:pt-48 md:pb-32">
         <div className="pointer-events-none absolute inset-0">
           <img
             src={aboutHeroBg}
