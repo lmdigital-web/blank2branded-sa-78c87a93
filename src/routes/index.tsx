@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import dtfPrintingImg from "@/assets/dtf-printing.jpg";
+import blankApparelImg from "@/assets/blank-apparel.jpg";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import {
