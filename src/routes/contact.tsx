@@ -43,7 +43,7 @@ function ContactPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <section className="relative overflow-hidden border-b border-border py-20 md:py-24">
+      <section className="relative overflow-hidden border-b border-border pt-40 pb-20 md:pt-48 md:pb-24">
         <div className="pointer-events-none absolute inset-0 opacity-30">
           <div className="absolute -right-20 top-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
           <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-magenta blur-3xl" />
