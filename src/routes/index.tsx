@@ -333,13 +333,13 @@ function Home() {
             <span className="text-primary">Blank to Branded?</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-background/70">
-            Open a trade account and get bulk pricing on DTF prints and blanks.
+            Order from 5 pieces and up — DTF prints and blank apparel, shipped nationwide.
           </p>
           <Link
             to="/contact"
             className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
           >
-            Request Trade Access <ArrowRight className="h-4 w-4" />
+            Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
