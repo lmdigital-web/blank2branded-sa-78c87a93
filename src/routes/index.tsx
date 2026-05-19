@@ -97,7 +97,7 @@ function Home() {
             </div>
 
             <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Trade accounts only · MOQ 10 units
+              Open to brands, businesses & individuals · Minimum 5 pieces per order
             </p>
           </div>
 
