@@ -49,10 +49,10 @@ function ContactPage() {
             Contact
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Get a Quote or Open a Trade Account.
+            Get a Quote.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            We reply to all trade enquiries within 4 business hours.
+            Open to brands, businesses and individuals — minimum 5 pieces per order. We reply to all enquiries within 4 business hours.
           </p>
         </div>
       </section>
