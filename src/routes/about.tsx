@@ -64,23 +64,22 @@ function AboutPage() {
       </section>
 
       <section className="relative overflow-hidden border-b border-border bg-charcoal py-24 text-background md:py-32">
-        <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
-          <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary blur-3xl" />
-          <div className="absolute right-0 bottom-0 h-72 w-72 rotate-12 bg-primary blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute right-0 top-20 h-72 w-72 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute left-1/3 bottom-0 h-80 w-80 rounded-full bg-primary blur-3xl" />
         </div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-dtf" />
 
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="grid items-end gap-8 md:grid-cols-2">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan">
                 Our Principles
               </p>
               <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
                 What we{" "}
-                <span className="relative inline-block">
-                  <span className="relative z-10">stand for.</span>
-                  <span className="absolute -bottom-1 left-0 right-0 h-3 bg-primary/40" />
-                </span>
+                <span className="text-gradient-dtf">stand for.</span>
               </h2>
             </div>
             <p className="max-w-md text-base leading-relaxed text-background/70 md:justify-self-end md:text-right">
@@ -96,37 +95,55 @@ function AboutPage() {
                 num: "01",
                 title: "Quality Obsessed",
                 desc: "Every DTF transfer and blank is tested to wash, stretch, and last. If we wouldn't put our brand on it, we won't sell it.",
+                color: "magenta",
               },
               {
                 icon: Zap,
                 num: "02",
                 title: "Speed First",
                 desc: "48hr DTF turnaround. Quotes in hours, not days. Your business doesn't wait — neither do we.",
+                color: "cyan",
               },
               {
                 icon: Handshake,
                 num: "03",
                 title: "Partners, Not Gatekeepers",
                 desc: "Real pricing, real support. Brands, businesses or individuals — order from 5 pieces. No attitude, no gatekeeping.",
+                color: "primary",
               },
             ].map((p) => (
               <div
                 key={p.title}
                 className="group relative overflow-hidden bg-charcoal p-10 transition-colors duration-300 hover:bg-charcoal/60"
               >
-                <span className="absolute right-6 top-6 text-5xl font-black text-background/5 transition-colors duration-300 group-hover:text-primary/30">
+                <span
+                  className="absolute right-6 top-6 text-5xl font-black opacity-10 transition-opacity duration-300 group-hover:opacity-40"
+                  style={{ color: `var(--${p.color})` }}
+                >
                   {p.num}
                 </span>
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <div
+                  className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                  style={{ backgroundColor: `var(--${p.color})` }}
+                />
 
                 <div className="relative">
-                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+                  <div
+                    className="inline-flex h-14 w-14 items-center justify-center rounded-xl border text-white transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+                    style={{
+                      backgroundColor: `var(--${p.color})`,
+                      borderColor: `color-mix(in oklab, var(--${p.color}) 60%, white)`,
+                    }}
+                  >
                     <p.icon className="h-6 w-6" strokeWidth={1.75} />
                   </div>
                   <h3 className="mt-8 text-2xl font-bold tracking-tight text-background">
                     {p.title}
                   </h3>
-                  <div className="mt-4 h-px w-10 bg-primary transition-all duration-300 group-hover:w-20" />
+                  <div
+                    className="mt-4 h-px w-10 transition-all duration-300 group-hover:w-20"
+                    style={{ backgroundColor: `var(--${p.color})` }}
+                  />
                   <p className="mt-5 text-sm leading-relaxed text-background/65">
                     {p.desc}
                   </p>
