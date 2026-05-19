@@ -63,43 +63,74 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-surface py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <h2 className="text-3xl font-bold tracking-tight text-charcoal md:text-4xl">
-            What we stand for.
-          </h2>
+      <section className="relative overflow-hidden border-b border-border bg-charcoal py-24 text-background md:py-32">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
+          <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary blur-3xl" />
+          <div className="absolute right-0 bottom-0 h-72 w-72 rotate-12 bg-primary blur-3xl" />
+        </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="grid items-end gap-8 md:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+                Our Principles
+              </p>
+              <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
+                What we{" "}
+                <span className="relative inline-block">
+                  <span className="relative z-10">stand for.</span>
+                  <span className="absolute -bottom-1 left-0 right-0 h-3 bg-primary/40" />
+                </span>
+              </h2>
+            </div>
+            <p className="max-w-md text-base leading-relaxed text-background/70 md:justify-self-end md:text-right">
+              Three values that shape how we quote, print, pack and ship —
+              every single order, no exceptions.
+            </p>
+          </div>
+
+          <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-background/10 bg-background/10 md:grid-cols-3">
             {[
               {
                 icon: Award,
+                num: "01",
                 title: "Quality Obsessed",
                 desc: "Every DTF transfer and blank is tested to wash, stretch, and last. If we wouldn't put our brand on it, we won't sell it.",
               },
               {
                 icon: Zap,
+                num: "02",
                 title: "Speed First",
                 desc: "48hr DTF turnaround. Quotes in hours, not days. Your business doesn't wait — neither do we.",
               },
               {
                 icon: Handshake,
+                num: "03",
                 title: "Partners, Not Gatekeepers",
-                desc: "Real pricing, real support. Brands, businesses or individuals — order from 5 pieces. We help new brands set up. No attitude, no gatekeeping.",
+                desc: "Real pricing, real support. Brands, businesses or individuals — order from 5 pieces. No attitude, no gatekeeping.",
               },
             ].map((p) => (
               <div
                 key={p.title}
-                className="rounded-lg border border-border bg-card p-8"
+                className="group relative overflow-hidden bg-charcoal p-10 transition-colors duration-300 hover:bg-charcoal/60"
               >
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-charcoal text-primary">
-                  <p.icon className="h-6 w-6" />
+                <span className="absolute right-6 top-6 text-5xl font-black text-background/5 transition-colors duration-300 group-hover:text-primary/30">
+                  {p.num}
+                </span>
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                <div className="relative">
+                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <p.icon className="h-6 w-6" strokeWidth={1.75} />
+                  </div>
+                  <h3 className="mt-8 text-2xl font-bold tracking-tight text-background">
+                    {p.title}
+                  </h3>
+                  <div className="mt-4 h-px w-10 bg-primary transition-all duration-300 group-hover:w-20" />
+                  <p className="mt-5 text-sm leading-relaxed text-background/65">
+                    {p.desc}
+                  </p>
                 </div>
-                <h3 className="mt-6 text-xl font-bold text-charcoal">
-                  {p.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {p.desc}
-                </p>
               </div>
             ))}
           </div>
