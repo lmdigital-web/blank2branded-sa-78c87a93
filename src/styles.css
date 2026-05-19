@@ -106,3 +106,28 @@
 .animate-dash-flow {
   animation: dash-flow 1.2s linear infinite;
 }
+
+.bg-gradient-dtf {
+  background-image: var(--gradient-dtf);
+}
+
+.bg-gradient-splash {
+  background-image: var(--gradient-splash);
+}
+
+.text-gradient-dtf {
+  background-image: var(--gradient-dtf);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -20px) scale(1.05); }
+  66% { transform: translate(-15px, 15px) scale(0.95); }
+}
+
+.animate-float-blob {
+  animation: float-blob 18s ease-in-out infinite;
+}
