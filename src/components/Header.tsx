@@ -19,10 +19,10 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "border-b border-border bg-background/95 backdrop-blur shadow-sm"
-          : "border-b border-transparent bg-transparent"
+          ? "sticky border-b border-border bg-background/95 backdrop-blur shadow-sm"
+          : "absolute border-b border-transparent bg-transparent"
       }`}
     >
       <div
