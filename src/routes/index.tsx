@@ -260,7 +260,7 @@ function Home() {
       <section className="border-b border-border py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <p className="text-sm font-semibold uppercase tracking-wider text-cyan">
               Inside the Operation
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -281,7 +281,7 @@ function Home() {
                 />
               </div>
               <div className="p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-magenta">
                   DTF Production
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
@@ -307,7 +307,7 @@ function Home() {
                 />
               </div>
               <div className="p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-lime">
                   Blank Apparel
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
@@ -325,14 +325,15 @@ function Home() {
 
       {/* DIFFERENTIATION */}
 
-      <section className="border-b border-border py-24">
+      <section className="relative overflow-hidden border-b border-border py-24">
+        <div className="pointer-events-none absolute -left-32 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-purple/15 blur-3xl" />
         <div className="mx-auto grid max-w-7xl gap-16 px-6 md:grid-cols-2">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <p className="text-sm font-semibold uppercase tracking-wider text-purple">
               The Difference
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
-              Why Blank2Branded?
+              Why <span className="text-gradient-dtf">Blank2Branded</span>?
             </h2>
             <p className="mt-6 text-lg text-muted-foreground">
               We built this for the brands, businesses and individuals we wish
@@ -342,20 +343,30 @@ function Home() {
 
           <ul className="space-y-5">
             {[
-              "Honest pricing — no retail markups.",
-              "Open to brands, businesses and individuals (min 5 pieces).",
-              "No middlemen. Direct supplier relationship.",
-              "Tech support for new brands getting set up.",
-              "SA-based. Real humans on WhatsApp.",
-              "Fast turnaround and quality you can resell.",
+              { text: "Honest pricing — no retail markups.", color: "primary" },
+              { text: "Open to brands, businesses and individuals (min 5 pieces).", color: "magenta" },
+              { text: "No middlemen. Direct supplier relationship.", color: "cyan" },
+              { text: "Tech support for new brands getting set up.", color: "purple" },
+              { text: "SA-based. Real humans on WhatsApp.", color: "lime" },
+              { text: "Fast turnaround and quality you can resell.", color: "yellow" },
             ].map((point) => (
               <li
-                key={point}
+                key={point.text}
                 className="flex items-start gap-4 border-b border-border pb-5 last:border-0"
               >
-                <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                <span
+                  className="mt-1 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor: `color-mix(in oklab, var(--${point.color}) 18%, transparent)`,
+                  }}
+                >
+                  <CheckCircle2
+                    className="h-4 w-4"
+                    style={{ color: `var(--${point.color})` }}
+                  />
+                </span>
                 <span className="text-base font-medium text-charcoal">
-                  {point}
+                  {point.text}
                 </span>
               </li>
             ))}
