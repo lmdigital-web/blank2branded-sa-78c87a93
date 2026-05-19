@@ -46,11 +46,12 @@ function Home() {
             src={heroBg}
             alt=""
             aria-hidden="true"
-            className="h-full w-full scale-105 object-cover blur-[6px]"
+            className="h-full w-full scale-105 object-cover blur-[2px]"
           />
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
+          <div className="absolute inset-0 bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/55 to-background/10" />
         </div>
+
 
         {/* Geometric accents */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
