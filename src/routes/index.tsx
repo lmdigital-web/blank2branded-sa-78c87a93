@@ -53,25 +53,27 @@ function Home() {
         </div>
 
 
-        {/* Geometric accents */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
-          <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-primary blur-3xl" />
-          <div className="absolute left-10 bottom-0 h-64 w-64 rotate-45 bg-charcoal" />
+        {/* DTF colour blobs */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="animate-float-blob absolute -right-40 -top-20 h-[28rem] w-[28rem] rounded-full bg-magenta opacity-25 blur-3xl" />
+          <div className="animate-float-blob absolute -left-32 top-40 h-96 w-96 rounded-full bg-cyan opacity-25 blur-3xl [animation-delay:-6s]" />
+          <div className="animate-float-blob absolute right-20 bottom-0 h-80 w-80 rounded-full bg-lime opacity-25 blur-3xl [animation-delay:-12s]" />
+          <div className="animate-float-blob absolute left-1/3 bottom-10 h-72 w-72 rounded-full bg-primary opacity-30 blur-3xl [animation-delay:-3s]" />
         </div>
 
 
         <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-20">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-primary" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-charcoal backdrop-blur">
+              <span className="inline-flex h-2 w-2 rounded-full bg-gradient-dtf" />
               DTF + Apparel Supplier — South Africa
             </div>
 
             <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-7xl">
               DTF Prints + Blank Tees,{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">Shipped SA-Wide</span>
-                <span className="absolute -bottom-1 left-0 right-0 h-3 bg-primary/30" />
+                <span className="text-gradient-dtf relative z-10">Shipped SA-Wide</span>
+                <span className="absolute -bottom-1 left-0 right-0 h-3 bg-gradient-dtf opacity-30" />
               </span>
             </h1>
 
@@ -109,28 +111,33 @@ function Home() {
       </section>
 
       {/* TRUST BAR */}
-      <section className="border-b border-border bg-charcoal text-background">
+      <section className="relative overflow-hidden border-b border-border bg-charcoal text-background">
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-dtf" />
         <div className="mx-auto grid max-w-7xl gap-6 px-6 py-6 text-center text-sm font-medium md:grid-cols-3 md:py-5">
           <div className="flex items-center justify-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="h-1.5 w-1.5 rounded-full bg-magenta" />
             Trusted by 100+ SA Brands
           </div>
           <div className="flex items-center justify-center gap-2 md:border-x md:border-background/10">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan" />
             48hr DTF Turnaround
           </div>
           <div className="flex items-center justify-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="h-1.5 w-1.5 rounded-full bg-lime" />
             Nationwide Courier
           </div>
         </div>
       </section>
 
       {/* SERVICES */}
-      <section id="services" className="border-b border-border py-24">
+      <section id="services" className="relative border-b border-border py-24">
+        <div className="pointer-events-none absolute inset-0 -z-10 opacity-40">
+          <div className="absolute right-0 top-10 h-72 w-72 rounded-full bg-cyan/30 blur-3xl" />
+          <div className="absolute left-1/3 bottom-0 h-72 w-72 rounded-full bg-magenta/20 blur-3xl" />
+        </div>
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
               What We Do
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -145,30 +152,47 @@ function Home() {
                 title: "DTF Transfers",
                 desc: "Upload your art, we print & ship ready-to-press transfers. Vivid colour, stretch-safe, durable wash.",
                 num: "01",
+                color: "cyan",
+                shadow: "shadow-cyan/40",
               },
               {
                 icon: Shirt,
                 title: "Blank Apparel",
                 desc: "Premium tees, hoodies, sweats at honest pricing. Quality blanks ready for your brand. Min 5 pieces.",
                 num: "02",
+                color: "magenta",
+                shadow: "shadow-magenta/40",
               },
               {
                 icon: Package,
                 title: "Print + Press",
                 desc: "Full service: we supply blanks, press your design, and ship finished goods to your door.",
                 num: "03",
+                color: "primary",
+                shadow: "shadow-primary/40",
               },
             ].map((s) => (
               <div
                 key={s.title}
-                className="group relative overflow-hidden rounded-lg border border-border bg-card p-8 transition-all hover:border-charcoal hover:shadow-xl"
+                className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 transition-all hover:-translate-y-1 hover:shadow-2xl"
+                style={{ boxShadow: undefined }}
               >
-                <div className="absolute right-6 top-6 text-5xl font-black text-surface transition-colors group-hover:text-primary/10">
+                <span
+                  className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                  style={{ backgroundColor: `var(--${s.color})` }}
+                />
+                <div
+                  className="absolute right-6 top-6 text-5xl font-black opacity-10 transition-opacity group-hover:opacity-30"
+                  style={{ color: `var(--${s.color})` }}
+                >
                   {s.num}
                 </div>
                 <div className="relative">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-charcoal text-primary">
-                    <s.icon className="h-6 w-6" />
+                  <div
+                    className="inline-flex h-14 w-14 items-center justify-center rounded-xl text-white transition-transform group-hover:scale-110 group-hover:rotate-3"
+                    style={{ backgroundColor: `var(--${s.color})` }}
+                  >
+                    <s.icon className="h-7 w-7" strokeWidth={1.75} />
                   </div>
                   <h3 className="mt-6 text-xl font-bold text-charcoal">
                     {s.title}
@@ -184,10 +208,10 @@ function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="border-b border-border bg-surface py-24">
+      <section className="relative overflow-hidden border-b border-border bg-surface py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <p className="text-sm font-semibold uppercase tracking-wider text-purple">
               Process
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -197,19 +221,33 @@ function Home() {
 
           <div className="mt-14 grid gap-8 md:grid-cols-4">
             {[
-              { icon: FileText, title: "Quote", desc: "Tell us your order. Get pricing in hours." },
-              { icon: Palette, title: "Artwork", desc: "Send files. We prep for production." },
-              { icon: Factory, title: "Production", desc: "Print, press, or pack — fast turnaround." },
-              { icon: Truck, title: "Courier", desc: "Tracked nationwide delivery to your door." },
+              { icon: FileText, title: "Quote", desc: "Tell us your order. Get pricing in hours.", color: "cyan" },
+              { icon: Palette, title: "Artwork", desc: "Send files. We prep for production.", color: "magenta" },
+              { icon: Factory, title: "Production", desc: "Print, press, or pack — fast turnaround.", color: "primary" },
+              { icon: Truck, title: "Courier", desc: "Tracked nationwide delivery to your door.", color: "lime" },
             ].map((step, i) => (
               <div key={step.title} className="relative">
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold tracking-widest text-primary">
+                  <span
+                    className="text-xs font-black tracking-widest"
+                    style={{ color: `var(--${step.color})` }}
+                  >
                     0{i + 1}
                   </span>
-                  <div className="h-px flex-1 bg-border" />
+                  <div
+                    className="h-px flex-1"
+                    style={{ backgroundColor: `color-mix(in oklab, var(--${step.color}) 40%, transparent)` }}
+                  />
                 </div>
-                <step.icon className="mt-6 h-7 w-7 text-charcoal" strokeWidth={1.5} />
+                <div
+                  className="mt-6 inline-flex h-12 w-12 items-center justify-center rounded-lg"
+                  style={{
+                    backgroundColor: `color-mix(in oklab, var(--${step.color}) 15%, transparent)`,
+                    color: `var(--${step.color})`,
+                  }}
+                >
+                  <step.icon className="h-6 w-6" strokeWidth={1.75} />
+                </div>
                 <h3 className="mt-4 text-lg font-bold text-charcoal">{step.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
               </div>
@@ -222,7 +260,7 @@ function Home() {
       <section className="border-b border-border py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <p className="text-sm font-semibold uppercase tracking-wider text-cyan">
               Inside the Operation
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -243,7 +281,7 @@ function Home() {
                 />
               </div>
               <div className="p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-magenta">
                   DTF Production
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
@@ -269,7 +307,7 @@ function Home() {
                 />
               </div>
               <div className="p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-lime">
                   Blank Apparel
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
@@ -287,14 +325,15 @@ function Home() {
 
       {/* DIFFERENTIATION */}
 
-      <section className="border-b border-border py-24">
+      <section className="relative overflow-hidden border-b border-border py-24">
+        <div className="pointer-events-none absolute -left-32 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-purple/15 blur-3xl" />
         <div className="mx-auto grid max-w-7xl gap-16 px-6 md:grid-cols-2">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <p className="text-sm font-semibold uppercase tracking-wider text-purple">
               The Difference
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
-              Why Blank2Branded?
+              Why <span className="text-gradient-dtf">Blank2Branded</span>?
             </h2>
             <p className="mt-6 text-lg text-muted-foreground">
               We built this for the brands, businesses and individuals we wish
@@ -304,20 +343,30 @@ function Home() {
 
           <ul className="space-y-5">
             {[
-              "Honest pricing — no retail markups.",
-              "Open to brands, businesses and individuals (min 5 pieces).",
-              "No middlemen. Direct supplier relationship.",
-              "Tech support for new brands getting set up.",
-              "SA-based. Real humans on WhatsApp.",
-              "Fast turnaround and quality you can resell.",
+              { text: "Honest pricing — no retail markups.", color: "primary" },
+              { text: "Open to brands, businesses and individuals (min 5 pieces).", color: "magenta" },
+              { text: "No middlemen. Direct supplier relationship.", color: "cyan" },
+              { text: "Tech support for new brands getting set up.", color: "purple" },
+              { text: "SA-based. Real humans on WhatsApp.", color: "lime" },
+              { text: "Fast turnaround and quality you can resell.", color: "yellow" },
             ].map((point) => (
               <li
-                key={point}
+                key={point.text}
                 className="flex items-start gap-4 border-b border-border pb-5 last:border-0"
               >
-                <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                <span
+                  className="mt-1 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor: `color-mix(in oklab, var(--${point.color}) 18%, transparent)`,
+                  }}
+                >
+                  <CheckCircle2
+                    className="h-4 w-4"
+                    style={{ color: `var(--${point.color})` }}
+                  />
+                </span>
                 <span className="text-base font-medium text-charcoal">
-                  {point}
+                  {point.text}
                 </span>
               </li>
             ))}
@@ -326,18 +375,26 @@ function Home() {
       </section>
 
       {/* CTA */}
-      <section className="bg-charcoal py-24 text-background">
-        <div className="mx-auto max-w-5xl px-6 text-center">
+      <section className="relative overflow-hidden bg-charcoal py-28 text-background">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute right-0 top-20 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute left-1/3 bottom-0 h-72 w-72 rounded-full bg-lime blur-3xl" />
+          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-primary blur-3xl" />
+        </div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-dtf" />
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-dtf" />
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
           <h2 className="text-4xl font-black tracking-tight md:text-6xl">
             Ready to go from{" "}
-            <span className="text-primary">Blank to Branded?</span>
+            <span className="text-gradient-dtf">Blank to Branded?</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-background/70">
             Order from 5 pieces and up — DTF prints and blank apparel, shipped nationwide.
           </p>
           <Link
             to="/contact"
-            className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
+            className="mt-10 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-8 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03] hover:shadow-2xl"
           >
             Get a Quote <ArrowRight className="h-4 w-4" />
           </Link>

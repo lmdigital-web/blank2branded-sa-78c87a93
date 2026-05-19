@@ -206,13 +206,18 @@ function BlanksPage() {
       <Header />
 
       {/* HERO */}
-      <section className="border-b border-border py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+      <section className="relative overflow-hidden border-b border-border py-20 md:py-24">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-6">
+          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
             Catalogue
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Blank Apparel.
+            <span className="text-gradient-dtf">Blank</span> Apparel.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
             Premium blanks ready for DTF, screen print, or embroidery. Open to brands, businesses and individuals — minimum 5 pieces per order. Nationwide shipping from Mbombela.
@@ -221,7 +226,7 @@ function BlanksPage() {
             <Link
               to="/contact"
               search={{ subject: "Blanks Enquiry" }}
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20"
+              className="inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.03]"
             >
               Request a Quote <ArrowRight className="h-4 w-4" />
             </Link>
@@ -281,19 +286,24 @@ function BlanksPage() {
       {/* CATEGORIES + GRID */}
       <section className="py-20">
         <div className="mx-auto max-w-7xl space-y-20 px-6">
-          {CATEGORIES.map((cat) => {
+          {CATEGORIES.map((cat, idx) => {
             const Icon = cat.icon;
+            const palette = ["magenta", "cyan", "primary", "lime", "purple", "yellow"];
+            const color = palette[idx % palette.length];
             return (
               <div key={cat.id} id={cat.id} className="scroll-mt-40">
-                <div className="flex items-center gap-4 border-b border-border pb-4">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-charcoal text-primary">
-                    <Icon className="h-5 w-5" />
+                <div className="flex items-center gap-4 border-b pb-4" style={{ borderColor: `color-mix(in oklab, var(--${color}) 40%, var(--border))` }}>
+                  <span
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-md"
+                    style={{ backgroundColor: `var(--${color})`, boxShadow: `0 8px 24px -8px color-mix(in oklab, var(--${color}) 60%, transparent)` }}
+                  >
+                    <Icon className="h-6 w-6" />
                   </span>
                   <div>
                     <h2 className="text-2xl font-black tracking-tight text-charcoal">
                       {cat.label}
                     </h2>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: `var(--${color})` }}>
                       {cat.products.length} style{cat.products.length === 1 ? "" : "s"}
                     </p>
                   </div>
@@ -311,18 +321,24 @@ function BlanksPage() {
       </section>
 
       {/* BOTTOM CTA */}
-      <section className="border-y border-border bg-surface py-20">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl font-black tracking-tight text-charcoal md:text-4xl">
-            Can't find the blank you need?
+      <section className="relative overflow-hidden border-y border-border bg-charcoal py-20 text-background">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-dtf" />
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-dtf" />
+        <div className="pointer-events-none absolute inset-0 opacity-25">
+          <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-magenta blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-4xl px-6 text-center">
+          <h2 className="text-3xl font-black tracking-tight md:text-4xl">
+            Can't find the <span className="text-gradient-dtf">blank</span> you need?
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-lg text-background/70">
             We can source other styles. Minimums apply.
           </p>
           <Link
             to="/contact"
             search={{ subject: "Custom Blank Sourcing Enquiry" }}
-            className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
+            className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03]"
           >
             Contact Our Team <ArrowRight className="h-4 w-4" />
           </Link>

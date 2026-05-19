@@ -31,6 +31,11 @@
   --color-ring: var(--ring);
   --color-charcoal: var(--charcoal);
   --color-surface: var(--surface);
+  --color-magenta: var(--magenta);
+  --color-cyan: var(--cyan);
+  --color-lime: var(--lime);
+  --color-yellow: var(--yellow);
+  --color-purple: var(--purple);
 }
 
 :root {
@@ -57,6 +62,16 @@
   --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
   --ring: oklch(0.685 0.222 38);
+
+  /* DTF print palette — inspired by ink splash */
+  --magenta: oklch(0.66 0.27 350);
+  --cyan: oklch(0.74 0.15 210);
+  --lime: oklch(0.85 0.20 130);
+  --yellow: oklch(0.86 0.18 90);
+  --purple: oklch(0.55 0.24 295);
+
+  --gradient-dtf: linear-gradient(135deg, var(--magenta), var(--primary) 35%, var(--yellow) 65%, var(--cyan));
+  --gradient-splash: linear-gradient(120deg, var(--cyan), var(--purple) 40%, var(--magenta) 70%, var(--primary));
 }
 
 @layer base {
@@ -90,4 +105,29 @@
 
 .animate-dash-flow {
   animation: dash-flow 1.2s linear infinite;
+}
+
+.bg-gradient-dtf {
+  background-image: var(--gradient-dtf);
+}
+
+.bg-gradient-splash {
+  background-image: var(--gradient-splash);
+}
+
+.text-gradient-dtf {
+  background-image: var(--gradient-dtf);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -20px) scale(1.05); }
+  66% { transform: translate(-15px, 15px) scale(0.95); }
+}
+
+.animate-float-blob {
+  animation: float-blob 18s ease-in-out infinite;
 }
