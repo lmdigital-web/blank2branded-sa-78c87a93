@@ -209,21 +209,21 @@ function BlanksPage() {
       <section className="border-b border-border py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-            Trade Catalogue
+            Catalogue
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Blank Apparel for Trade.
+            Blank Apparel.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Premium blanks ready for DTF, screen print, or embroidery. Trade accounts only. Nationwide shipping from Mbombela.
+            Premium blanks ready for DTF, screen print, or embroidery. Open to brands, businesses and individuals — minimum 5 pieces per order. Nationwide shipping from Mbombela.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/contact"
-              search={{ subject: "Trade Access Request" }}
+              search={{ subject: "Blanks Enquiry" }}
               className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20"
             >
-              Request Trade Access <ArrowRight className="h-4 w-4" />
+              Request a Quote <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#"
