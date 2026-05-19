@@ -39,7 +39,8 @@ function AboutPage() {
               Blank2Branded started to solve the gap between expensive retail
               blanks and unreliable print suppliers. We're printers and brand
               builders ourselves, so we know what matters: quality, speed, and
-              pricing that lets you actually profit.
+              pricing that lets you actually profit. We supply brands, businesses
+              and individuals from just 5 pieces per order.
             </p>
             <p>
               Based in Mbombela, serving all of South Africa — we ship
