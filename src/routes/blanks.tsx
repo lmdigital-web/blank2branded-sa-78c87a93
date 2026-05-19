@@ -17,17 +17,17 @@ import {
 export const Route = createFileRoute("/blanks")({
   head: () => ({
     meta: [
-      { title: "Blank Apparel for Trade — DTF, Screen Print, Embroidery | Blank2Branded" },
+      { title: "Blank Apparel — DTF, Screen Print, Embroidery | Blank2Branded" },
       {
         name: "description",
         content:
-          "Premium blank t-shirts, polos, hoodies, ladies and kids apparel for South African trade customers. Ready for DTF, screen print or embroidery. Nationwide shipping from Mbombela.",
+          "Premium blank t-shirts, polos, hoodies, ladies and kids apparel. Ready for DTF, screen print or embroidery. Open to brands, businesses and individuals — minimum 5 pieces per order. Nationwide shipping from Mbombela.",
       },
-      { property: "og:title", content: "Blank Apparel for Trade | Blank2Branded" },
+      { property: "og:title", content: "Blank Apparel | Blank2Branded" },
       {
         property: "og:description",
         content:
-          "Premium blanks ready for DTF, screen print or embroidery. Trade accounts only. Nationwide shipping.",
+          "Premium blanks ready for DTF, screen print or embroidery. Minimum 5 pieces per order. Nationwide shipping.",
       },
       { property: "og:url", content: "/blanks" },
     ],
