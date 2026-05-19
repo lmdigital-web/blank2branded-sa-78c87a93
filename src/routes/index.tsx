@@ -64,7 +64,7 @@ function Home() {
           <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-primary" />
-              Trade Supplier — South Africa
+              DTF + Apparel Supplier — South Africa
             </div>
 
             <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-7xl">
