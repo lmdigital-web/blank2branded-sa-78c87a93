@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Trade supplier of DTF transfers & blank apparel. Nationwide shipping. Print, press, or supply for SA clothing brands.",
+          "DTF transfers & blank apparel for brands, businesses and individuals. Minimum 5 pieces per order. Nationwide shipping across SA.",
       },
       { property: "og:title", content: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
       { property: "og:url", content: "/" },
