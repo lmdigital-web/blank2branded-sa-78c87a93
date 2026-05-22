@@ -206,14 +206,14 @@ function ProductCard({ product }: { product: Product }) {
             <ColorDots colors={product.colors} />
           </div>
         </div>
-      <Link
-        to="/contact"
-        search={{ subject: `Quote: ${product.name}` }}
-        className="mt-6 inline-flex items-center justify-between gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-charcoal transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground"
-      >
-        Request Quote for This Style
-        <ArrowRight className="h-3.5 w-3.5" />
-      </Link>
+        <Link
+          to="/contact"
+          search={{ subject: `Quote: ${product.name}` }}
+          className="mt-6 inline-flex items-center justify-between gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-charcoal transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground"
+        >
+          Request Quote for This Style
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
     </div>
   );
