@@ -29,7 +29,7 @@ export const Route = createFileRoute("/dtf")({
       {
         property: "og:description",
         content:
-          "Full-colour DTF transfers from A6 up to 2m long. 20cm – 2m wide. Print anything you like.",
+          "Full-colour DTF transfers from A6 up to 10 m long. 20 cm wide roll prints. Print anything you like.",
       },
       { property: "og:url", content: "/dtf" },
     ],
