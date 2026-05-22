@@ -19,17 +19,17 @@ import {
 export const Route = createFileRoute("/dtf")({
   head: () => ({
     meta: [
-      { title: "DTF Prints — A6 to 2m Large Format | Blank2Branded" },
+      { title: "DTF Prints — A6 to 10m Roll Prints | Blank2Branded" },
       {
         name: "description",
         content:
-          "Full-colour DTF transfers from A6 up to 2 metres long. 20cm wide up to 2m. We print anything you like — logos, illustrations, photographic prints. Nationwide shipping from Mbombela.",
+          "Full-colour DTF transfers from A6 up to 10 metres long. 20 cm wide roll prints. We print anything you like — logos, illustrations, photographic prints. Nationwide shipping from Mbombela.",
       },
-      { property: "og:title", content: "DTF Prints — A6 to 2m | Blank2Branded" },
+      { property: "og:title", content: "DTF Prints — A6 to 10m | Blank2Branded" },
       {
         property: "og:description",
         content:
-          "Full-colour DTF transfers from A6 up to 2m long. 20cm – 2m wide. Print anything you like.",
+          "Full-colour DTF transfers from A6 up to 10 m long. 20 cm wide roll prints. Print anything you like.",
       },
       { property: "og:url", content: "/dtf" },
     ],
@@ -42,16 +42,13 @@ const SIZES: { name: string; dim: string; tag?: string }[] = [
   { name: "A6", dim: "10.5 × 14.8 cm", tag: "Smallest" },
   { name: "A5", dim: "14.8 × 21 cm" },
   { name: "A4", dim: "21 × 29.7 cm", tag: "Popular" },
-  { name: "A3", dim: "29.7 × 42 cm" },
-  { name: "A2", dim: "42 × 59.4 cm" },
-  { name: "Large Format", dim: "Up to 60 × 200 cm", tag: "Banners" },
-  { name: "Roll Print", dim: "20 cm – 2 m wide × 2 m long" },
-  { name: "Custom", dim: "Any size on request", tag: "We'll quote" },
+  { name: "Roll Print", dim: "20 cm wide × up to 10 m long", tag: "Long Run" },
+  { name: "Custom", dim: "Any length up to 10 m on request", tag: "We'll quote" },
 ];
 
 const FEATURES = [
   { icon: Palette, color: "magenta", title: "Full-Colour CMYK + White", body: "Photographic detail, gradients and bold neons — all printed with a true white underbase so colours pop on any garment colour." },
-  { icon: Maximize2, color: "cyan", title: "A6 → 2 Metres", body: "From tiny chest logos to full-back, hoodie-wide and banner-length prints. 20 cm to 2 m wide, up to 2 m long per piece." },
+  { icon: Maximize2, color: "cyan", title: "A6 → 10 Metres", body: "From tiny chest logos to full-length roll prints. 20 cm wide, up to 10 m long per run — perfect for repeat orders and bulk jobs." },
   { icon: Sparkles, color: "lime", title: "Print Anything You Like", body: "Logos, illustrations, photos, lettering, repeat patterns. Send us the artwork — if it fits in the size, we can print it." },
   { icon: Layers, color: "primary", title: "Soft Hand-Feel", body: "Thin, stretchy and durable film that bonds to cotton, polyester, blends, fleece and more without going crusty." },
   { icon: Clock, color: "purple", title: "48hr Turnaround", body: "Standard production in 48 hours. Need it sooner? Ask about our rush slots." },
@@ -60,7 +57,7 @@ const FEATURES = [
 
 const STEPS = [
   { n: "01", icon: FileImage, color: "magenta", title: "Send Artwork", body: "PNG with transparent background at 300dpi works best. We'll review and flag any issues for free." },
-  { n: "02", icon: Ruler, color: "cyan", title: "Pick Your Size", body: "From A6 chest prints to 2-metre back pieces. Mix sizes on a single roll to save on cost." },
+  { n: "02", icon: Ruler, color: "cyan", title: "Pick Your Size", body: "From A6 chest prints to 10-metre roll runs. Gang multiple designs on a single roll to save on cost." },
   { n: "03", icon: Printer, color: "lime", title: "We Print + Ship", body: "Production in 48 hours, then couriered nationwide. Or press them onto blanks for you — full service available." },
 ];
 
@@ -92,10 +89,10 @@ function DtfPage() {
             DTF Transfers
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            <span className="text-gradient-dtf">A6 to 2 metres.</span> We print anything you like.
+            <span className="text-gradient-dtf">A6 to 10 metres.</span> We print anything you like.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Full-colour, photo-quality DTF prints — from tiny chest logos up to 2-metre back pieces and banner runs. 20 cm to 2 m wide. Soft hand-feel, wash-tested, ready to press.
+            Full-colour, photo-quality DTF prints — from tiny chest logos up to 10-metre roll runs. 20 cm wide rolls. Soft hand-feel, wash-tested, ready to press.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -167,10 +164,10 @@ function DtfPage() {
                 Print Sizes
               </p>
               <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
-                From a coin to a <span className="text-gradient-dtf">car bonnet.</span>
+                From a coin to a <span className="text-gradient-dtf">10-metre roll.</span>
               </h2>
               <p className="mt-6 text-lg text-background/70">
-                We print on rolls up to 2 metres wide. Whether you need 50 small chest logos or one big 2 m back piece — same machine, same colours, one quote.
+                Our printer runs 20 cm wide rolls up to 10 metres long. Whether you need 50 small chest logos ganged on one roll or a long continuous run — same machine, same colours, one quote.
               </p>
 
               <div className="mt-8 overflow-hidden rounded-2xl border border-background/10">
