@@ -89,10 +89,10 @@ function DtfPage() {
             DTF Transfers
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            <span className="text-gradient-dtf">A6 to 2 metres.</span> We print anything you like.
+            <span className="text-gradient-dtf">A6 to 10 metres.</span> We print anything you like.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Full-colour, photo-quality DTF prints — from tiny chest logos up to 2-metre back pieces and banner runs. 20 cm to 2 m wide. Soft hand-feel, wash-tested, ready to press.
+            Full-colour, photo-quality DTF prints — from tiny chest logos up to 10-metre roll runs. 20 cm wide rolls. Soft hand-feel, wash-tested, ready to press.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
