@@ -2,6 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import blanksHeroBg from "@/assets/blanks-hero-bg.jpg";
+import tshirtLightweight140 from "@/assets/blank-lightweight-140g.jpg";
+import tshirtHeavyweight180 from "@/assets/blank-heavyweight-180g.jpg";
+import tshirtPremium220 from "@/assets/blank-premium-220g.jpg";
+import tshirtPlatinum160 from "@/assets/blank-platinum-160g.jpg";
+import tshirtVneck160 from "@/assets/blank-vneck-160g.jpg";
+import tshirtLongsleeve180 from "@/assets/blank-longsleeve-180g.jpg";
 import {
   Shirt,
   UserRound,
@@ -92,6 +98,7 @@ type Product = {
   spec: string;
   sizes: string;
   colors: string[];
+  image?: string;
 };
 
 const CATEGORIES: { id: string; label: string; icon: React.ComponentType<{ className?: string }>; products: Product[] }[] = [
@@ -100,12 +107,12 @@ const CATEGORIES: { id: string; label: string; icon: React.ComponentType<{ class
     label: "T-Shirts",
     icon: Shirt,
     products: [
-      { name: "Lightweight 140g Crew Neck", spec: "140g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Grey","Royal","Sky","Bottle","Lime","Yellow","Orange","Red"] },
-      { name: "Heavyweight 180g Crew Neck", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal","Turquoise","Purple","Hot Pink","Baby Pink","Brown","Stone","Olive","Emerald","Lime","Yellow","Orange","Red","Grey","Sky","Bottle","Maroon"] },
-      { name: "Premium 220g Crew Neck", spec: "220g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy"] },
-      { name: "Platinum 160g Crew Neck", spec: "160g | Combed Cotton", sizes: "S – 3XL", colors: ["White","Black","Midnight Blue","Forest Green","Flame Red","Granite","Melange"] },
-      { name: "V-Neck 160g T-Shirt", spec: "160g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Red","Melange"] },
-      { name: "Long Sleeve 180g", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal"] },
+      { name: "Lightweight 140g Crew Neck", spec: "140g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Grey","Royal","Sky","Bottle","Lime","Yellow","Orange","Red"], image: tshirtLightweight140 },
+      { name: "Heavyweight 180g Crew Neck", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal","Turquoise","Purple","Hot Pink","Baby Pink","Brown","Stone","Olive","Emerald","Lime","Yellow","Orange","Red","Grey","Sky","Bottle","Maroon"], image: tshirtHeavyweight180 },
+      { name: "Premium 220g Crew Neck", spec: "220g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy"], image: tshirtPremium220 },
+      { name: "Platinum 160g Crew Neck", spec: "160g | Combed Cotton", sizes: "S – 3XL", colors: ["White","Black","Midnight Blue","Forest Green","Flame Red","Granite","Melange"], image: tshirtPlatinum160 },
+      { name: "V-Neck 160g T-Shirt", spec: "160g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Red","Melange"], image: tshirtVneck160 },
+      { name: "Long Sleeve 180g", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal"], image: tshirtLongsleeve180 },
     ],
   },
   {
@@ -173,19 +180,32 @@ const CATEGORIES: { id: string; label: string; icon: React.ComponentType<{ class
 
 function ProductCard({ product }: { product: Product }) {
   return (
-    <div className="group flex flex-col rounded-lg border border-border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-charcoal hover:shadow-lg">
-      <div className="flex-1">
-        <h3 className="text-base font-bold text-charcoal">{product.name}</h3>
-        <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-primary">
-          {product.spec}
-        </p>
-        <p className="mt-3 text-sm text-muted-foreground">
-          <span className="font-semibold text-charcoal">Sizes:</span> {product.sizes}
-        </p>
-        <div className="mt-4">
-          <ColorDots colors={product.colors} />
+    <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-charcoal hover:shadow-lg">
+      {product.image && (
+        <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            width={1024}
+            height={1024}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
         </div>
-      </div>
+      )}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex-1">
+          <h3 className="text-base font-bold text-charcoal">{product.name}</h3>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-primary">
+            {product.spec}
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            <span className="font-semibold text-charcoal">Sizes:</span> {product.sizes}
+          </p>
+          <div className="mt-4">
+            <ColorDots colors={product.colors} />
+          </div>
+        </div>
       <Link
         to="/contact"
         search={{ subject: `Quote: ${product.name}` }}
@@ -194,6 +214,7 @@ function ProductCard({ product }: { product: Product }) {
         Request Quote for This Style
         <ArrowRight className="h-3.5 w-3.5" />
       </Link>
+      </div>
     </div>
   );
 }
