@@ -57,7 +57,7 @@ const FEATURES = [
 
 const STEPS = [
   { n: "01", icon: FileImage, color: "magenta", title: "Send Artwork", body: "PNG with transparent background at 300dpi works best. We'll review and flag any issues for free." },
-  { n: "02", icon: Ruler, color: "cyan", title: "Pick Your Size", body: "From A6 chest prints to 2-metre back pieces. Mix sizes on a single roll to save on cost." },
+  { n: "02", icon: Ruler, color: "cyan", title: "Pick Your Size", body: "From A6 chest prints to 10-metre roll runs. Gang multiple designs on a single roll to save on cost." },
   { n: "03", icon: Printer, color: "lime", title: "We Print + Ship", body: "Production in 48 hours, then couriered nationwide. Or press them onto blanks for you — full service available." },
 ];
 
