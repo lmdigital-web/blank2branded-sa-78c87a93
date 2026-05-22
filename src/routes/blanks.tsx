@@ -2,6 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import blanksHeroBg from "@/assets/blanks-hero-bg.jpg";
+import tshirtLightweight140 from "@/assets/blank-lightweight-140g.jpg";
+import tshirtHeavyweight180 from "@/assets/blank-heavyweight-180g.jpg";
+import tshirtPremium220 from "@/assets/blank-premium-220g.jpg";
+import tshirtPlatinum160 from "@/assets/blank-platinum-160g.jpg";
+import tshirtVneck160 from "@/assets/blank-vneck-160g.jpg";
+import tshirtLongsleeve180 from "@/assets/blank-longsleeve-180g.jpg";
 import {
   Shirt,
   UserRound,
@@ -92,6 +98,7 @@ type Product = {
   spec: string;
   sizes: string;
   colors: string[];
+  image?: string;
 };
 
 const CATEGORIES: { id: string; label: string; icon: React.ComponentType<{ className?: string }>; products: Product[] }[] = [
@@ -100,12 +107,12 @@ const CATEGORIES: { id: string; label: string; icon: React.ComponentType<{ class
     label: "T-Shirts",
     icon: Shirt,
     products: [
-      { name: "Lightweight 140g Crew Neck", spec: "140g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Grey","Royal","Sky","Bottle","Lime","Yellow","Orange","Red"] },
-      { name: "Heavyweight 180g Crew Neck", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal","Turquoise","Purple","Hot Pink","Baby Pink","Brown","Stone","Olive","Emerald","Lime","Yellow","Orange","Red","Grey","Sky","Bottle","Maroon"] },
-      { name: "Premium 220g Crew Neck", spec: "220g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy"] },
-      { name: "Platinum 160g Crew Neck", spec: "160g | Combed Cotton", sizes: "S – 3XL", colors: ["White","Black","Midnight Blue","Forest Green","Flame Red","Granite","Melange"] },
-      { name: "V-Neck 160g T-Shirt", spec: "160g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Red","Melange"] },
-      { name: "Long Sleeve 180g", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal"] },
+      { name: "Lightweight 140g Crew Neck", spec: "140g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Grey","Royal","Sky","Bottle","Lime","Yellow","Orange","Red"], image: tshirtLightweight140 },
+      { name: "Heavyweight 180g Crew Neck", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal","Turquoise","Purple","Hot Pink","Baby Pink","Brown","Stone","Olive","Emerald","Lime","Yellow","Orange","Red","Grey","Sky","Bottle","Maroon"], image: tshirtHeavyweight180 },
+      { name: "Premium 220g Crew Neck", spec: "220g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy"], image: tshirtPremium220 },
+      { name: "Platinum 160g Crew Neck", spec: "160g | Combed Cotton", sizes: "S – 3XL", colors: ["White","Black","Midnight Blue","Forest Green","Flame Red","Granite","Melange"], image: tshirtPlatinum160 },
+      { name: "V-Neck 160g T-Shirt", spec: "160g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Red","Melange"], image: tshirtVneck160 },
+      { name: "Long Sleeve 180g", spec: "180g | 100% Cotton", sizes: "S – 3XL", colors: ["White","Black","Navy","Royal"], image: tshirtLongsleeve180 },
     ],
   },
   {
