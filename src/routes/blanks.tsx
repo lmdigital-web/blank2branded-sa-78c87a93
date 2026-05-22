@@ -180,19 +180,32 @@ const CATEGORIES: { id: string; label: string; icon: React.ComponentType<{ class
 
 function ProductCard({ product }: { product: Product }) {
   return (
-    <div className="group flex flex-col rounded-lg border border-border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-charcoal hover:shadow-lg">
-      <div className="flex-1">
-        <h3 className="text-base font-bold text-charcoal">{product.name}</h3>
-        <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-primary">
-          {product.spec}
-        </p>
-        <p className="mt-3 text-sm text-muted-foreground">
-          <span className="font-semibold text-charcoal">Sizes:</span> {product.sizes}
-        </p>
-        <div className="mt-4">
-          <ColorDots colors={product.colors} />
+    <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-charcoal hover:shadow-lg">
+      {product.image && (
+        <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            width={1024}
+            height={1024}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
         </div>
-      </div>
+      )}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex-1">
+          <h3 className="text-base font-bold text-charcoal">{product.name}</h3>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-primary">
+            {product.spec}
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            <span className="font-semibold text-charcoal">Sizes:</span> {product.sizes}
+          </p>
+          <div className="mt-4">
+            <ColorDots colors={product.colors} />
+          </div>
+        </div>
       <Link
         to="/contact"
         search={{ subject: `Quote: ${product.name}` }}
