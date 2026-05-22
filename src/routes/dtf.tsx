@@ -164,10 +164,10 @@ function DtfPage() {
                 Print Sizes
               </p>
               <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
-                From a coin to a <span className="text-gradient-dtf">car bonnet.</span>
+                From a coin to a <span className="text-gradient-dtf">10-metre roll.</span>
               </h2>
               <p className="mt-6 text-lg text-background/70">
-                We print on rolls up to 2 metres wide. Whether you need 50 small chest logos or one big 2 m back piece — same machine, same colours, one quote.
+                Our printer runs 20 cm wide rolls up to 10 metres long. Whether you need 50 small chest logos ganged on one roll or a long continuous run — same machine, same colours, one quote.
               </p>
 
               <div className="mt-8 overflow-hidden rounded-2xl border border-background/10">
