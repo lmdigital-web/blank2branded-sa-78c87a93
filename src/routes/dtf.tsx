@@ -19,13 +19,13 @@ import {
 export const Route = createFileRoute("/dtf")({
   head: () => ({
     meta: [
-      { title: "DTF Prints — A6 to 2m Large Format | Blank2Branded" },
+      { title: "DTF Prints — A6 to 10m Roll Prints | Blank2Branded" },
       {
         name: "description",
         content:
-          "Full-colour DTF transfers from A6 up to 2 metres long. 20cm wide up to 2m. We print anything you like — logos, illustrations, photographic prints. Nationwide shipping from Mbombela.",
+          "Full-colour DTF transfers from A6 up to 10 metres long. 20 cm wide roll prints. We print anything you like — logos, illustrations, photographic prints. Nationwide shipping from Mbombela.",
       },
-      { property: "og:title", content: "DTF Prints — A6 to 2m | Blank2Branded" },
+      { property: "og:title", content: "DTF Prints — A6 to 10m | Blank2Branded" },
       {
         property: "og:description",
         content:
