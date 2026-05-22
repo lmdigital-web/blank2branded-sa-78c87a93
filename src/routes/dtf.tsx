@@ -48,7 +48,7 @@ const SIZES: { name: string; dim: string; tag?: string }[] = [
 
 const FEATURES = [
   { icon: Palette, color: "magenta", title: "Full-Colour CMYK + White", body: "Photographic detail, gradients and bold neons — all printed with a true white underbase so colours pop on any garment colour." },
-  { icon: Maximize2, color: "cyan", title: "A6 → 2 Metres", body: "From tiny chest logos to full-back, hoodie-wide and banner-length prints. 20 cm to 2 m wide, up to 2 m long per piece." },
+  { icon: Maximize2, color: "cyan", title: "A6 → 10 Metres", body: "From tiny chest logos to full-length roll prints. 20 cm wide, up to 10 m long per run — perfect for repeat orders and bulk jobs." },
   { icon: Sparkles, color: "lime", title: "Print Anything You Like", body: "Logos, illustrations, photos, lettering, repeat patterns. Send us the artwork — if it fits in the size, we can print it." },
   { icon: Layers, color: "primary", title: "Soft Hand-Feel", body: "Thin, stretchy and durable film that bonds to cotton, polyester, blends, fleece and more without going crusty." },
   { icon: Clock, color: "purple", title: "48hr Turnaround", body: "Standard production in 48 hours. Need it sooner? Ask about our rush slots." },
