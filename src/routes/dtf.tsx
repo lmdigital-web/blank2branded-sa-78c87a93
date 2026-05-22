@@ -42,11 +42,8 @@ const SIZES: { name: string; dim: string; tag?: string }[] = [
   { name: "A6", dim: "10.5 × 14.8 cm", tag: "Smallest" },
   { name: "A5", dim: "14.8 × 21 cm" },
   { name: "A4", dim: "21 × 29.7 cm", tag: "Popular" },
-  { name: "A3", dim: "29.7 × 42 cm" },
-  { name: "A2", dim: "42 × 59.4 cm" },
-  { name: "Large Format", dim: "Up to 60 × 200 cm", tag: "Banners" },
-  { name: "Roll Print", dim: "20 cm – 2 m wide × 2 m long" },
-  { name: "Custom", dim: "Any size on request", tag: "We'll quote" },
+  { name: "Roll Print", dim: "20 cm wide × up to 10 m long", tag: "Long Run" },
+  { name: "Custom", dim: "Any length up to 10 m on request", tag: "We'll quote" },
 ];
 
 const FEATURES = [
