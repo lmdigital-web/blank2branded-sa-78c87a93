@@ -214,6 +214,7 @@ function ProductCard({ product }: { product: Product }) {
         Request Quote for This Style
         <ArrowRight className="h-3.5 w-3.5" />
       </Link>
+      </div>
     </div>
   );
 }
