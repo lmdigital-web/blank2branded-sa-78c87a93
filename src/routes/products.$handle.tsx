@@ -271,7 +271,73 @@ function ProductPage() {
           )}
         </div>
       </section>
+      {product && <RecentlyViewed currentHandle={product.handle} />}
       <Footer />
     </div>
   );
 }
+
+function RecentlyViewed({ currentHandle }: { currentHandle: string }) {
+  const [handles, setHandles] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const prev: string[] = raw ? JSON.parse(raw) : [];
+      setHandles(prev.filter((h) => h !== currentHandle).slice(0, 4));
+    } catch { /* ignore */ }
+  }, [currentHandle]);
+
+  const { data: products } = useQuery({
+    queryKey: ["recently-viewed", handles],
+    enabled: handles.length > 0,
+    queryFn: async () => {
+      const results = await Promise.all(
+        handles.map(async (h) => {
+          const d = await storefrontApiRequest(PRODUCT_LITE_QUERY, { handle: h });
+          return d?.data?.productByHandle as null | {
+            id: string; handle: string; title: string;
+            images: { edges: Array<{ node: { url: string; altText: string | null } }> };
+            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+          };
+        })
+      );
+      return results.filter(Boolean) as Array<NonNullable<typeof results[number]>>;
+    },
+  });
+
+  if (!products || products.length === 0) return null;
+
+  return (
+    <section className="border-t border-border py-16">
+      <div className="mx-auto max-w-7xl px-6">
+        <h2 className="text-2xl font-black tracking-tight mb-8">Recently Viewed</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {products.map((p) => (
+            <Link
+              key={p.id}
+              to="/products/$handle"
+              params={{ handle: p.handle }}
+              className="group block"
+            >
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                {p.images.edges[0] && (
+                  <img
+                    src={p.images.edges[0].node.url}
+                    alt={p.images.edges[0].node.altText ?? p.title}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                )}
+              </div>
+              <h3 className="mt-3 text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">{p.title}</h3>
+              <p className="mt-1 text-sm font-bold text-primary">
+                {p.priceRange.minVariantPrice.currencyCode} {parseFloat(p.priceRange.minVariantPrice.amount).toFixed(2)}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
