@@ -156,13 +156,16 @@ export function PostEditor({ postId }: { postId?: string }) {
 
             <div>
               <Label htmlFor="content">Content *</Label>
-              <Textarea id="content" rows={18} required value={form.content}
-                onChange={(e) => update("content", e.target.value)}
-                placeholder="Write your post here. Markdown is supported in display via plain text formatting."
-              />
+              <div className="mt-1">
+                <RichTextEditor
+                  value={form.content}
+                  onChange={(html) => update("content", html)}
+                  placeholder="Write your post here. Use the toolbar to add headings, lists, links and images."
+                />
+              </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                {form.content.trim().split(/\s+/).filter(Boolean).length} words ·
-                ~{Math.max(1, Math.round(form.content.trim().split(/\s+/).filter(Boolean).length / 200))} min read
+                {form.content.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length} words ·
+                ~{Math.max(1, Math.round(form.content.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length / 200))} min read
               </p>
             </div>
           </div>
