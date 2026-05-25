@@ -22,8 +22,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as AdminPostsRouteImport } from './routes/admin.posts'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminPostsIndexRouteImport } from './routes/admin.posts.index'
 import { Route as AdminPostsNewRouteImport } from './routes/admin.posts.new'
 import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
 
@@ -92,25 +92,25 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
-const AdminPostsRoute = AdminPostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPostsIndexRoute = AdminPostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPostsNewRoute = AdminPostsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AdminPostsRoute,
+  id: '/posts/new',
+  path: '/posts/new',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminPostsIdRoute = AdminPostsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminPostsRoute,
+  id: '/posts/$id',
+  path: '/posts/$id',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -125,12 +125,12 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/categories': typeof AdminCategoriesRoute
-  '/admin/posts': typeof AdminPostsRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/products/$handle': typeof ProductsHandleRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRoute
   '/admin/posts/new': typeof AdminPostsNewRoute
+  '/admin/posts/': typeof AdminPostsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -143,12 +143,12 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/categories': typeof AdminCategoriesRoute
-  '/admin/posts': typeof AdminPostsRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/products/$handle': typeof ProductsHandleRoute
   '/admin': typeof AdminIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRoute
   '/admin/posts/new': typeof AdminPostsNewRoute
+  '/admin/posts': typeof AdminPostsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -163,12 +163,12 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/categories': typeof AdminCategoriesRoute
-  '/admin/posts': typeof AdminPostsRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/products/$handle': typeof ProductsHandleRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRoute
   '/admin/posts/new': typeof AdminPostsNewRoute
+  '/admin/posts/': typeof AdminPostsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -184,12 +184,12 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/admin/categories'
-    | '/admin/posts'
     | '/blog/$slug'
     | '/products/$handle'
     | '/admin/'
     | '/admin/posts/$id'
     | '/admin/posts/new'
+    | '/admin/posts/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -202,12 +202,12 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/admin/categories'
-    | '/admin/posts'
     | '/blog/$slug'
     | '/products/$handle'
     | '/admin'
     | '/admin/posts/$id'
     | '/admin/posts/new'
+    | '/admin/posts'
   id:
     | '__root__'
     | '/'
@@ -221,12 +221,12 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/admin/categories'
-    | '/admin/posts'
     | '/blog/$slug'
     | '/products/$handle'
     | '/admin/'
     | '/admin/posts/$id'
     | '/admin/posts/new'
+    | '/admin/posts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -336,13 +336,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
-    '/admin/posts': {
-      id: '/admin/posts'
-      path: '/posts'
-      fullPath: '/admin/posts'
-      preLoaderRoute: typeof AdminPostsRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/categories': {
       id: '/admin/categories'
       path: '/categories'
@@ -350,47 +343,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/posts/': {
+      id: '/admin/posts/'
+      path: '/posts'
+      fullPath: '/admin/posts/'
+      preLoaderRoute: typeof AdminPostsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/posts/new': {
       id: '/admin/posts/new'
-      path: '/new'
+      path: '/posts/new'
       fullPath: '/admin/posts/new'
       preLoaderRoute: typeof AdminPostsNewRouteImport
-      parentRoute: typeof AdminPostsRoute
+      parentRoute: typeof AdminRoute
     }
     '/admin/posts/$id': {
       id: '/admin/posts/$id'
-      path: '/$id'
+      path: '/posts/$id'
       fullPath: '/admin/posts/$id'
       preLoaderRoute: typeof AdminPostsIdRouteImport
-      parentRoute: typeof AdminPostsRoute
+      parentRoute: typeof AdminRoute
     }
   }
 }
 
-interface AdminPostsRouteChildren {
-  AdminPostsIdRoute: typeof AdminPostsIdRoute
-  AdminPostsNewRoute: typeof AdminPostsNewRoute
-}
-
-const AdminPostsRouteChildren: AdminPostsRouteChildren = {
-  AdminPostsIdRoute: AdminPostsIdRoute,
-  AdminPostsNewRoute: AdminPostsNewRoute,
-}
-
-const AdminPostsRouteWithChildren = AdminPostsRoute._addFileChildren(
-  AdminPostsRouteChildren,
-)
-
 interface AdminRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
-  AdminPostsRoute: typeof AdminPostsRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminPostsIdRoute: typeof AdminPostsIdRoute
+  AdminPostsNewRoute: typeof AdminPostsNewRoute
+  AdminPostsIndexRoute: typeof AdminPostsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
-  AdminPostsRoute: AdminPostsRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
+  AdminPostsIdRoute: AdminPostsIdRoute,
+  AdminPostsNewRoute: AdminPostsNewRoute,
+  AdminPostsIndexRoute: AdminPostsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -421,3 +411,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

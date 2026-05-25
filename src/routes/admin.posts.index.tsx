@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/posts")({
+export const Route = createFileRoute("/admin/posts/")({
   component: AdminPosts,
 });
 
