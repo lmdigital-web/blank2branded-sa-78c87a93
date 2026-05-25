@@ -35,6 +35,38 @@ export type Database = {
         }
         Relationships: []
       }
+      post_views: {
+        Row: {
+          country: string | null
+          id: string
+          post_id: string
+          referrer: string | null
+          viewed_at: string
+        }
+        Insert: {
+          country?: string | null
+          id?: string
+          post_id: string
+          referrer?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          country?: string | null
+          id?: string
+          post_id?: string
+          referrer?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           author_id: string | null
@@ -44,6 +76,7 @@ export type Database = {
           created_at: string
           excerpt: string | null
           id: string
+          keywords: string | null
           meta_description: string | null
           meta_title: string | null
           published_at: string | null
@@ -60,6 +93,7 @@ export type Database = {
           created_at?: string
           excerpt?: string | null
           id?: string
+          keywords?: string | null
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
@@ -76,6 +110,7 @@ export type Database = {
           created_at?: string
           excerpt?: string | null
           id?: string
+          keywords?: string | null
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
