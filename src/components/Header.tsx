@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
+import { CartDrawer } from "@/components/CartDrawer";
 
 export function Header() {
   const [open, setOpen] = useState(false);
