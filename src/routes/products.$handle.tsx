@@ -151,7 +151,14 @@ function ProductPage() {
                     {selectedVariant.price.currencyCode} {parseFloat(selectedVariant.price.amount).toFixed(2)}
                   </p>
                 )}
-                <p className="mt-6 text-muted-foreground whitespace-pre-line">{product.description}</p>
+                {product.descriptionHtml ? (
+                  <div
+                    className="prose prose-sm dark:prose-invert mt-6 max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary"
+                    dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                  />
+                ) : (
+                  <p className="mt-6 text-muted-foreground whitespace-pre-line">{product.description}</p>
+                )}
 
                 <div className="mt-8 space-y-6">
                   {options.map((opt) => {
