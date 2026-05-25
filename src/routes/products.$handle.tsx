@@ -63,13 +63,24 @@ function ProductPage() {
       const p = d?.data?.productByHandle;
       if (!p) throw notFound();
       return p as {
-        id: string; title: string; description: string; handle: string;
+        id: string; title: string; description: string; descriptionHtml: string; handle: string;
         images: { edges: Array<{ node: { url: string; altText: string | null } }> };
         variants: { edges: Array<{ node: ShopifyVariant }> };
         options: Array<{ name: string; values: string[] }>;
       };
     },
   });
+
+  // Track recently viewed in localStorage
+  useEffect(() => {
+    if (!product) return;
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const prev: string[] = raw ? JSON.parse(raw) : [];
+      const next = [product.handle, ...prev.filter((h) => h !== product.handle)].slice(0, 8);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    } catch { /* ignore */ }
+  }, [product]);
 
   const variants = product?.variants.edges.map((e) => e.node) ?? [];
   const options = product?.options ?? [];
