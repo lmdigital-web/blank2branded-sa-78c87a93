@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,19 @@ import { useCartStore } from "@/stores/cartStore";
 import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const RECENT_KEY = "recently-viewed-products";
+
+const PRODUCT_LITE_QUERY = `
+  query ProductLite($handle: String!) {
+    productByHandle(handle: $handle) {
+      id handle title
+      images(first: 1) { edges { node { url altText } } }
+      priceRange { minVariantPrice { amount currencyCode } }
+    }
+  }
+`;
+
 
 export const Route = createFileRoute("/products/$handle")({
   component: ProductPage,
@@ -46,13 +59,24 @@ function ProductPage() {
       const p = d?.data?.productByHandle;
       if (!p) throw notFound();
       return p as {
-        id: string; title: string; description: string; handle: string;
+        id: string; title: string; description: string; descriptionHtml: string; handle: string;
         images: { edges: Array<{ node: { url: string; altText: string | null } }> };
         variants: { edges: Array<{ node: ShopifyVariant }> };
         options: Array<{ name: string; values: string[] }>;
       };
     },
   });
+
+  // Track recently viewed in localStorage
+  useEffect(() => {
+    if (!product) return;
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const prev: string[] = raw ? JSON.parse(raw) : [];
+      const next = [product.handle, ...prev.filter((h) => h !== product.handle)].slice(0, 8);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    } catch { /* ignore */ }
+  }, [product]);
 
   const variants = product?.variants.edges.map((e) => e.node) ?? [];
   const options = product?.options ?? [];
@@ -123,7 +147,14 @@ function ProductPage() {
                     {selectedVariant.price.currencyCode} {parseFloat(selectedVariant.price.amount).toFixed(2)}
                   </p>
                 )}
-                <p className="mt-6 text-muted-foreground whitespace-pre-line">{product.description}</p>
+                {product.descriptionHtml ? (
+                  <div
+                    className="prose prose-sm dark:prose-invert mt-6 max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary"
+                    dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                  />
+                ) : (
+                  <p className="mt-6 text-muted-foreground whitespace-pre-line">{product.description}</p>
+                )}
 
                 <div className="mt-8 space-y-6">
                   {options.map((opt) => {
@@ -236,7 +267,73 @@ function ProductPage() {
           )}
         </div>
       </section>
+      {product && <RecentlyViewed currentHandle={product.handle} />}
       <Footer />
     </div>
   );
 }
+
+function RecentlyViewed({ currentHandle }: { currentHandle: string }) {
+  const [handles, setHandles] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const prev: string[] = raw ? JSON.parse(raw) : [];
+      setHandles(prev.filter((h) => h !== currentHandle).slice(0, 4));
+    } catch { /* ignore */ }
+  }, [currentHandle]);
+
+  const { data: products } = useQuery({
+    queryKey: ["recently-viewed", handles],
+    enabled: handles.length > 0,
+    queryFn: async () => {
+      const results = await Promise.all(
+        handles.map(async (h) => {
+          const d = await storefrontApiRequest(PRODUCT_LITE_QUERY, { handle: h });
+          return d?.data?.productByHandle as null | {
+            id: string; handle: string; title: string;
+            images: { edges: Array<{ node: { url: string; altText: string | null } }> };
+            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+          };
+        })
+      );
+      return results.filter(Boolean) as Array<NonNullable<typeof results[number]>>;
+    },
+  });
+
+  if (!products || products.length === 0) return null;
+
+  return (
+    <section className="border-t border-border py-16">
+      <div className="mx-auto max-w-7xl px-6">
+        <h2 className="text-2xl font-black tracking-tight mb-8">Recently Viewed</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {products.map((p) => (
+            <Link
+              key={p.id}
+              to="/products/$handle"
+              params={{ handle: p.handle }}
+              className="group block"
+            >
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                {p.images.edges[0] && (
+                  <img
+                    src={p.images.edges[0].node.url}
+                    alt={p.images.edges[0].node.altText ?? p.title}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                )}
+              </div>
+              <h3 className="mt-3 text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">{p.title}</h3>
+              <p className="mt-1 text-sm font-bold text-primary">
+                {p.priceRange.minVariantPrice.currencyCode} {parseFloat(p.priceRange.minVariantPrice.amount).toFixed(2)}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
