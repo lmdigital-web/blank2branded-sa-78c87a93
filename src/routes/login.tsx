@@ -72,7 +72,28 @@ function LoginPage() {
       <Header />
       <main className="flex-1 flex items-center justify-center px-6 py-24">
         <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 shadow-sm">
-          <h1 className="text-2xl font-bold">{mode === "signin" ? "Sign in" : "Create account"}</h1>
+          <div className="mb-6 grid grid-cols-2 rounded-lg border border-border p-1 bg-muted/40">
+            <button
+              type="button"
+              onClick={() => setMode("signin")}
+              className={`rounded-md py-2 text-sm font-medium transition ${
+                mode === "signin" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("signup")}
+              className={`rounded-md py-2 text-sm font-medium transition ${
+                mode === "signup" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              Sign up
+            </button>
+          </div>
+
+          <h1 className="text-2xl font-bold">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "signin" ? "Access your admin dashboard." : "First account becomes the admin."}
           </p>
@@ -97,17 +118,9 @@ function LoginPage() {
               <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "signin" ? "Sign in" : "Sign up"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "signin" ? "Sign in" : "Create account"}
             </Button>
           </form>
-
-          <button
-            type="button"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="mt-4 w-full text-sm text-muted-foreground hover:text-primary"
-          >
-            {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
-          </button>
         </div>
       </main>
       <Footer />
