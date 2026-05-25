@@ -22,22 +22,9 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">(() => {
-    if (typeof window === "undefined") return "signin";
-    return new URLSearchParams(window.location.search).get("mode") === "signup" ? "signup" : "signin";
-  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const switchMode = (nextMode: "signin" | "signup") => {
-    setMode(nextMode);
-    if (typeof window === "undefined") return;
-    const url = new URL(window.location.href);
-    if (nextMode === "signup") url.searchParams.set("mode", "signup");
-    else url.searchParams.delete("mode");
-    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -49,22 +36,9 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email, password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) throw error;
-        if (!data.session) {
-          toast.success("Account created. Check your email to confirm your account.");
-          return;
-        }
-        toast.success("Account created!");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Signed in");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Signed in");
       navigate({ to: "/admin" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Authentication failed");
@@ -88,31 +62,8 @@ function LoginPage() {
       <Header variant="solid" />
       <main className="flex-1 flex items-center justify-center px-6 py-12 md:py-16">
         <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 shadow-sm">
-          <div className="mb-6 grid grid-cols-2 rounded-lg border border-border p-1 bg-muted/40">
-            <button
-              type="button"
-              onClick={() => switchMode("signin")}
-              className={`rounded-md py-2 text-sm font-medium transition ${
-                mode === "signin" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              onClick={() => switchMode("signup")}
-              className={`rounded-md py-2 text-sm font-medium transition ${
-                mode === "signup" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              Sign up
-            </button>
-          </div>
-
-          <h1 className="text-2xl font-bold">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "signin" ? "Access your admin dashboard." : "First account becomes the admin."}
-          </p>
+          <h1 className="text-2xl font-bold">Welcome back</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Admin sign in.</p>
 
           <Button type="button" variant="outline" className="mt-6 w-full" onClick={google}>
             Continue with Google
@@ -131,10 +82,10 @@ function LoginPage() {
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "signin" ? "Sign in" : "Create account"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
             </Button>
           </form>
         </div>
