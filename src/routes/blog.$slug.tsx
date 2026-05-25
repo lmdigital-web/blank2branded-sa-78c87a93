@@ -78,9 +78,10 @@ function BlogPostPage() {
               {post.cover_image_url && (
                 <img src={post.cover_image_url} alt={post.title} className="mt-8 w-full rounded-xl" />
               )}
-              <div className="prose prose-lg mt-8 max-w-none whitespace-pre-wrap text-foreground">
-                {post.content}
-              </div>
+              <div
+                className="prose prose-lg dark:prose-invert mt-8 max-w-none"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
             </>
           )}
         </div>

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Search, CheckCircle2, AlertCircle } from "lucide-react";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 interface PostForm {
   title: string;
@@ -155,13 +156,16 @@ export function PostEditor({ postId }: { postId?: string }) {
 
             <div>
               <Label htmlFor="content">Content *</Label>
-              <Textarea id="content" rows={18} required value={form.content}
-                onChange={(e) => update("content", e.target.value)}
-                placeholder="Write your post here. Markdown is supported in display via plain text formatting."
-              />
+              <div className="mt-1">
+                <RichTextEditor
+                  value={form.content}
+                  onChange={(html) => update("content", html)}
+                  placeholder="Write your post here. Use the toolbar to add headings, lists, links and images."
+                />
+              </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                {form.content.trim().split(/\s+/).filter(Boolean).length} words ·
-                ~{Math.max(1, Math.round(form.content.trim().split(/\s+/).filter(Boolean).length / 200))} min read
+                {form.content.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length} words ·
+                ~{Math.max(1, Math.round(form.content.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length / 200))} min read
               </p>
             </div>
           </div>
@@ -229,7 +233,7 @@ function SeoPanel({
   const descLen = effectiveDesc.length;
 
   const checks = useMemo(() => {
-    const w = form.content.trim().split(/\s+/).filter(Boolean).length;
+    const w = form.content.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length;
     return [
       { ok: titleLen >= 30 && titleLen <= 60, label: `Meta title 30–60 chars (now ${titleLen})` },
       { ok: descLen >= 70 && descLen <= 160, label: `Meta description 70–160 chars (now ${descLen})` },
