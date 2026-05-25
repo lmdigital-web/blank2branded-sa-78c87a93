@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,23 @@ import { useCartStore } from "@/stores/cartStore";
 import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const RECENT_KEY = "recently-viewed-products";
+const RECENT_QUERY = `
+  query GetProductsByHandles($handles: [String!]!) {
+    nodes: products(first: 20, query: "") { edges { node { id handle title images(first: 1) { edges { node { url altText } } } priceRange { minVariantPrice { amount currencyCode } } } } }
+  }
+`;
+const PRODUCT_LITE_QUERY = `
+  query ProductLite($handle: String!) {
+    productByHandle(handle: $handle) {
+      id handle title
+      images(first: 1) { edges { node { url altText } } }
+      priceRange { minVariantPrice { amount currencyCode } }
+    }
+  }
+`;
+
 
 export const Route = createFileRoute("/products/$handle")({
   component: ProductPage,
