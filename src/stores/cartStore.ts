@@ -172,8 +172,13 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: "shopify-cart",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== "undefined"
+          ? window.localStorage
+          : { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+      ),
       partialize: (s) => ({ items: s.items, cartId: s.cartId, checkoutUrl: s.checkoutUrl }),
+      skipHydration: typeof window === "undefined",
     }
   )
 );
