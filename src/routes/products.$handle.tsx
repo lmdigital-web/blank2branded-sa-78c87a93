@@ -11,11 +11,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const RECENT_KEY = "recently-viewed-products";
-const RECENT_QUERY = `
-  query GetProductsByHandles($handles: [String!]!) {
-    nodes: products(first: 20, query: "") { edges { node { id handle title images(first: 1) { edges { node { url altText } } } priceRange { minVariantPrice { amount currencyCode } } } } }
-  }
-`;
+
 const PRODUCT_LITE_QUERY = `
   query ProductLite($handle: String!) {
     productByHandle(handle: $handle) {
