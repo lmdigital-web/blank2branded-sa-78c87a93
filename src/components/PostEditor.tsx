@@ -233,7 +233,7 @@ function SeoPanel({
   const descLen = effectiveDesc.length;
 
   const checks = useMemo(() => {
-    const w = form.content.trim().split(/\s+/).filter(Boolean).length;
+    const w = form.content.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length;
     return [
       { ok: titleLen >= 30 && titleLen <= 60, label: `Meta title 30–60 chars (now ${titleLen})` },
       { ok: descLen >= 70 && descLen <= 160, label: `Meta description 70–160 chars (now ${descLen})` },
