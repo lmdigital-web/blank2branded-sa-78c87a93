@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Search, CheckCircle2, AlertCircle } from "lucide-react";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 interface PostForm {
   title: string;
