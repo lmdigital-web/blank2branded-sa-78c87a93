@@ -69,8 +69,8 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <main className="flex-1 flex items-center justify-center px-6 py-24">
+      <Header variant="solid" />
+      <main className="flex-1 flex items-center justify-center px-6 py-12 md:py-16">
         <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 shadow-sm">
           <div className="mb-6 grid grid-cols-2 rounded-lg border border-border p-1 bg-muted/40">
             <button
