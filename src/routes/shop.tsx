@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { storefrontApiRequest, PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify";
+import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -20,14 +22,81 @@ export const Route = createFileRoute("/shop")({
   component: ShopPage,
 });
 
+const COLLECTIONS_QUERY = `
+  query GetCollections($first: Int!) {
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          products(first: 100) { edges { node { id } } }
+        }
+      }
+    }
+  }
+`;
+
+const PRODUCTS_FULL_QUERY = `
+  query GetProducts($first: Int!) {
+    products(first: $first) {
+      edges {
+        node {
+          id title description handle
+          priceRange { minVariantPrice { amount currencyCode } }
+          images(first: 5) { edges { node { url altText } } }
+          variants(first: 20) {
+            edges {
+              node {
+                id title availableForSale
+                price { amount currencyCode }
+                selectedOptions { name value }
+              }
+            }
+          }
+          options { name values }
+        }
+      }
+    }
+  }
+`;
+
+type Collection = {
+  node: {
+    id: string;
+    title: string;
+    handle: string;
+    products: { edges: Array<{ node: { id: string } }> };
+  };
+};
+
 function ShopPage() {
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
+
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products"],
     queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCTS_QUERY, { first: 50 });
+      const d = await storefrontApiRequest(PRODUCTS_FULL_QUERY, { first: 50 });
       return (d?.data?.products?.edges ?? []) as ShopifyProduct[];
     },
   });
+
+  const { data: collections } = useQuery({
+    queryKey: ["shopify-collections"],
+    queryFn: async () => {
+      const d = await storefrontApiRequest(COLLECTIONS_QUERY, { first: 50 });
+      return (d?.data?.collections?.edges ?? []) as Collection[];
+    },
+  });
+
+  const filtered = (() => {
+    if (!data) return [];
+    if (!activeCollection) return data;
+    const col = collections?.find((c) => c.node.handle === activeCollection);
+    if (!col) return data;
+    const ids = new Set(col.node.products.edges.map((e) => e.node.id));
+    return data.filter((p) => ids.has(p.node.id));
+  })();
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,19 +113,56 @@ function ShopPage() {
         </div>
       </section>
 
+      {collections && collections.length > 0 && (
+        <section className="border-b border-border bg-muted/30 py-6">
+          <div className="mx-auto max-w-7xl px-6">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Collections
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setActiveCollection(null)}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                  activeCollection === null
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                )}
+              >
+                All
+              </button>
+              {collections.map((c) => (
+                <button
+                  key={c.node.id}
+                  onClick={() => setActiveCollection(c.node.handle)}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                    activeCollection === c.node.handle
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                  )}
+                >
+                  {c.node.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-6">
           {isLoading ? (
             <div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
-          ) : !data || data.length === 0 ? (
+          ) : !filtered || filtered.length === 0 ? (
             <div className="text-center py-24">
               <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
               <h2 className="mt-4 text-xl font-semibold">No products found</h2>
-              <p className="mt-2 text-muted-foreground">Products will appear here once added to the store.</p>
+              <p className="mt-2 text-muted-foreground">Try a different collection or add products to the store.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {data.map((p) => {
+              {filtered.map((p) => {
                 const img = p.node.images.edges[0]?.node;
                 const price = p.node.priceRange.minVariantPrice;
                 return (
