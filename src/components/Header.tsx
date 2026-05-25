@@ -54,6 +54,12 @@ export function Header() {
           <Link to="/blanks" className={linkCls} activeProps={{ className: "text-primary" }}>
             Blanks
           </Link>
+          <Link to="/shop" className={linkCls} activeProps={{ className: "text-primary" }}>
+            Shop
+          </Link>
+          <Link to="/blog" className={linkCls} activeProps={{ className: "text-primary" }}>
+            Blog
+          </Link>
           <Link to="/contact" className={linkCls} activeProps={{ className: "text-primary" }}>
             Contact
           </Link>
@@ -63,15 +69,18 @@ export function Header() {
           >
             Get Quote
           </Link>
+          <CartDrawer />
         </nav>
 
-        <button
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <CartDrawer />
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -81,6 +90,8 @@ export function Header() {
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
             <Link to="/dtf" className={linkCls} onClick={() => setOpen(false)}>DTF Prints</Link>
             <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>Blanks</Link>
+            <Link to="/shop" className={linkCls} onClick={() => setOpen(false)}>Shop</Link>
+            <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>Blog</Link>
             <Link to="/contact" className={linkCls} onClick={() => setOpen(false)}>Contact</Link>
             <Link
               to="/contact"
