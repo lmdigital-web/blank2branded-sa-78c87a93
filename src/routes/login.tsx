@@ -22,10 +22,22 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">(() => {
+    if (typeof window === "undefined") return "signin";
+    return new URLSearchParams(window.location.search).get("mode") === "signup" ? "signup" : "signin";
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const switchMode = (nextMode: "signin" | "signup") => {
+    setMode(nextMode);
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (nextMode === "signup") url.searchParams.set("mode", "signup");
+    else url.searchParams.delete("mode");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -79,7 +91,7 @@ function LoginPage() {
           <div className="mb-6 grid grid-cols-2 rounded-lg border border-border p-1 bg-muted/40">
             <button
               type="button"
-              onClick={() => setMode("signin")}
+              onClick={() => switchMode("signin")}
               className={`rounded-md py-2 text-sm font-medium transition ${
                 mode === "signin" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"
               }`}
@@ -88,7 +100,7 @@ function LoginPage() {
             </button>
             <button
               type="button"
-              onClick={() => setMode("signup")}
+              onClick={() => switchMode("signup")}
               className={`rounded-md py-2 text-sm font-medium transition ${
                 mode === "signup" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"
               }`}
