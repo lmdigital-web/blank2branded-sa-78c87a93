@@ -162,29 +162,31 @@ function AdminDashboard() {
             {topPosts.length === 0 ? (
               <EmptyState message="No views yet. Publish a post and share it to start tracking." />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topPosts} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
-                  <YAxis
-                    type="category"
-                    dataKey="title"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={11}
-                    width={140}
-                    tickFormatter={(t: string) => (t.length > 22 ? `${t.slice(0, 22)}…` : t)}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: 8,
-                      fontSize: 12,
-                    }}
-                  />
-                  <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <ClientOnly fallback={<div className="h-full" />}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topPosts} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                    <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                    <YAxis
+                      type="category"
+                      dataKey="title"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={11}
+                      width={140}
+                      tickFormatter={(t: string) => (t.length > 22 ? `${t.slice(0, 22)}…` : t)}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: 8,
+                        fontSize: 12,
+                      }}
+                    />
+                    <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ClientOnly>
             )}
           </div>
         </div>
