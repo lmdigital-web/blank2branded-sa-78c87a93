@@ -4,9 +4,14 @@ import { useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 import { CartDrawer } from "@/components/CartDrawer";
 
-export function Header() {
+type HeaderProps = {
+  variant?: "overlay" | "solid";
+};
+
+export function Header({ variant = "overlay" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const solid = variant === "solid" || scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -21,14 +26,14 @@ export function Header() {
   return (
     <header
       className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+        solid
           ? "sticky border-b border-border bg-background/95 backdrop-blur shadow-sm"
           : "absolute border-b border-transparent bg-transparent"
       }`}
     >
       <div
         className={`mx-auto flex max-w-7xl items-center justify-between px-6 transition-all duration-300 ${
-          scrolled ? "py-2" : "py-4"
+          solid ? "py-2" : "py-4"
         }`}
       >
         <Link to="/" className="flex items-center" aria-label="Blank2Branded home">
@@ -36,7 +41,7 @@ export function Header() {
             src={logo}
             alt="Blank2Branded — DTF, Blanks, Print & Press"
             className={`w-auto transition-all duration-300 ${
-              scrolled ? "h-14 md:h-16" : "h-24 md:h-40"
+              solid ? "h-14 md:h-16" : "h-24 md:h-40"
             }`}
           />
         </Link>
