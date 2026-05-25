@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, ClientOnly } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -126,30 +126,33 @@ function AdminDashboard() {
           <span className="text-xs text-muted-foreground">All published posts</span>
         </div>
         <div className="mt-4 h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={viewsByDay} margin={{ top: 10, right: 12, left: -16, bottom: 0 }}>
-              <defs>
-                <linearGradient id="vfill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} interval={3} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 8,
-                  fontSize: 12,
-                }}
-              />
-              <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#vfill)" />
-            </AreaChart>
-          </ResponsiveContainer>
+          <ClientOnly fallback={<div className="h-full" />}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={viewsByDay} margin={{ top: 10, right: 12, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="vfill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} interval={3} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                />
+                <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#vfill)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ClientOnly>
         </div>
       </div>
+
 
       {/* Top posts + ranking */}
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -159,29 +162,31 @@ function AdminDashboard() {
             {topPosts.length === 0 ? (
               <EmptyState message="No views yet. Publish a post and share it to start tracking." />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topPosts} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
-                  <YAxis
-                    type="category"
-                    dataKey="title"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={11}
-                    width={140}
-                    tickFormatter={(t: string) => (t.length > 22 ? `${t.slice(0, 22)}…` : t)}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: 8,
-                      fontSize: 12,
-                    }}
-                  />
-                  <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <ClientOnly fallback={<div className="h-full" />}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topPosts} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                    <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                    <YAxis
+                      type="category"
+                      dataKey="title"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={11}
+                      width={140}
+                      tickFormatter={(t: string) => (t.length > 22 ? `${t.slice(0, 22)}…` : t)}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: 8,
+                        fontSize: 12,
+                      }}
+                    />
+                    <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ClientOnly>
             )}
           </div>
         </div>
