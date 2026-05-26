@@ -9,6 +9,9 @@ import { useCartStore } from "@/stores/cartStore";
 import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
+
+const DTF_ADDON_HANDLE = "dtf-print-add-on";
 
 const RECENT_KEY = "recently-viewed-products";
 
