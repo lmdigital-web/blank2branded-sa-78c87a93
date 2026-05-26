@@ -124,6 +124,11 @@ function ProductPage() {
       selectedOptions: selectedVariant.selectedOptions ?? [],
     });
     toast.success("Added to cart");
+    // Offer DTF prints — but not when the just-added item IS the add-on itself.
+    if (product.handle !== DTF_ADDON_HANDLE) {
+      setLastAddedQty(quantity);
+      setUpsellOpen(true);
+    }
   };
 
   return (
