@@ -7,6 +7,7 @@ import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import shopHeroBg from "@/assets/shop-hero-bg.jpg";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
