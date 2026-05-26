@@ -69,10 +69,10 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             Contact
           </Link>
           <Link
-            to="/contact"
+            to="/shop"
             className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20"
           >
-            Get Quote
+            Shop Now
           </Link>
           <CartDrawer />
         </nav>
@@ -99,11 +99,11 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>Blog</Link>
             <Link to="/contact" className={linkCls} onClick={() => setOpen(false)}>Contact</Link>
             <Link
-              to="/contact"
+              to="/shop"
               onClick={() => setOpen(false)}
               className="rounded-md bg-primary px-5 py-2.5 text-center text-sm font-semibold text-primary-foreground"
             >
-              Get Quote
+              Shop Now
             </Link>
           </div>
         </div>

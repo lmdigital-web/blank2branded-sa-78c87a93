@@ -85,10 +85,10 @@ function Home() {
 
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
-                to="/contact"
+                to="/shop"
                 className="inline-flex items-center gap-2 rounded-md bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
               >
-                Get a Quote <ArrowRight className="h-4 w-4" />
+                Shop Now <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#services"
@@ -435,10 +435,10 @@ function Home() {
             Order from 5 pieces and up — DTF prints and blank apparel, shipped nationwide.
           </p>
           <Link
-            to="/contact"
+            to="/shop"
             className="mt-10 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-8 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03] hover:shadow-2xl"
           >
-            Get a Quote <ArrowRight className="h-4 w-4" />
+            Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

@@ -175,11 +175,10 @@ function SectionBlock({ section, index }: { section: Section; index: number }) {
             ))}
           </ul>
           <Link
-            to="/contact"
-            search={{ subject: `Quote: ${section.title}` }}
+            to="/shop"
             className="mt-8 inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-semibold text-charcoal transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground"
           >
-            Request a Quote <ArrowRight className="h-4 w-4" />
+            Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
@@ -260,11 +259,10 @@ function BlanksPage() {
             Tell us what you need and we'll quote you fast. Minimum 5 pieces per order.
           </p>
           <Link
-            to="/contact"
-            search={{ subject: "Blanks Enquiry" }}
+            to="/shop"
             className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03]"
           >
-            Request a Quote <ArrowRight className="h-4 w-4" />
+            Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
