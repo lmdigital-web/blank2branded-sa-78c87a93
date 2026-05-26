@@ -102,14 +102,29 @@ function ShopPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <section className="relative border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">Shop</p>
-          <h1 className="mt-3 text-5xl font-black tracking-tight text-foreground md:text-6xl">
-            Blanks. Prints. Ready to ship.
+      <section className="relative overflow-hidden border-b border-border pt-40 pb-20 md:pt-48 md:pb-24">
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src={shopHeroBg}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full scale-105 object-cover blur-[2px]"
+          />
+          <div className="absolute inset-0 bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 opacity-25">
+          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-6">
+          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
+          <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
+            <span className="text-gradient-dtf">Blanks.</span> Prints. Ready to ship.
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Browse our catalogue. Pick what you need. Checkout securely.
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+            Browse our catalogue. Pick what you need. Checkout securely — nationwide shipping from Mbombela.
           </p>
         </div>
       </section>
