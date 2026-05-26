@@ -54,6 +54,8 @@ function ProductPage() {
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
   const [quantity, setQuantity] = useState(1);
+  const [upsellOpen, setUpsellOpen] = useState(false);
+  const [lastAddedQty, setLastAddedQty] = useState(1);
 
   const { data: product, isLoading: loading } = useQuery({
     queryKey: ["shopify-product", handle],
