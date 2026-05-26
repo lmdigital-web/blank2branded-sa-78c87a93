@@ -9,6 +9,9 @@ import { useCartStore } from "@/stores/cartStore";
 import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
+
+const DTF_ADDON_HANDLE = "dtf-print-add-on";
 
 const RECENT_KEY = "recently-viewed-products";
 
@@ -51,6 +54,8 @@ function ProductPage() {
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
   const [quantity, setQuantity] = useState(1);
+  const [upsellOpen, setUpsellOpen] = useState(false);
+  const [lastAddedQty, setLastAddedQty] = useState(1);
 
   const { data: product, isLoading: loading } = useQuery({
     queryKey: ["shopify-product", handle],
@@ -119,6 +124,11 @@ function ProductPage() {
       selectedOptions: selectedVariant.selectedOptions ?? [],
     });
     toast.success("Added to cart");
+    // Offer DTF prints — but not when the just-added item IS the add-on itself.
+    if (product.handle !== DTF_ADDON_HANDLE) {
+      setLastAddedQty(quantity);
+      setUpsellOpen(true);
+    }
   };
 
   return (
@@ -269,6 +279,12 @@ function ProductPage() {
       </section>
       {product && <RecentlyViewed currentHandle={product.handle} />}
       <Footer />
+      <DtfUpsellDialog
+        open={upsellOpen}
+        onOpenChange={setUpsellOpen}
+        quantity={lastAddedQty}
+        garmentTitle={product?.title}
+      />
     </div>
   );
 }
