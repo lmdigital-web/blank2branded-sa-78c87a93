@@ -115,17 +115,23 @@ function ProductPage() {
 
   const handleAdd = async () => {
     if (!product || !selectedVariant) return;
-    await addItem({
-      product: { node: { ...product, priceRange: { minVariantPrice: selectedVariant.price } } as never },
-      variantId: selectedVariant.id,
-      variantTitle: selectedVariant.title,
-      price: selectedVariant.price,
-      quantity,
-      selectedOptions: selectedVariant.selectedOptions ?? [],
-    });
-    toast.success("Added to cart");
+    try {
+      await addItem({
+        product: { node: { ...product, priceRange: { minVariantPrice: selectedVariant.price } } as never },
+        variantId: selectedVariant.id,
+        variantTitle: selectedVariant.title,
+        price: selectedVariant.price,
+        quantity,
+        selectedOptions: selectedVariant.selectedOptions ?? [],
+      });
+      toast.success("Added to cart");
+    } catch (err) {
+      console.error("[cart] addItem failed", err);
+      toast.error("Could not add to cart");
+    }
     // Offer DTF prints — but not when the just-added item IS the add-on itself.
     if (product.handle !== DTF_ADDON_HANDLE) {
+      console.log("[upsell] opening DTF dialog for qty", quantity);
       setLastAddedQty(quantity);
       setUpsellOpen(true);
     }
