@@ -1,7 +1,6 @@
 import { MessageCircle } from "lucide-react";
 
-// TODO: replace with real WhatsApp Business number (international format, no +)
-const WHATSAPP_NUMBER = "27000000000";
+const WHATSAPP_NUMBER = "27698384045";
 
 export function WhatsAppButton() {
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
