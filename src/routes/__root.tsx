@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Supplier of DTF transfers & blank apparel for brands, businesses and individuals. Minimum 5 pieces per order. Nationwide shipping.",
       },
       { name: "author", content: "Blank2Branded" },
-      { property: "og:title", content: "Blank2Branded — DTF Prints + Blank Tees, SA-Wide" },
+      { property: "og:title", content: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
       {
         property: "og:description",
         content:
@@ -93,6 +93,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Blank2Branded" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
+      { name: "description", content: "Builds a professional B2B website for a South African trade supplier of DTF prints and blank apparel." },
+      { property: "og:description", content: "Builds a professional B2B website for a South African trade supplier of DTF prints and blank apparel." },
+      { name: "twitter:description", content: "Builds a professional B2B website for a South African trade supplier of DTF prints and blank apparel." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/73747ad5-08c6-40db-94bc-180bdfc8da6c/id-preview-4dda09c6--248ef277-1b53-4011-9045-ffdff404376b.lovable.app-1779802410571.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/73747ad5-08c6-40db-94bc-180bdfc8da6c/id-preview-4dda09c6--248ef277-1b53-4011-9045-ffdff404376b.lovable.app-1779802410571.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
