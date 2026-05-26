@@ -279,6 +279,12 @@ function ProductPage() {
       </section>
       {product && <RecentlyViewed currentHandle={product.handle} />}
       <Footer />
+      <DtfUpsellDialog
+        open={upsellOpen}
+        onOpenChange={setUpsellOpen}
+        quantity={lastAddedQty}
+        garmentTitle={product?.title}
+      />
     </div>
   );
 }
