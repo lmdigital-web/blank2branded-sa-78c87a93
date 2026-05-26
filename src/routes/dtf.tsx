@@ -96,11 +96,10 @@ function DtfPage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/contact"
-              search={{ subject: "DTF Print Quote" }}
+              to="/shop"
               className="inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.03]"
             >
-              Get a DTF Quote <ArrowRight className="h-4 w-4" />
+              Shop Now <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#sizes"
@@ -274,11 +273,10 @@ function DtfPage() {
             Upload your design and we'll come back with a quote within 4 business hours.
           </p>
           <Link
-            to="/contact"
-            search={{ subject: "DTF Print Quote" }}
+            to="/shop"
             className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03]"
           >
-            Request DTF Quote <ArrowRight className="h-4 w-4" />
+            Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

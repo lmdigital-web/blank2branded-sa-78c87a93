@@ -164,10 +164,10 @@ function AboutPage() {
             Let's build your <span className="text-gradient-dtf">brand</span> together.
           </h2>
           <Link
-            to="/contact"
+            to="/shop"
             className="mt-10 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-8 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03]"
           >
-            Get a Quote <ArrowRight className="h-4 w-4" />
+            Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
