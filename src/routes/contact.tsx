@@ -179,9 +179,9 @@ function ContactPage() {
               <h2 className="relative text-xl font-bold">Talk to us directly.</h2>
               <ul className="relative mt-8 space-y-6">
                 {[
-                  { icon: MessageCircle, color: "lime", label: "WhatsApp Business", value: "+27 00 000 0000", href: "https://wa.me/27000000000" },
+                  { icon: MessageCircle, color: "lime", label: "WhatsApp Business", value: "+27 69 838 4045", href: "https://wa.me/27698384045" },
                   { icon: Mail, color: "cyan", label: "Email", value: "hello@blank2branded.co.za", href: "mailto:hello@blank2branded.co.za" },
-                  { icon: Clock, color: "magenta", label: "Hours", value: "Mon–Fri · 8am–5pm" },
+                  { icon: Clock, color: "magenta", label: "Hours", value: "Mon–Fri · 8am–4pm" },
                   { icon: MapPin, color: "primary", label: "Location", value: "Mbombela, SA", sub: "Courier nationwide" },
                 ].map((item) => (
                   <li key={item.label} className="flex items-start gap-4">
