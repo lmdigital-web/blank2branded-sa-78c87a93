@@ -41,7 +41,7 @@ export function Footer() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-background">Contact</h4>
             <ul className="mt-4 space-y-2 text-sm text-background/60">
               <li>hello@blank2branded.co.za</li>
-              <li>Mon–Fri 8am–5pm</li>
+              <li>Mon–Fri 8am–4pm</li>
               <li>Mbombela, South Africa</li>
               <li>Courier nationwide</li>
             </ul>
