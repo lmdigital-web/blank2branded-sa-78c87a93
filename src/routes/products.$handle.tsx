@@ -12,6 +12,14 @@ import { cn } from "@/lib/utils";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
 
 const DTF_ADDON_HANDLE = "dtf-print-add-on";
+// Products that are themselves prints — no upsell popup needed.
+const NO_UPSELL_HANDLES = new Set([
+  DTF_ADDON_HANDLE,
+  "dtf-print-a4",
+  "dtf-print-a5",
+  "dtf-print-a6",
+  "dtf-print-1-meter-20cm-wide",
+]);
 
 const RECENT_KEY = "recently-viewed-products";
 
