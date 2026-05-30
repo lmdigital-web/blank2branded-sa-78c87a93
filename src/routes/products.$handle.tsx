@@ -12,6 +12,14 @@ import { cn } from "@/lib/utils";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
 
 const DTF_ADDON_HANDLE = "dtf-print-add-on";
+// Products that are themselves prints — no upsell popup needed.
+const NO_UPSELL_HANDLES = new Set([
+  DTF_ADDON_HANDLE,
+  "dtf-print-a4",
+  "dtf-print-a5",
+  "dtf-print-a6",
+  "dtf-print-1-meter-20cm-wide",
+]);
 
 const RECENT_KEY = "recently-viewed-products";
 
@@ -129,8 +137,8 @@ function ProductPage() {
       console.error("[cart] addItem failed", err);
       toast.error("Could not add to cart");
     }
-    // Offer DTF prints — but not when the just-added item IS the add-on itself.
-    if (product.handle !== DTF_ADDON_HANDLE) {
+    // Offer DTF prints — but not when the just-added item IS a print product itself.
+    if (!NO_UPSELL_HANDLES.has(product.handle)) {
       console.log("[upsell] opening DTF dialog for qty", quantity);
       setLastAddedQty(quantity);
       setUpsellOpen(true);
