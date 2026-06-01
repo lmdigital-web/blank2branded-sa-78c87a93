@@ -56,14 +56,6 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           <Link to="/dtf" className={linkCls} activeProps={{ className: "text-primary" }}>
             DTF Prints
           </Link>
-          <a
-            href="https://blank2branded.myshopify.com/apps/gang-sheet-builder/builder?product_id=8527307505825&variant_id=46470926237857"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkCls}
-          >
-            Gang Sheet Builder
-          </a>
           <Link to="/blanks" className={linkCls} activeProps={{ className: "text-primary" }}>
             Blanks
           </Link>
@@ -102,15 +94,6 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             <Link to="/" className={linkCls} onClick={() => setOpen(false)}>Home</Link>
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
             <Link to="/dtf" className={linkCls} onClick={() => setOpen(false)}>DTF Prints</Link>
-            <a
-              href="https://blank2branded.myshopify.com/apps/gang-sheet-builder/builder?product_id=8527307505825&variant_id=46470926237857"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={linkCls}
-              onClick={() => setOpen(false)}
-            >
-              Gang Sheet Builder
-            </a>
             <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>Blanks</Link>
             <Link to="/shop" className={linkCls} onClick={() => setOpen(false)}>Shop</Link>
             <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>Blog</Link>

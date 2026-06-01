@@ -21,6 +21,13 @@ const NO_UPSELL_HANDLES = new Set([
   "dtf-print-1-meter-20cm-wide",
 ]);
 
+// Map of print product handles to their Shopify Gangio builder URL.
+// Customers can either Add to Cart directly or jump into the gang-sheet builder.
+const GANG_BUILDER_URLS: Record<string, string> = {
+  "dtf-print-1-meter-20cm-wide":
+    "https://blank2branded.myshopify.com/apps/gang-sheet-builder/builder?product_id=8527307505825&variant_id=46470926237857",
+};
+
 const RECENT_KEY = "recently-viewed-products";
 
 const PRODUCT_LITE_QUERY = `
@@ -286,6 +293,25 @@ function ProductPage() {
                     )}
                   </Button>
                 </div>
+
+                {product && GANG_BUILDER_URLS[product.handle] && (
+                  <div className="mt-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
+                    <p className="text-sm font-semibold text-foreground">
+                      Need to fit multiple designs on one sheet?
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Use our Gang Sheet Builder to arrange your artwork on a 20 cm wide roll before checkout.
+                    </p>
+                    <a
+                      href={GANG_BUILDER_URLS[product.handle]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-4 py-2 text-sm font-semibold text-white shadow transition-all hover:scale-[1.02]"
+                    >
+                      Build Gang Sheet →
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           )}
