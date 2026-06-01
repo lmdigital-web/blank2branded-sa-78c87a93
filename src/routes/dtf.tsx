@@ -95,11 +95,19 @@ function DtfPage() {
             Full-colour, photo-quality DTF prints — from tiny chest logos up to 10-metre roll runs. 20 cm wide rolls. Soft hand-feel, wash-tested, ready to press.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/shop"
+            <a
+              href="https://blank2branded.myshopify.com/apps/gang-sheet-builder/builder?product_id=8527307505825&variant_id=46470926237857"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.03]"
             >
-              Shop Now <ArrowRight className="h-4 w-4" />
+              Build Your Gang Sheet <ArrowRight className="h-4 w-4" />
+            </a>
+            <Link
+              to="/shop"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-6 py-3 text-sm font-semibold text-charcoal transition-colors hover:border-charcoal"
+            >
+              Shop Prints
             </Link>
             <a
               href="#sizes"
