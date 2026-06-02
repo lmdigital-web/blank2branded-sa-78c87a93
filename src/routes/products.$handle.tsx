@@ -26,6 +26,8 @@ const NO_UPSELL_HANDLES = new Set([
 const GANG_BUILDER_URLS: Record<string, string> = {
   "dtf-print-1-meter-20cm-wide":
     "https://blank2branded.myshopify.com/apps/gang-sheet-builder/builder?product_id=8527307505825&variant_id=46470926237857",
+  "dtf-print-a4":
+    "https://blank2branded.myshopify.com/apps/gang-sheet-builder/builder?product_id=8527297052833&variant_id=46470915391649",
 };
 
 const RECENT_KEY = "recently-viewed-products";
