@@ -216,8 +216,9 @@ function BlanksPage() {
             <span className="text-gradient-dtf">Blank</span> Apparel.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Minimum 5 pieces per order. Nationwide shipping from Mbombela.
+            Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Minimum 3 tees per order (DTF prints exempt — order from 1). Nationwide shipping from Mbombela.
           </p>
+
 
           {/* Quick nav */}
           <div className="mt-8 flex flex-wrap gap-2">
