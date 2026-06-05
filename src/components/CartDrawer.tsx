@@ -89,14 +89,21 @@ export function CartDrawer() {
                 ))}
               </div>
               <div className="space-y-4 pt-4 border-t">
+                {moqShort && (
+                  <div className="rounded-md border border-magenta/40 bg-magenta/5 p-3 text-xs leading-relaxed text-charcoal">
+                    <span className="font-semibold text-magenta">Minimum order: 3 tees.</span>{" "}
+                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to checkout. DTF prints are exempt and can be ordered from 1.
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Total</span>
                   <span className="text-xl font-bold">{currency} {totalPrice.toFixed(2)}</span>
                 </div>
-                <Button onClick={checkout} className="w-full" size="lg" disabled={isLoading || isSyncing}>
+                <Button onClick={checkout} className="w-full" size="lg" disabled={isLoading || isSyncing || moqShort}>
                   {isLoading || isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ExternalLink className="w-4 h-4 mr-2" />Checkout</>}
                 </Button>
               </div>
+
             </>
           )}
         </div>
