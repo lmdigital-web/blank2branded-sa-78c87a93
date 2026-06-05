@@ -358,8 +358,9 @@ function Home() {
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Premium tees, polos, hoodies and more — held in stock at our
-                  Mbombela facility and couriered nationwide. Minimum 5 pieces per order.
+                  Mbombela facility and couriered nationwide. Minimum 3 tees per order (DTF prints exempt — order from 1).
                 </p>
+
               </div>
             </div>
           </div>
