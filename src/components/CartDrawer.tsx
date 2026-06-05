@@ -12,10 +12,20 @@ export function CartDrawer() {
   const totalPrice = items.reduce((s, i) => s + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "ZAR";
 
-  // MOQ: any non-DTF item (tees/blanks) requires a combined minimum of 3.
-  const isDtf = (handle?: string) => !!handle && handle.toLowerCase().startsWith("dtf-");
+  // MOQ: tees/blanks require a minimum of 3. DTF prints, add-ons, and setup fees are exempt.
+  const isExempt = (handle?: string, title?: string) => {
+    const h = (handle ?? "").toLowerCase();
+    const t = (title ?? "").toLowerCase();
+    if (h.startsWith("dtf-") || h.includes("dtf")) return true;
+    if (h.includes("setup") || h.includes("add-on") || h.includes("addon") || h.includes("fee")) return true;
+    if (t.includes("dtf") || t.includes("setup fee") || t.includes("add-on") || t.includes("add on")) return true;
+    return false;
+  };
   const teeQty = items
-    .filter((i) => !isDtf((i.product.node as { handle?: string }).handle))
+    .filter((i) => {
+      const node = i.product.node as { handle?: string; title?: string };
+      return !isExempt(node.handle, node.title);
+    })
     .reduce((s, i) => s + i.quantity, 0);
   const moqShort = teeQty > 0 && teeQty < 3;
   const moqRemaining = moqShort ? 3 - teeQty : 0;
