@@ -216,8 +216,9 @@ function BlanksPage() {
             <span className="text-gradient-dtf">Blank</span> Apparel.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Minimum 5 pieces per order. Nationwide shipping from Mbombela.
+            Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Minimum 3 tees per order (DTF prints exempt — order from 1). Nationwide shipping from Mbombela.
           </p>
+
 
           {/* Quick nav */}
           <div className="mt-8 flex flex-wrap gap-2">
@@ -256,8 +257,9 @@ function BlanksPage() {
             Ready to <span className="text-gradient-dtf">brand</span> your blanks?
           </h2>
           <p className="mt-4 text-lg text-background/70">
-            Tell us what you need and we'll quote you fast. Minimum 5 pieces per order.
+            Tell us what you need and we'll quote you fast. Minimum 3 tees per order — DTF prints from 1.
           </p>
+
           <Link
             to="/shop"
             className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.03]"

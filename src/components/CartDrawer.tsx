@@ -12,12 +12,22 @@ export function CartDrawer() {
   const totalPrice = items.reduce((s, i) => s + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "ZAR";
 
+  // MOQ: any non-DTF item (tees/blanks) requires a combined minimum of 3.
+  const isDtf = (handle?: string) => !!handle && handle.toLowerCase().startsWith("dtf-");
+  const teeQty = items
+    .filter((i) => !isDtf((i.product.node as { handle?: string }).handle))
+    .reduce((s, i) => s + i.quantity, 0);
+  const moqShort = teeQty > 0 && teeQty < 3;
+  const moqRemaining = moqShort ? 3 - teeQty : 0;
+
   useEffect(() => { if (open) syncCart(); }, [open, syncCart]);
 
   const checkout = () => {
+    if (moqShort) return;
     const url = getCheckoutUrl();
     if (url) { window.open(url, "_blank"); setOpen(false); }
   };
+
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -79,14 +89,21 @@ export function CartDrawer() {
                 ))}
               </div>
               <div className="space-y-4 pt-4 border-t">
+                {moqShort && (
+                  <div className="rounded-md border border-magenta/40 bg-magenta/5 p-3 text-xs leading-relaxed text-charcoal">
+                    <span className="font-semibold text-magenta">Minimum order: 3 tees.</span>{" "}
+                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to checkout. DTF prints are exempt and can be ordered from 1.
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Total</span>
                   <span className="text-xl font-bold">{currency} {totalPrice.toFixed(2)}</span>
                 </div>
-                <Button onClick={checkout} className="w-full" size="lg" disabled={isLoading || isSyncing}>
+                <Button onClick={checkout} className="w-full" size="lg" disabled={isLoading || isSyncing || moqShort}>
                   {isLoading || isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ExternalLink className="w-4 h-4 mr-2" />Checkout</>}
                 </Button>
               </div>
+
             </>
           )}
         </div>
