@@ -99,8 +99,9 @@ function Home() {
             </div>
 
             <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Open to brands, businesses & individuals · Minimum 5 pieces per order
+              Open to brands, businesses & individuals · Min 3 tees per order · DTF prints from 1
             </p>
+
           </div>
 
           {/* Visual: Blank → Branded */}
