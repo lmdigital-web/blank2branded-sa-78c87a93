@@ -5,8 +5,6 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "vite";
-import LovableVite from "@lovable/dev/vite";
+import { lovableTanstackConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig({
-  plugins: [LovableVite()],
-});
+export default defineConfig(lovableTanstackConfig());
