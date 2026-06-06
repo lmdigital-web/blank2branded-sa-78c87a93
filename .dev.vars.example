@@ -1,0 +1,16 @@
+# Cloudflare Workers runtime environment variables.
+# Copy to .dev.vars for local `wrangler dev`. Never commit real values.
+# In production, set these in Cloudflare dashboard → Workers → Settings → Variables and Secrets.
+
+# Supabase (server-side)
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# Shopify
+SHOPIFY_ACCESS_TOKEN=
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=
+SHOPIFY_ONLINE_ACCESS_TOKEN=
+
+# Lovable AI Gateway
+LOVABLE_API_KEY=

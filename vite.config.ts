@@ -9,7 +9,4 @@ import LovableVite from "@lovable/dev/vite";
 
 export default defineConfig({
   plugins: [LovableVite()],
-  nitro: {
-    preset: 'static', // important for Pages
-  },
 });
