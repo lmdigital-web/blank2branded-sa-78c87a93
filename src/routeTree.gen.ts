@@ -9,51 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 
-const ProductsHandleRoute = ProductsHandleRouteImport.update({
-  id: '/products/$handle',
-  path: '/products/$handle',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
-export interface FileRoutesByFullPath {
-  '/products/$handle': typeof ProductsHandleRoute
-}
-export interface FileRoutesByTo {
-  '/products/$handle': typeof ProductsHandleRoute
-}
+export interface FileRoutesByFullPath {}
+export interface FileRoutesByTo {}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/products/$handle': typeof ProductsHandleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/products/$handle'
+  fullPaths: never
   fileRoutesByTo: FileRoutesByTo
-  to: '/products/$handle'
-  id: '__root__' | '/products/$handle'
+  to: never
+  id: '__root__'
   fileRoutesById: FileRoutesById
 }
-export interface RootRouteChildren {
-  ProductsHandleRoute: typeof ProductsHandleRoute
-}
+export interface RootRouteChildren {}
 
 declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/products/$handle': {
-      id: '/products/$handle'
-      path: '/products/$handle'
-      fullPath: '/products/$handle'
-      preLoaderRoute: typeof ProductsHandleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-  }
+  interface FileRoutesByPath {}
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  ProductsHandleRoute: ProductsHandleRoute,
-}
+const rootRouteChildren: RootRouteChildren = {}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
