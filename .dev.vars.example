@@ -1,21 +1,2 @@
-# Cloudflare Workers runtime environment variables.
-# Copy to .dev.vars for local `wrangler dev`. Never commit real values.
-# In production, set these in Cloudflare dashboard → Workers → Settings → Variables and Secrets.
-
-# Supabase (server-side)
-SUPABASE_URL=
-SUPABASE_PUBLISHABLE_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-
-# Supabase (build-time/browser)
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
-VITE_SUPABASE_PROJECT_ID=
-
-# Shopify
-SHOPIFY_ACCESS_TOKEN=
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=
-SHOPIFY_ONLINE_ACCESS_TOKEN=
-
-# Lovable AI Gateway
-LOVABLE_API_KEY=
+# This is now a plain static Vite site.
+# No backend variables are required for cPanel or Cloudflare Pages deploys.
