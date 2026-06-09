@@ -1,33 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useState } from "react";
 import { MessageCircle, Mail, Clock, MapPin, Upload, Send } from "lucide-react";
 import contactHeroBg from "@/assets/contact-hero-bg.jpg";
 
-export const Route = createFileRoute("/contact")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    subject: typeof search.subject === "string" ? search.subject : undefined,
-  }),
-  head: () => ({
-    meta: [
-      { title: "Contact — Get a Quote | Blank2Branded" },
-      {
-        name: "description",
-        content:
-          "Request a quote for DTF prints and blank apparel. Open to brands, businesses and individuals — minimum 5 pieces. We reply within 4 business hours.",
-      },
-      { property: "og:title", content: "Contact Blank2Branded" },
-      { property: "og:description", content: "Get a quote on DTF prints and blanks. Min 5 pieces. Reply within 4 business hours." },
-      { property: "og:url", content: "/contact" },
-    ],
-    links: [{ rel: "canonical", href: "/contact" }],
-  }),
-  component: ContactPage,
-});
-
-function ContactPage() {
-  const { subject } = Route.useSearch();
+export function ContactPage() {
+  const subject = new URLSearchParams(window.location.search).get("subject") ?? undefined;
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@/lib/static-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Header } from "@/components/Header";
@@ -8,20 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-
-export const Route = createFileRoute("/shop")({
-  head: () => ({
-    meta: [
-      { title: "Shop — Blank2Branded" },
-      { name: "description", content: "Shop blank apparel, DTF transfers and branded gear from Blank2Branded." },
-      { property: "og:title", content: "Shop — Blank2Branded" },
-      { property: "og:description", content: "Shop blank apparel, DTF transfers and branded gear." },
-      { property: "og:url", content: "/shop" },
-    ],
-    links: [{ rel: "canonical", href: "/shop" }],
-  }),
-  component: ShopPage,
-});
 
 const COLLECTIONS_QUERY = `
   query GetCollections($first: Int!) {
@@ -71,7 +57,7 @@ type Collection = {
   };
 };
 
-function ShopPage() {
+export function ShopPage() {
   const [activeCollection, setActiveCollection] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({

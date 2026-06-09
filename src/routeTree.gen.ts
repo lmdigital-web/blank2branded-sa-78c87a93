@@ -12,9 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as DtfRouteImport } from './routes/dtf'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BlanksRouteImport } from './routes/blanks'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 
 const ShopRoute = ShopRouteImport.update({
@@ -32,21 +29,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlanksRoute = BlanksRouteImport.update({
-  id: '/blanks',
-  path: '/blanks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProductsHandleRoute = ProductsHandleRouteImport.update({
   id: '/products/$handle',
   path: '/products/$handle',
@@ -54,18 +36,12 @@ const ProductsHandleRoute = ProductsHandleRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/blanks': typeof BlanksRoute
   '/contact': typeof ContactRoute
   '/dtf': typeof DtfRoute
   '/shop': typeof ShopRoute
   '/products/$handle': typeof ProductsHandleRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/blanks': typeof BlanksRoute
   '/contact': typeof ContactRoute
   '/dtf': typeof DtfRoute
   '/shop': typeof ShopRoute
@@ -73,9 +49,6 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/blanks': typeof BlanksRoute
   '/contact': typeof ContactRoute
   '/dtf': typeof DtfRoute
   '/shop': typeof ShopRoute
@@ -83,38 +56,13 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/blanks'
-    | '/contact'
-    | '/dtf'
-    | '/shop'
-    | '/products/$handle'
+  fullPaths: '/contact' | '/dtf' | '/shop' | '/products/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/about'
-    | '/blanks'
-    | '/contact'
-    | '/dtf'
-    | '/shop'
-    | '/products/$handle'
-  id:
-    | '__root__'
-    | '/'
-    | '/about'
-    | '/blanks'
-    | '/contact'
-    | '/dtf'
-    | '/shop'
-    | '/products/$handle'
+  to: '/contact' | '/dtf' | '/shop' | '/products/$handle'
+  id: '__root__' | '/contact' | '/dtf' | '/shop' | '/products/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  BlanksRoute: typeof BlanksRoute
   ContactRoute: typeof ContactRoute
   DtfRoute: typeof DtfRoute
   ShopRoute: typeof ShopRoute
@@ -144,27 +92,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blanks': {
-      id: '/blanks'
-      path: '/blanks'
-      fullPath: '/blanks'
-      preLoaderRoute: typeof BlanksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/products/$handle': {
       id: '/products/$handle'
       path: '/products/$handle'
@@ -176,9 +103,6 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  BlanksRoute: BlanksRoute,
   ContactRoute: ContactRoute,
   DtfRoute: DtfRoute,
   ShopRoute: ShopRoute,

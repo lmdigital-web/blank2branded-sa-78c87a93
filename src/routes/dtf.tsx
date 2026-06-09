@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@/lib/static-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import dtfHeroBg from "@/assets/dtf-hero-bg.jpg";
@@ -15,28 +15,6 @@ import {
   Maximize2,
   FileImage,
 } from "lucide-react";
-
-export const Route = createFileRoute("/dtf")({
-  head: () => ({
-    meta: [
-      { title: "DTF Prints — A6 to 10m Roll Prints | Blank2Branded" },
-      {
-        name: "description",
-        content:
-          "Full-colour DTF transfers from A6 up to 10 metres long. 20 cm wide roll prints. We print anything you like — logos, illustrations, photographic prints. Nationwide shipping from Mbombela.",
-      },
-      { property: "og:title", content: "DTF Prints — A6 to 10m | Blank2Branded" },
-      {
-        property: "og:description",
-        content:
-          "Full-colour DTF transfers from A6 up to 10 m long. 20 cm wide roll prints. Print anything you like.",
-      },
-      { property: "og:url", content: "/dtf" },
-    ],
-    links: [{ rel: "canonical", href: "/dtf" }],
-  }),
-  component: DtfPage,
-});
 
 const SIZES: { name: string; dim: string; tag?: string }[] = [
   { name: "A6", dim: "10.5 × 14.8 cm", tag: "Smallest" },
@@ -61,7 +39,7 @@ const STEPS = [
   { n: "03", icon: Printer, color: "lime", title: "We Print + Ship", body: "Production in 48 hours, then couriered nationwide. Or press them onto blanks for you — full service available." },
 ];
 
-function DtfPage() {
+export function DtfPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
