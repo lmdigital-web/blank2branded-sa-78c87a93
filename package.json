@@ -1,5 +1,5 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "blank2branded-static",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -7,8 +7,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "build:cpanel": "vite build --mode production",
-    "deploy:cloudflare": "bun run build && bunx wrangler deploy --config .output/server/wrangler.json",
+    "build:cpanel": "vite build",
+    "deploy:cloudflare": "bun run build && bunx wrangler pages deploy dist --project-name blank2branded-sa",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
