@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link, useProductHandle } from "@/lib/static-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
@@ -43,10 +43,6 @@ const PRODUCT_LITE_QUERY = `
 `;
 
 
-export const Route = createFileRoute("/products/$handle")({
-  component: ProductPage,
-});
-
 const COLOR_MAP: Record<string, string> = {
   black: "#000000", white: "#ffffff", navy: "#1e2a4a", "navy blue": "#1e2a4a",
   blue: "#1d4ed8", royal: "#1d4ed8", "royal blue": "#1d4ed8",
@@ -66,8 +62,8 @@ function colorToHex(value: string): string {
   return key;
 }
 
-function ProductPage() {
-  const { handle } = Route.useParams();
+export function ProductPage() {
+  const handle = useProductHandle();
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
   const [quantity, setQuantity] = useState(1);
@@ -79,7 +75,7 @@ function ProductPage() {
     queryFn: async () => {
       const d = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
       const p = d?.data?.productByHandle;
-      if (!p) throw notFound();
+      if (!p) return null;
       return p as {
         id: string; title: string; description: string; descriptionHtml: string; handle: string;
         images: { edges: Array<{ node: { url: string; altText: string | null } }> };

@@ -9,26 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ShopRouteImport } from './routes/shop'
-import { Route as DtfRouteImport } from './routes/dtf'
-import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 
-const ShopRoute = ShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DtfRoute = DtfRouteImport.update({
-  id: '/dtf',
-  path: '/dtf',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProductsHandleRoute = ProductsHandleRouteImport.update({
   id: '/products/$handle',
   path: '/products/$handle',
@@ -36,62 +18,29 @@ const ProductsHandleRoute = ProductsHandleRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/contact': typeof ContactRoute
-  '/dtf': typeof DtfRoute
-  '/shop': typeof ShopRoute
   '/products/$handle': typeof ProductsHandleRoute
 }
 export interface FileRoutesByTo {
-  '/contact': typeof ContactRoute
-  '/dtf': typeof DtfRoute
-  '/shop': typeof ShopRoute
   '/products/$handle': typeof ProductsHandleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/contact': typeof ContactRoute
-  '/dtf': typeof DtfRoute
-  '/shop': typeof ShopRoute
   '/products/$handle': typeof ProductsHandleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/contact' | '/dtf' | '/shop' | '/products/$handle'
+  fullPaths: '/products/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/contact' | '/dtf' | '/shop' | '/products/$handle'
-  id: '__root__' | '/contact' | '/dtf' | '/shop' | '/products/$handle'
+  to: '/products/$handle'
+  id: '__root__' | '/products/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  ContactRoute: typeof ContactRoute
-  DtfRoute: typeof DtfRoute
-  ShopRoute: typeof ShopRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/shop': {
-      id: '/shop'
-      path: '/shop'
-      fullPath: '/shop'
-      preLoaderRoute: typeof ShopRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dtf': {
-      id: '/dtf'
-      path: '/dtf'
-      fullPath: '/dtf'
-      preLoaderRoute: typeof DtfRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/products/$handle': {
       id: '/products/$handle'
       path: '/products/$handle'
@@ -103,9 +52,6 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  ContactRoute: ContactRoute,
-  DtfRoute: DtfRoute,
-  ShopRoute: ShopRoute,
   ProductsHandleRoute: ProductsHandleRoute,
 }
 export const routeTree = rootRouteImport
