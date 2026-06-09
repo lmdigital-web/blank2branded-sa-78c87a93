@@ -1,28 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@/lib/static-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Award, Zap, Handshake, ArrowRight } from "lucide-react";
 import aboutHeroBg from "@/assets/about-hero-bg.jpg";
 
-export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About — The Backend for SA's Clothing Brands | Blank2Branded" },
-      {
-        name: "description",
-        content:
-          "Blank2Branded is a Mbombela-based supplier of DTF transfers and blank apparel, serving brands, businesses and individuals across South Africa. Minimum 5 pieces per order.",
-      },
-      { property: "og:title", content: "About Blank2Branded" },
-      { property: "og:description", content: "Supplier of DTF + blanks, built by printers and brand builders. Min 5 pieces per order." },
-      { property: "og:url", content: "/about" },
-    ],
-    links: [{ rel: "canonical", href: "/about" }],
-  }),
-  component: AboutPage,
-});
-
-function AboutPage() {
+export function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />

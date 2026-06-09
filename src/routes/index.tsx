@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@/lib/static-router";
 import dtfPrintingImg from "@/assets/dtf-printing.jpg";
 import blankApparelImg from "@/assets/blank-apparel.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -16,24 +16,7 @@ import {
   Truck,
 } from "lucide-react";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
-      {
-        name: "description",
-        content:
-          "DTF transfers & blank apparel for brands, businesses and individuals. Minimum 5 pieces per order. Nationwide shipping across SA.",
-      },
-      { property: "og:title", content: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded" },
-      { property: "og:url", content: "/" },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-  }),
-  component: Home,
-});
-
-function Home() {
+export function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Header />

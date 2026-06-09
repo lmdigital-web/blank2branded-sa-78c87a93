@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@/lib/static-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import blanksHeroBg from "@/assets/blanks-hero-bg.jpg";
@@ -8,28 +8,6 @@ import polyester from "@/assets/blanks-polyester.jpg";
 import golfShirts from "@/assets/blanks-golf.jpg";
 import hoodies from "@/assets/blanks-hoodies.jpg";
 import { Shirt, Sparkles, Wind, Flag, Flame, ArrowRight, Check } from "lucide-react";
-
-export const Route = createFileRoute("/blanks")({
-  head: () => ({
-    meta: [
-      { title: "Blank Apparel — Tees, Golf Shirts & Hoodies | Blank2Branded" },
-      {
-        name: "description",
-        content:
-          "Premium blank apparel: carded cotton, combed cotton and 100% polyester t-shirts, golf shirts in cotton or polyester, and hoodies. Ready for DTF, screen print or embroidery. Minimum 5 pieces.",
-      },
-      { property: "og:title", content: "Blank Apparel | Blank2Branded" },
-      {
-        property: "og:description",
-        content:
-          "Premium blanks ready for DTF, screen print or embroidery. Minimum 5 pieces per order.",
-      },
-      { property: "og:url", content: "/blanks" },
-    ],
-    links: [{ rel: "canonical", href: "/blanks" }],
-  }),
-  component: BlanksPage,
-});
 
 type Section = {
   id: string;
@@ -186,7 +164,7 @@ function SectionBlock({ section, index }: { section: Section; index: number }) {
   );
 }
 
-function BlanksPage() {
+export function BlanksPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
