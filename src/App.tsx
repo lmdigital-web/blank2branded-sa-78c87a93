@@ -14,45 +14,107 @@ import { ProductPage } from "@/routes/products.$handle";
 
 const queryClient = new QueryClient();
 
-const pageMeta: Record<string, { title: string; description: string }> = {
+const SITE_URL = "https://blank2branded.co.za";
+
+const pageMeta: Record<string, { title: string; description: string; keywords: string }> = {
   "/": {
-    title: "DTF Prints + Blank T-Shirts South Africa | Blank2Branded",
+    title: "DTF Prints & Blank T-Shirts South Africa | Blank2Branded",
     description:
-      "Supplier of DTF transfers and blank apparel for brands, businesses and individuals. Nationwide shipping across South Africa.",
+      "DTF transfers and blank apparel supplier in South Africa. A6 to 10m DTF prints, blank tees, golf shirts & hoodies. Nationwide shipping from Mbombela.",
+    keywords:
+      "DTF printing South Africa, DTF transfers, blank t-shirts South Africa, blank apparel, gang sheet printing, custom t-shirt printing, Mbombela DTF, Mpumalanga printing",
   },
   "/about": {
-    title: "About Blank2Branded | DTF + Blank Apparel Supplier",
-    description: "Mbombela-based supplier of DTF transfers and blank apparel serving South Africa.",
+    title: "About Blank2Branded | DTF & Blank Apparel Supplier South Africa",
+    description:
+      "Mbombela-based supplier of DTF transfers and blank apparel serving brands, businesses and individuals across South Africa. Fast turnaround, nationwide shipping.",
+    keywords:
+      "about Blank2Branded, DTF supplier South Africa, blank apparel supplier, Mbombela printing, Mpumalanga DTF",
   },
   "/blanks": {
-    title: "Blank Apparel — Tees, Golf Shirts & Hoodies | Blank2Branded",
-    description: "Premium blank apparel ready for DTF, screen print or embroidery.",
+    title: "Blank Apparel South Africa — Tees, Golf Shirts & Hoodies | Blank2Branded",
+    description:
+      "Premium blank apparel in South Africa — t-shirts, golf shirts and hoodies ready for DTF, screen print or embroidery. Wholesale prices, nationwide shipping.",
+    keywords:
+      "blank t-shirts South Africa, blank golf shirts, blank hoodies, wholesale blank apparel, blanks for DTF, blanks for embroidery, screen printing blanks",
   },
   "/contact": {
-    title: "Contact — Get a Quote | Blank2Branded",
-    description: "Request a quote for DTF prints and blank apparel.",
+    title: "Contact Blank2Branded — Get a DTF & Apparel Quote | South Africa",
+    description:
+      "Contact Blank2Branded in Mbombela for DTF prints and blank apparel quotes. WhatsApp, email or call — nationwide shipping across South Africa.",
+    keywords:
+      "contact Blank2Branded, DTF quote South Africa, blank apparel quote, Mbombela DTF printing contact",
   },
   "/dtf": {
-    title: "DTF Prints — A6 to 10m Roll Prints | Blank2Branded",
-    description: "Full-colour DTF transfers from A6 up to 10 metres long.",
+    title: "DTF Prints South Africa — A6 to 10m Gang Sheets | Blank2Branded",
+    description:
+      "Full-colour DTF transfers in South Africa, A6 to 10 metres. Build your own gang sheet, vivid prints on cotton, poly and blends. Nationwide shipping from Mbombela.",
+    keywords:
+      "DTF prints South Africa, DTF transfers, gang sheet DTF, A4 DTF print, A3 DTF print, 10m DTF roll, custom DTF transfers, DTF printing Mbombela",
   },
   "/shop": {
-    title: "Shop — Blank2Branded",
-    description: "Shop blank apparel, DTF transfers and branded gear from Blank2Branded.",
+    title: "Shop DTF Prints & Blank Apparel Online | Blank2Branded South Africa",
+    description:
+      "Shop blank apparel, DTF transfers and branded gear from Blank2Branded. Wholesale pricing, fast dispatch and nationwide shipping across South Africa.",
+    keywords:
+      "shop DTF prints, buy blank t-shirts South Africa, online apparel shop, DTF transfers online, wholesale blanks",
   },
 };
+
+function ensureLink(rel: string): HTMLLinkElement {
+  let el = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+  if (!el) {
+    el = document.createElement("link");
+    el.rel = rel;
+    document.head.appendChild(el);
+  }
+  return el;
+}
+
+function ensureMeta(attr: "name" | "property", key: string): HTMLMetaElement {
+  let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  return el;
+}
+
+function applySeo(title: string, description: string, keywords: string, path: string) {
+  const url = `${SITE_URL}${path === "/" ? "/" : path}`;
+  document.title = title;
+  ensureMeta("name", "description").content = description;
+  ensureMeta("name", "keywords").content = keywords;
+  ensureLink("canonical").href = url;
+  ensureMeta("property", "og:title").content = title;
+  ensureMeta("property", "og:description").content = description;
+  ensureMeta("property", "og:url").content = url;
+  ensureMeta("name", "twitter:title").content = title;
+  ensureMeta("name", "twitter:description").content = description;
+}
 
 function AppContent() {
   useCartSync();
   const path = useCurrentPath();
   const cleanPath = path.replace(/\/$/, "") || "/";
-  const meta = pageMeta[cleanPath] ?? pageMeta["/"];
+  const productMatch = cleanPath.match(/^\/products\/([^/]+)$/);
+  const meta = pageMeta[cleanPath];
 
   useEffect(() => {
-    document.title = meta.title;
-    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    if (description) description.content = meta.description;
-  }, [meta]);
+    if (productMatch) {
+      const handle = productMatch[1];
+      const pretty = handle.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      const title = `${pretty} | Blank2Branded South Africa`;
+      const description = `Buy ${pretty} from Blank2Branded — DTF prints and blank apparel with nationwide shipping across South Africa.`;
+      const keywords = `${pretty}, ${pretty} South Africa, buy ${pretty} online, Blank2Branded`;
+      applySeo(title, description, keywords, cleanPath);
+    } else if (meta) {
+      applySeo(meta.title, meta.description, meta.keywords, cleanPath);
+    } else {
+      applySeo(pageMeta["/"].title, pageMeta["/"].description, pageMeta["/"].keywords, "/");
+    }
+  }, [cleanPath, meta, productMatch]);
 
   let page = <NotFoundPage />;
   if (cleanPath === "/") page = <Home />;
