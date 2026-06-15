@@ -4,7 +4,7 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://blank2branded-sa.lovable.app";
+const BASE_URL = "https://blank2branded.co.za";
 
 interface SitemapEntry {
   path: string;
