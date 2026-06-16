@@ -16,48 +16,59 @@ const queryClient = new QueryClient();
 
 const SITE_URL = "https://blank2branded.co.za";
 
-const pageMeta: Record<string, { title: string; description: string; keywords: string }> = {
+// Keyword map — one focus keyword + supporting/long-tail terms per page,
+// targeted at South African search intent for DTF prints and blank apparel.
+const pageMeta: Record<
+  string,
+  { title: string; description: string; keywords: string; focusKeyword: string }
+> = {
   "/": {
-    title: "DTF Prints & Blank T-Shirts South Africa | Blank2Branded",
+    focusKeyword: "DTF printing South Africa",
+    title: "DTF Printing South Africa | Blank T-Shirts & Transfers | Blank2Branded",
     description:
-      "DTF transfers and blank apparel supplier in South Africa. A6 to 10m DTF prints, blank tees, golf shirts & hoodies. Nationwide shipping from Mbombela.",
+      "Buy DTF transfers and blank t-shirts in South Africa. Gang sheets from A6 to 10m, blank tees, golf shirts & hoodies. Courier nationwide from Mbombela.",
     keywords:
-      "DTF printing South Africa, DTF transfers, blank t-shirts South Africa, blank apparel, gang sheet printing, custom t-shirt printing, Mbombela DTF, Mpumalanga printing",
+      "DTF printing South Africa, DTF transfers South Africa, DTF prints near me, blank t-shirts South Africa, blank apparel suppliers South Africa, gang sheet printing, custom t-shirt printing South Africa, DTF Mbombela, DTF Mpumalanga, DTF Johannesburg, DTF Pretoria, DTF Cape Town, DTF Durban",
   },
   "/about": {
-    title: "About Blank2Branded | DTF & Blank Apparel Supplier South Africa",
+    focusKeyword: "DTF supplier South Africa",
+    title: "About Blank2Branded | DTF & Blank Apparel Supplier in South Africa",
     description:
-      "Mbombela-based supplier of DTF transfers and blank apparel serving brands, businesses and individuals across South Africa. Fast turnaround, nationwide shipping.",
+      "Blank2Branded is a Mbombela-based DTF print and blank apparel supplier serving resellers, brands and print shops across South Africa. Fast turnaround, courier nationwide.",
     keywords:
-      "about Blank2Branded, DTF supplier South Africa, blank apparel supplier, Mbombela printing, Mpumalanga DTF",
+      "DTF supplier South Africa, blank apparel supplier South Africa, wholesale t-shirt supplier, Mbombela print shop, Mpumalanga DTF supplier, about Blank2Branded",
   },
   "/blanks": {
-    title: "Blank Apparel South Africa — Tees, Golf Shirts & Hoodies | Blank2Branded",
+    focusKeyword: "blank t-shirts South Africa",
+    title: "Blank T-Shirts South Africa | Wholesale Tees, Golf Shirts & Hoodies",
     description:
-      "Premium blank apparel in South Africa — t-shirts, golf shirts and hoodies ready for DTF, screen print or embroidery. Wholesale prices, nationwide shipping.",
+      "Wholesale blank t-shirts, golf shirts and hoodies in South Africa. 100% cotton and poly-cotton blanks ready for DTF, screen print or embroidery. Courier nationwide.",
     keywords:
-      "blank t-shirts South Africa, blank golf shirts, blank hoodies, wholesale blank apparel, blanks for DTF, blanks for embroidery, screen printing blanks",
+      "blank t-shirts South Africa, wholesale blank t-shirts, blank golf shirts South Africa, blank hoodies South Africa, plain t-shirts wholesale, 100 cotton blanks, blanks for DTF printing, blanks for embroidery, screen printing blanks South Africa, bulk t-shirts South Africa",
   },
   "/contact": {
-    title: "Contact Blank2Branded — Get a DTF & Apparel Quote | South Africa",
+    focusKeyword: "DTF printing quote South Africa",
+    title: "Contact Blank2Branded | DTF & Blank Apparel Quotes South Africa",
     description:
-      "Contact Blank2Branded in Mbombela for DTF prints and blank apparel quotes. WhatsApp, email or call — nationwide shipping across South Africa.",
+      "Get a DTF print or blank apparel quote from Blank2Branded. WhatsApp, email or call our Mbombela team. Fast quotes and nationwide courier across South Africa.",
     keywords:
-      "contact Blank2Branded, DTF quote South Africa, blank apparel quote, Mbombela DTF printing contact",
+      "DTF printing quote South Africa, blank t-shirt quote, contact DTF supplier, WhatsApp DTF printing, Mbombela DTF contact, custom t-shirt printing quote",
   },
   "/dtf": {
-    title: "DTF Prints South Africa — A6 to 10m Gang Sheets | Blank2Branded",
+    focusKeyword: "DTF transfers South Africa",
+    title: "DTF Transfers South Africa | A6 to 10m Gang Sheets | Blank2Branded",
     description:
-      "Full-colour DTF transfers in South Africa, A6 to 10 metres. Build your own gang sheet, vivid prints on cotton, poly and blends. Nationwide shipping from Mbombela.",
+      "Order full-colour DTF transfers in South Africa — A6, A5, A4, A3 and 10m gang sheets. Vivid prints on cotton, polyester and blends. Courier nationwide from Mbombela.",
     keywords:
-      "DTF prints South Africa, DTF transfers, gang sheet DTF, A4 DTF print, A3 DTF print, 10m DTF roll, custom DTF transfers, DTF printing Mbombela",
+      "DTF transfers South Africa, DTF prints South Africa, gang sheet DTF South Africa, A3 DTF print, A4 DTF print, A5 DTF transfers, 10m DTF roll, custom DTF transfers, DTF heat transfers, DTF printing for resellers, DTF Mbombela, DTF Johannesburg, DTF Cape Town",
   },
   "/shop": {
-    title: "Shop DTF Prints & Blank Apparel Online | Blank2Branded South Africa",
+    focusKeyword: "buy DTF prints and blank t-shirts online South Africa",
+    title: "Shop DTF Transfers & Blank T-Shirts Online | Blank2Branded South Africa",
     description:
-      "Shop blank apparel, DTF transfers and branded gear from Blank2Branded. Wholesale pricing, fast dispatch and nationwide shipping across South Africa.",
+      "Shop DTF transfers, blank t-shirts, golf shirts and hoodies online. Wholesale pricing, secure checkout and nationwide courier across South Africa.",
     keywords:
-      "shop DTF prints, buy blank t-shirts South Africa, online apparel shop, DTF transfers online, wholesale blanks",
+      "buy DTF prints online South Africa, buy blank t-shirts online South Africa, online DTF shop, wholesale blanks online, order DTF transfers South Africa, blank apparel online store",
   },
 };
 
