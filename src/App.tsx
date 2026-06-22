@@ -11,6 +11,11 @@ import { ContactPage } from "@/routes/contact";
 import { DtfPage } from "@/routes/dtf";
 import { ShopPage } from "@/routes/shop";
 import { ProductPage } from "@/routes/products.$handle";
+import { BlogIndexPage } from "@/routes/blog";
+import { BlogPostPage } from "@/routes/blog.$slug";
+import { LoginPage } from "@/routes/login";
+import { AdminPage } from "@/routes/admin";
+import { PostEditorPage } from "@/routes/admin.post-editor";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +74,14 @@ const pageMeta: Record<
       "Shop DTF transfers, blank t-shirts, golf shirts and hoodies online. Wholesale pricing, secure checkout and nationwide courier across South Africa.",
     keywords:
       "buy DTF prints online South Africa, buy blank t-shirts online South Africa, online DTF shop, wholesale blanks online, order DTF transfers South Africa, blank apparel online store",
+  },
+  "/blog": {
+    focusKeyword: "DTF printing blog South Africa",
+    title: "Blog | DTF Printing & Blank Apparel Tips South Africa | Blank2Branded",
+    description:
+      "Guides, tips and news on DTF printing, blank apparel and custom t-shirt printing in South Africa. From the Blank2Branded team in Mbombela.",
+    keywords:
+      "DTF printing blog, DTF tips South Africa, blank apparel guides, custom t-shirt printing tips, Blank2Branded blog",
   },
 };
 
@@ -134,6 +147,12 @@ function AppContent() {
   else if (cleanPath === "/contact") page = <ContactPage />;
   else if (cleanPath === "/dtf") page = <DtfPage />;
   else if (cleanPath === "/shop") page = <ShopPage />;
+  else if (cleanPath === "/blog") page = <BlogIndexPage />;
+  else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
+  else if (cleanPath === "/login") page = <LoginPage />;
+  else if (cleanPath === "/admin") page = <AdminPage />;
+  else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
+  else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (
