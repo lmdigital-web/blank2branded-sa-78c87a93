@@ -213,39 +213,87 @@ export function ShopPage() {
                 <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   Categories
                 </p>
-                <nav className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
+                <nav className="flex flex-col gap-1">
                   <button
                     onClick={() => setActiveCollection(null)}
                     className={cn(
-                      "shrink-0 rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors lg:w-full",
+                      "w-full rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors",
                       activeCollection === null
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
                     )}
                   >
                     All products
-                    {data && (
-                      <span className="ml-2 text-xs opacity-70">({data.length})</span>
-                    )}
+                    {data && <span className="ml-2 text-xs opacity-70">({data.length})</span>}
                   </button>
-                  {collections?.map((c) => (
-                    <button
-                      key={c.node.id}
-                      onClick={() => setActiveCollection(c.node.handle)}
-                      className={cn(
-                        "shrink-0 rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors lg:w-full",
-                        activeCollection === c.node.handle
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
-                      )}
-                    >
-                      {c.node.title}
-                      <span className="ml-2 text-xs opacity-70">
-                        ({c.node.products.edges.length})
-                      </span>
-                    </button>
-                  ))}
+
+                  {tree.map((node) => {
+                    const parentKey = `parent:${node.name}`;
+                    const isParentActive = activeCollection === parentKey;
+                    const hasChildren = node.children.length > 0;
+                    const isOpen =
+                      expanded[node.name] ??
+                      (isParentActive ||
+                        node.children.some((c) => c.node.handle === activeCollection));
+
+                    return (
+                      <div key={node.name} className="flex flex-col">
+                        <div className="flex items-stretch gap-1">
+                          <button
+                            onClick={() => setActiveCollection(parentKey)}
+                            className={cn(
+                              "flex-1 rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
+                              isParentActive
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                            )}
+                          >
+                            {node.name}
+                            <span className="ml-2 text-xs opacity-70">
+                              ({node.childProductIds.size})
+                            </span>
+                          </button>
+                          {hasChildren && (
+                            <button
+                              onClick={() => toggle(node.name)}
+                              aria-label={isOpen ? "Collapse" : "Expand"}
+                              className="rounded-lg border border-border bg-background px-2 text-muted-foreground hover:border-primary/40 hover:text-primary"
+                            >
+                              <ChevronDown
+                                className={cn(
+                                  "h-4 w-4 transition-transform",
+                                  isOpen ? "rotate-0" : "-rotate-90",
+                                )}
+                              />
+                            </button>
+                          )}
+                        </div>
+                        {hasChildren && isOpen && (
+                          <div className="mt-1 ml-3 flex flex-col gap-1 border-l border-border pl-3">
+                            {node.children.map((c) => (
+                              <button
+                                key={c.node.id}
+                                onClick={() => setActiveCollection(c.node.handle)}
+                                className={cn(
+                                  "w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors",
+                                  activeCollection === c.node.handle
+                                    ? "bg-primary/10 text-primary font-medium"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                )}
+                              >
+                                {c.node.title}
+                                <span className="ml-2 text-xs opacity-70">
+                                  ({c.node.products.edges.length})
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </nav>
+
               </div>
             </aside>
 
