@@ -1,13 +1,14 @@
 import { Link } from "@/lib/static-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { ChevronDown, Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
+
 
 const COLLECTIONS_QUERY = `
   query GetCollections($first: Int!) {
@@ -57,8 +58,39 @@ type Collection = {
   };
 };
 
+// Top-level categories — order shown in sidebar. Anything else falls under "Other".
+const TOP_LEVEL = [
+  "Apparel",
+  "Bags",
+  "Chef Wear",
+  "Display",
+  "Gifting",
+  "Head Wear",
+  "Homeware",
+  "Sport",
+  "Sublimation",
+  "Work Wear",
+  "Promotions",
+] as const;
+
+const SPLIT_RE = /\s+[—\-/>]\s+/; // " — ", " - ", " / ", " > "
+
+function splitTitle(title: string): { parent: string | null; child: string } {
+  const parts = title.split(SPLIT_RE);
+  if (parts.length >= 2) return { parent: parts[0].trim(), child: parts.slice(1).join(" — ").trim() };
+  return { parent: null, child: title.trim() };
+}
+
+type TreeNode = {
+  name: string;
+  parentCollection: Collection | null; // collection whose title === parent name (if any)
+  children: Collection[];
+  childProductIds: Set<string>; // union of all children + own products
+};
+
 export function ShopPage() {
   const [activeCollection, setActiveCollection] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products"],
@@ -76,14 +108,71 @@ export function ShopPage() {
     },
   });
 
-  const filtered = (() => {
+  // Build tree: parent name -> { parentCollection, children[] }
+  const tree = useMemo<TreeNode[]>(() => {
+    if (!collections) return [];
+    const map = new Map<string, TreeNode>();
+    const ensure = (name: string): TreeNode => {
+      const key = name.toLowerCase();
+      let n = map.get(key);
+      if (!n) {
+        n = { name, parentCollection: null, children: [], childProductIds: new Set() };
+        map.set(key, n);
+      }
+      return n;
+    };
+
+    for (const c of collections) {
+      const { parent, child } = splitTitle(c.node.title);
+      if (parent) {
+        const node = ensure(parent);
+        // override display name to use child portion
+        const childCol: Collection = { ...c, node: { ...c.node, title: child } };
+        node.children.push(childCol);
+        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
+      } else {
+        // Title with no separator: treat as a parent itself
+        const node = ensure(c.node.title);
+        node.parentCollection = c;
+        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
+      }
+    }
+
+    // Order: TOP_LEVEL first (in defined order), then anything else alphabetical
+    const ordered: TreeNode[] = [];
+    for (const name of TOP_LEVEL) {
+      const n = map.get(name.toLowerCase());
+      if (n) {
+        ordered.push(n);
+        map.delete(name.toLowerCase());
+      }
+    }
+    [...map.values()].sort((a, b) => a.name.localeCompare(b.name)).forEach((n) => ordered.push(n));
+    return ordered;
+  }, [collections]);
+
+  const filtered = useMemo(() => {
     if (!data) return [];
     if (!activeCollection) return data;
+
+    // Parent selection (prefix "parent:")
+    if (activeCollection.startsWith("parent:")) {
+      const name = activeCollection.slice(7);
+      const node = tree.find((t) => t.name.toLowerCase() === name.toLowerCase());
+      if (!node) return data;
+      return data.filter((p) => node.childProductIds.has(p.node.id));
+    }
+
+    // Child collection selection (handle)
     const col = collections?.find((c) => c.node.handle === activeCollection);
     if (!col) return data;
     const ids = new Set(col.node.products.edges.map((e) => e.node.id));
     return data.filter((p) => ids.has(p.node.id));
-  })();
+  }, [data, collections, activeCollection, tree]);
+
+  const toggle = (name: string) =>
+    setExpanded((s) => ({ ...s, [name]: !(s[name] ?? false) }));
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,39 +213,87 @@ export function ShopPage() {
                 <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   Categories
                 </p>
-                <nav className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
+                <nav className="flex flex-col gap-1">
                   <button
                     onClick={() => setActiveCollection(null)}
                     className={cn(
-                      "shrink-0 rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors lg:w-full",
+                      "w-full rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors",
                       activeCollection === null
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
                     )}
                   >
                     All products
-                    {data && (
-                      <span className="ml-2 text-xs opacity-70">({data.length})</span>
-                    )}
+                    {data && <span className="ml-2 text-xs opacity-70">({data.length})</span>}
                   </button>
-                  {collections?.map((c) => (
-                    <button
-                      key={c.node.id}
-                      onClick={() => setActiveCollection(c.node.handle)}
-                      className={cn(
-                        "shrink-0 rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors lg:w-full",
-                        activeCollection === c.node.handle
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
-                      )}
-                    >
-                      {c.node.title}
-                      <span className="ml-2 text-xs opacity-70">
-                        ({c.node.products.edges.length})
-                      </span>
-                    </button>
-                  ))}
+
+                  {tree.map((node) => {
+                    const parentKey = `parent:${node.name}`;
+                    const isParentActive = activeCollection === parentKey;
+                    const hasChildren = node.children.length > 0;
+                    const isOpen =
+                      expanded[node.name] ??
+                      (isParentActive ||
+                        node.children.some((c) => c.node.handle === activeCollection));
+
+                    return (
+                      <div key={node.name} className="flex flex-col">
+                        <div className="flex items-stretch gap-1">
+                          <button
+                            onClick={() => setActiveCollection(parentKey)}
+                            className={cn(
+                              "flex-1 rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
+                              isParentActive
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                            )}
+                          >
+                            {node.name}
+                            <span className="ml-2 text-xs opacity-70">
+                              ({node.childProductIds.size})
+                            </span>
+                          </button>
+                          {hasChildren && (
+                            <button
+                              onClick={() => toggle(node.name)}
+                              aria-label={isOpen ? "Collapse" : "Expand"}
+                              className="rounded-lg border border-border bg-background px-2 text-muted-foreground hover:border-primary/40 hover:text-primary"
+                            >
+                              <ChevronDown
+                                className={cn(
+                                  "h-4 w-4 transition-transform",
+                                  isOpen ? "rotate-0" : "-rotate-90",
+                                )}
+                              />
+                            </button>
+                          )}
+                        </div>
+                        {hasChildren && isOpen && (
+                          <div className="mt-1 ml-3 flex flex-col gap-1 border-l border-border pl-3">
+                            {node.children.map((c) => (
+                              <button
+                                key={c.node.id}
+                                onClick={() => setActiveCollection(c.node.handle)}
+                                className={cn(
+                                  "w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors",
+                                  activeCollection === c.node.handle
+                                    ? "bg-primary/10 text-primary font-medium"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                )}
+                              >
+                                {c.node.title}
+                                <span className="ml-2 text-xs opacity-70">
+                                  ({c.node.products.edges.length})
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </nav>
+
               </div>
             </aside>
 
