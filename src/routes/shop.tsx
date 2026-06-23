@@ -1,13 +1,14 @@
 import { Link } from "@/lib/static-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { ChevronDown, Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
+
 
 const COLLECTIONS_QUERY = `
   query GetCollections($first: Int!) {
