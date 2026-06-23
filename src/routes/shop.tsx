@@ -58,8 +58,39 @@ type Collection = {
   };
 };
 
+// Top-level categories — order shown in sidebar. Anything else falls under "Other".
+const TOP_LEVEL = [
+  "Apparel",
+  "Bags",
+  "Chef Wear",
+  "Display",
+  "Gifting",
+  "Head Wear",
+  "Homeware",
+  "Sport",
+  "Sublimation",
+  "Work Wear",
+  "Promotions",
+] as const;
+
+const SPLIT_RE = /\s+[—\-/>]\s+/; // " — ", " - ", " / ", " > "
+
+function splitTitle(title: string): { parent: string | null; child: string } {
+  const parts = title.split(SPLIT_RE);
+  if (parts.length >= 2) return { parent: parts[0].trim(), child: parts.slice(1).join(" — ").trim() };
+  return { parent: null, child: title.trim() };
+}
+
+type TreeNode = {
+  name: string;
+  parentCollection: Collection | null; // collection whose title === parent name (if any)
+  children: Collection[];
+  childProductIds: Set<string>; // union of all children + own products
+};
+
 export function ShopPage() {
   const [activeCollection, setActiveCollection] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products"],
@@ -77,14 +108,71 @@ export function ShopPage() {
     },
   });
 
-  const filtered = (() => {
+  // Build tree: parent name -> { parentCollection, children[] }
+  const tree = useMemo<TreeNode[]>(() => {
+    if (!collections) return [];
+    const map = new Map<string, TreeNode>();
+    const ensure = (name: string): TreeNode => {
+      const key = name.toLowerCase();
+      let n = map.get(key);
+      if (!n) {
+        n = { name, parentCollection: null, children: [], childProductIds: new Set() };
+        map.set(key, n);
+      }
+      return n;
+    };
+
+    for (const c of collections) {
+      const { parent, child } = splitTitle(c.node.title);
+      if (parent) {
+        const node = ensure(parent);
+        // override display name to use child portion
+        const childCol: Collection = { ...c, node: { ...c.node, title: child } };
+        node.children.push(childCol);
+        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
+      } else {
+        // Title with no separator: treat as a parent itself
+        const node = ensure(c.node.title);
+        node.parentCollection = c;
+        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
+      }
+    }
+
+    // Order: TOP_LEVEL first (in defined order), then anything else alphabetical
+    const ordered: TreeNode[] = [];
+    for (const name of TOP_LEVEL) {
+      const n = map.get(name.toLowerCase());
+      if (n) {
+        ordered.push(n);
+        map.delete(name.toLowerCase());
+      }
+    }
+    [...map.values()].sort((a, b) => a.name.localeCompare(b.name)).forEach((n) => ordered.push(n));
+    return ordered;
+  }, [collections]);
+
+  const filtered = useMemo(() => {
     if (!data) return [];
     if (!activeCollection) return data;
+
+    // Parent selection (prefix "parent:")
+    if (activeCollection.startsWith("parent:")) {
+      const name = activeCollection.slice(7);
+      const node = tree.find((t) => t.name.toLowerCase() === name.toLowerCase());
+      if (!node) return data;
+      return data.filter((p) => node.childProductIds.has(p.node.id));
+    }
+
+    // Child collection selection (handle)
     const col = collections?.find((c) => c.node.handle === activeCollection);
     if (!col) return data;
     const ids = new Set(col.node.products.edges.map((e) => e.node.id));
     return data.filter((p) => ids.has(p.node.id));
-  })();
+  }, [data, collections, activeCollection, tree]);
+
+  const toggle = (name: string) =>
+    setExpanded((s) => ({ ...s, [name]: !(s[name] ?? false) }));
+
 
   return (
     <div className="min-h-screen bg-background">
