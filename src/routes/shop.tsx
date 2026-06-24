@@ -119,21 +119,81 @@ export function ShopPage() {
                     {products && <span className="ml-2 text-xs opacity-70">({products.length})</span>}
                   </button>
 
-                  {(categories ?? []).filter((c) => c.productCount > 0).map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => setActiveCategorySlug(c.slug)}
-                      className={cn(
-                        "w-full rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
-                        activeCategorySlug === c.slug
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
-                      )}
-                    >
-                      {c.name}
-                      <span className="ml-2 text-xs opacity-70">({c.productCount})</span>
-                    </button>
-                  ))}
+                  {parents.map((parent) => {
+                    const kids = (childrenByParent.get(parent.id) ?? []).filter(
+                      (k) => k.productCount > 0,
+                    );
+                    const totalCount = rolledUpCount(parent);
+                    if (totalCount === 0) return null;
+                    const isActive = activeCategorySlug === parent.slug;
+                    const isExpanded =
+                      expandedParents[parent.id] ??
+                      (isActive ||
+                        kids.some((k) => k.slug === activeCategorySlug));
+                    const hasKids = kids.length > 0;
+                    return (
+                      <div key={parent.id} className="flex flex-col gap-1">
+                        <div
+                          className={cn(
+                            "flex items-stretch rounded-lg border overflow-hidden transition-colors",
+                            isActive
+                              ? "border-primary"
+                              : "border-border hover:border-primary/40",
+                          )}
+                        >
+                          <button
+                            onClick={() => setActiveCategorySlug(parent.slug)}
+                            className={cn(
+                              "flex-1 px-4 py-2 text-left text-sm font-semibold transition-colors",
+                              isActive
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-background text-foreground hover:text-primary",
+                            )}
+                          >
+                            {parent.name}
+                            <span className="ml-2 text-xs opacity-70">({totalCount})</span>
+                          </button>
+                          {hasKids && (
+                            <button
+                              onClick={() => toggleParent(parent.id)}
+                              aria-label={isExpanded ? "Collapse" : "Expand"}
+                              className={cn(
+                                "px-2 transition-colors border-l",
+                                isActive
+                                  ? "bg-primary text-primary-foreground border-primary-foreground/20"
+                                  : "bg-background text-muted-foreground hover:text-primary border-border",
+                              )}
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                        {hasKids && isExpanded && (
+                          <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
+                            {kids.map((c) => (
+                              <button
+                                key={c.id}
+                                onClick={() => setActiveCategorySlug(c.slug)}
+                                className={cn(
+                                  "w-full rounded-md border px-3 py-1.5 text-left text-sm font-medium transition-colors",
+                                  activeCategorySlug === c.slug
+                                    ? "border-primary bg-primary text-primary-foreground"
+                                    : "border-transparent bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                                )}
+                              >
+                                {c.name}
+                                <span className="ml-2 text-xs opacity-70">({c.productCount})</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </nav>
               </div>
             </aside>
