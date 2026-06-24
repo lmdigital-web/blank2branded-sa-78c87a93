@@ -158,11 +158,12 @@ function AppContent() {
 
   return (
     <>
-      {page}
+      <Suspense fallback={<div className="min-h-screen" />}>{page}</Suspense>
       <WhatsAppButton />
       <Toaster />
     </>
   );
+
 }
 
 function NotFoundPage() {
