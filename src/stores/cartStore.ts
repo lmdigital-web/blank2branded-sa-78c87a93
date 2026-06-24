@@ -1,12 +1,28 @@
+// Local cart store. No remote checkout — cart contents are sent as a Quote Request
+// to the Blank2Branded team for manual quoting.
+
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 
 export interface CartItem {
-  lineId: string | null;
-  product: ShopifyProduct;
+  productId: string;
+  productHandle: string;
+  productTitle: string;
   variantId: string;
   variantTitle: string;
+  image: string | null;
+  price: { amount: string; currencyCode: string };
+  quantity: number;
+  selectedOptions: Array<{ name: string; value: string }>;
+}
+
+export interface AddItemInput {
+  productId: string;
+  productHandle: string;
+  productTitle: string;
+  variantId: string;
+  variantTitle: string;
+  image: string | null;
   price: { amount: string; currencyCode: string };
   quantity: number;
   selectedOptions: Array<{ name: string; value: string }>;
@@ -14,171 +30,55 @@ export interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  cartId: string | null;
-  checkoutUrl: string | null;
   isLoading: boolean;
-  isSyncing: boolean;
-  addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
+  addItem: (item: AddItemInput) => Promise<void>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
-  syncCart: () => Promise<void>;
-  getCheckoutUrl: () => string | null;
-}
-
-const CART_QUERY = `query cart($id: ID!) { cart(id: $id) { id totalQuantity } }`;
-const CART_CREATE = `mutation cartCreate($input: CartInput!) { cartCreate(input: $input) { cart { id checkoutUrl lines(first: 100) { edges { node { id merchandise { ... on ProductVariant { id } } } } } } userErrors { field message } } }`;
-const CART_ADD = `mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) { cartLinesAdd(cartId: $cartId, lines: $lines) { cart { id lines(first: 100) { edges { node { id merchandise { ... on ProductVariant { id } } } } } } userErrors { field message } } }`;
-const CART_UPDATE = `mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) { cartLinesUpdate(cartId: $cartId, lines: $lines) { cart { id } userErrors { field message } } }`;
-const CART_REMOVE = `mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) { cartLinesRemove(cartId: $cartId, lineIds: $lineIds) { cart { id } userErrors { field message } } }`;
-
-function formatCheckoutUrl(url: string): string {
-  try {
-    const u = new URL(url);
-    u.searchParams.set("channel", "online_store");
-    return u.toString();
-  } catch {
-    return url;
-  }
-}
-
-function isCartNotFound(errors: Array<{ message: string }>): boolean {
-  return errors.some((e) => /cart not found|does not exist/i.test(e.message));
-}
-
-async function createCart(item: CartItem) {
-  const data = await storefrontApiRequest(CART_CREATE, {
-    input: { lines: [{ quantity: item.quantity, merchandiseId: item.variantId }] },
-  });
-  const errs = data?.data?.cartCreate?.userErrors ?? [];
-  if (errs.length) { console.error(errs); return null; }
-  const cart = data?.data?.cartCreate?.cart;
-  if (!cart?.checkoutUrl) return null;
-  const lineId = cart.lines.edges[0]?.node?.id;
-  return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId };
-}
-
-async function addLine(cartId: string, item: CartItem) {
-  const data = await storefrontApiRequest(CART_ADD, { cartId, lines: [{ quantity: item.quantity, merchandiseId: item.variantId }] });
-  const errs = data?.data?.cartLinesAdd?.userErrors ?? [];
-  if (isCartNotFound(errs)) return { success: false, cartNotFound: true } as const;
-  if (errs.length) { console.error(errs); return { success: false } as const; }
-  const lines = data?.data?.cartLinesAdd?.cart?.lines?.edges ?? [];
-  const newLine = lines.find((l: { node: { merchandise: { id: string } } }) => l.node.merchandise.id === item.variantId);
-  return { success: true, lineId: newLine?.node?.id } as const;
-}
-
-async function updateLine(cartId: string, lineId: string, quantity: number) {
-  const data = await storefrontApiRequest(CART_UPDATE, { cartId, lines: [{ id: lineId, quantity }] });
-  const errs = data?.data?.cartLinesUpdate?.userErrors ?? [];
-  if (isCartNotFound(errs)) return { success: false, cartNotFound: true } as const;
-  if (errs.length) { console.error(errs); return { success: false } as const; }
-  return { success: true } as const;
-}
-
-async function removeLine(cartId: string, lineId: string) {
-  const data = await storefrontApiRequest(CART_REMOVE, { cartId, lineIds: [lineId] });
-  const errs = data?.data?.cartLinesRemove?.userErrors ?? [];
-  if (isCartNotFound(errs)) return { success: false, cartNotFound: true } as const;
-  if (errs.length) { console.error(errs); return { success: false } as const; }
-  return { success: true } as const;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      cartId: null,
-      checkoutUrl: null,
       isLoading: false,
-      isSyncing: false,
 
       addItem: async (item) => {
-        const { items, cartId, clearCart } = get();
+        const items = get().items;
         const existing = items.find((i) => i.variantId === item.variantId);
-        set({ isLoading: true });
-        try {
-          if (!cartId) {
-            const res = await createCart({ ...item, lineId: null });
-            if (res) set({ cartId: res.cartId, checkoutUrl: res.checkoutUrl, items: [{ ...item, lineId: res.lineId }] });
-          } else if (existing) {
-            if (!existing.lineId) return;
-            const qty = existing.quantity + item.quantity;
-            const res = await updateLine(cartId, existing.lineId, qty);
-            if (res.success) {
-              set({ items: get().items.map((i) => i.variantId === item.variantId ? { ...i, quantity: qty } : i) });
-            } else if (res.cartNotFound) clearCart();
-          } else {
-            const res = await addLine(cartId, { ...item, lineId: null });
-            if (res.success) {
-              set({ items: [...get().items, { ...item, lineId: res.lineId ?? null }] });
-            } else if (res.cartNotFound) clearCart();
-          }
-        } finally {
-          set({ isLoading: false });
+        if (existing) {
+          set({
+            items: items.map((i) =>
+              i.variantId === item.variantId ? { ...i, quantity: i.quantity + item.quantity } : i,
+            ),
+          });
+        } else {
+          set({ items: [...items, { ...item }] });
         }
       },
 
       updateQuantity: async (variantId, quantity) => {
         if (quantity <= 0) return get().removeItem(variantId);
-        const { items, cartId, clearCart } = get();
-        const item = items.find((i) => i.variantId === variantId);
-        if (!item?.lineId || !cartId) return;
-        set({ isLoading: true });
-        try {
-          const res = await updateLine(cartId, item.lineId, quantity);
-          if (res.success) {
-            set({ items: get().items.map((i) => i.variantId === variantId ? { ...i, quantity } : i) });
-          } else if (res.cartNotFound) clearCart();
-        } finally {
-          set({ isLoading: false });
-        }
+        set({
+          items: get().items.map((i) => (i.variantId === variantId ? { ...i, quantity } : i)),
+        });
       },
 
       removeItem: async (variantId) => {
-        const { items, cartId, clearCart } = get();
-        const item = items.find((i) => i.variantId === variantId);
-        if (!item?.lineId || !cartId) return;
-        set({ isLoading: true });
-        try {
-          const res = await removeLine(cartId, item.lineId);
-          if (res.success) {
-            const next = get().items.filter((i) => i.variantId !== variantId);
-            next.length === 0 ? clearCart() : set({ items: next });
-          } else if (res.cartNotFound) clearCart();
-        } finally {
-          set({ isLoading: false });
-        }
+        set({ items: get().items.filter((i) => i.variantId !== variantId) });
       },
 
-      clearCart: () => set({ items: [], cartId: null, checkoutUrl: null }),
-      getCheckoutUrl: () => get().checkoutUrl,
-
-      syncCart: async () => {
-        const { cartId, isSyncing, clearCart } = get();
-        if (!cartId || isSyncing) return;
-        set({ isSyncing: true });
-        try {
-          const data = await storefrontApiRequest(CART_QUERY, { id: cartId });
-          if (!data) return;
-          const cart = data?.data?.cart;
-          if (!cart || cart.totalQuantity === 0) clearCart();
-        } catch (e) {
-          console.error("syncCart failed", e);
-        } finally {
-          set({ isSyncing: false });
-        }
-      },
+      clearCart: () => set({ items: [] }),
     }),
     {
-      name: "shopify-cart",
+      name: "b2b-cart",
       storage: createJSONStorage(() =>
         typeof window !== "undefined"
           ? window.localStorage
-          : { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+          : { getItem: () => null, setItem: () => {}, removeItem: () => {} },
       ),
-      partialize: (s) => ({ items: s.items, cartId: s.cartId, checkoutUrl: s.checkoutUrl }),
+      partialize: (s) => ({ items: s.items }),
       skipHydration: typeof window === "undefined",
-    }
-  )
+    },
+  ),
 );
