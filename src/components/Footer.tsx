@@ -8,7 +8,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
-            <img src={logo} alt="Blank2Branded" className="h-16 w-auto rounded bg-background/5 p-2" />
+            <img src={logo} width={480} height={319} loading="lazy" decoding="async" alt="Blank2Branded" className="h-16 w-auto rounded bg-background/5 p-2" />
             <p className="mt-4 max-w-sm text-sm text-background/60">
               From Blank to Branded. Nationwide. Supplier of DTF transfers
               & blank apparel for South African brands, businesses and individuals. Minimum 5 pieces per order.
