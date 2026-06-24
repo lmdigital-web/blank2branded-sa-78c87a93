@@ -3,176 +3,35 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
+import {
+  fetchPublishedProducts,
+  fetchCategoriesWithCounts,
+  type CatalogueProduct,
+  type CatalogueCategory,
+} from "@/lib/catalogue";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
 
-
-const COLLECTIONS_QUERY = `
-  query GetCollections($first: Int!) {
-    collections(first: $first) {
-      edges {
-        node {
-          id
-          title
-          handle
-          products(first: 100) { edges { node { id } } }
-        }
-      }
-    }
-  }
-`;
-
-const PRODUCTS_FULL_QUERY = `
-  query GetProducts($first: Int!) {
-    products(first: $first) {
-      edges {
-        node {
-          id title description handle
-          priceRange { minVariantPrice { amount currencyCode } }
-          images(first: 5) { edges { node { url altText } } }
-          variants(first: 20) {
-            edges {
-              node {
-                id title availableForSale
-                price { amount currencyCode }
-                selectedOptions { name value }
-              }
-            }
-          }
-          options { name values }
-        }
-      }
-    }
-  }
-`;
-
-type Collection = {
-  node: {
-    id: string;
-    title: string;
-    handle: string;
-    products: { edges: Array<{ node: { id: string } }> };
-  };
-};
-
-// Top-level categories — order shown in sidebar. Anything else falls under "Other".
-const TOP_LEVEL = [
-  "Apparel",
-  "Bags",
-  "Chef Wear",
-  "Display",
-  "Gifting",
-  "Head Wear",
-  "Homeware",
-  "Sport",
-  "Sublimation",
-  "Work Wear",
-  "Promotions",
-] as const;
-
-const SPLIT_RE = /\s+[—\-/>]\s+/; // " — ", " - ", " / ", " > "
-
-function splitTitle(title: string): { parent: string | null; child: string } {
-  const parts = title.split(SPLIT_RE);
-  if (parts.length >= 2) return { parent: parts[0].trim(), child: parts.slice(1).join(" — ").trim() };
-  return { parent: null, child: title.trim() };
-}
-
-type TreeNode = {
-  name: string;
-  parentCollection: Collection | null; // collection whose title === parent name (if any)
-  children: Collection[];
-  childProductIds: Set<string>; // union of all children + own products
-};
-
 export function ShopPage() {
-  const [activeCollection, setActiveCollection] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["shopify-products"],
-    queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCTS_FULL_QUERY, { first: 50 });
-      return (d?.data?.products?.edges ?? []) as ShopifyProduct[];
-    },
+  const { data: products, isLoading } = useQuery<CatalogueProduct[]>({
+    queryKey: ["catalogue-products"],
+    queryFn: fetchPublishedProducts,
   });
 
-  const { data: collections } = useQuery({
-    queryKey: ["shopify-collections"],
-    queryFn: async () => {
-      const d = await storefrontApiRequest(COLLECTIONS_QUERY, { first: 50 });
-      return (d?.data?.collections?.edges ?? []) as Collection[];
-    },
+  const { data: categories } = useQuery<CatalogueCategory[]>({
+    queryKey: ["catalogue-categories"],
+    queryFn: fetchCategoriesWithCounts,
   });
-
-  // Build tree: parent name -> { parentCollection, children[] }
-  const tree = useMemo<TreeNode[]>(() => {
-    if (!collections) return [];
-    const map = new Map<string, TreeNode>();
-    const ensure = (name: string): TreeNode => {
-      const key = name.toLowerCase();
-      let n = map.get(key);
-      if (!n) {
-        n = { name, parentCollection: null, children: [], childProductIds: new Set() };
-        map.set(key, n);
-      }
-      return n;
-    };
-
-    for (const c of collections) {
-      const { parent, child } = splitTitle(c.node.title);
-      if (parent) {
-        const node = ensure(parent);
-        // override display name to use child portion
-        const childCol: Collection = { ...c, node: { ...c.node, title: child } };
-        node.children.push(childCol);
-        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
-      } else {
-        // Title with no separator: treat as a parent itself
-        const node = ensure(c.node.title);
-        node.parentCollection = c;
-        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
-      }
-    }
-
-    // Order: TOP_LEVEL first (in defined order), then anything else alphabetical
-    const ordered: TreeNode[] = [];
-    for (const name of TOP_LEVEL) {
-      const n = map.get(name.toLowerCase());
-      if (n) {
-        ordered.push(n);
-        map.delete(name.toLowerCase());
-      }
-    }
-    [...map.values()].sort((a, b) => a.name.localeCompare(b.name)).forEach((n) => ordered.push(n));
-    return ordered;
-  }, [collections]);
 
   const filtered = useMemo(() => {
-    if (!data) return [];
-    if (!activeCollection) return data;
-
-    // Parent selection (prefix "parent:")
-    if (activeCollection.startsWith("parent:")) {
-      const name = activeCollection.slice(7);
-      const node = tree.find((t) => t.name.toLowerCase() === name.toLowerCase());
-      if (!node) return data;
-      return data.filter((p) => node.childProductIds.has(p.node.id));
-    }
-
-    // Child collection selection (handle)
-    const col = collections?.find((c) => c.node.handle === activeCollection);
-    if (!col) return data;
-    const ids = new Set(col.node.products.edges.map((e) => e.node.id));
-    return data.filter((p) => ids.has(p.node.id));
-  }, [data, collections, activeCollection, tree]);
-
-  const toggle = (name: string) =>
-    setExpanded((s) => ({ ...s, [name]: !(s[name] ?? false) }));
-
+    if (!products) return [];
+    if (!activeCategorySlug) return products;
+    return products.filter((p) => p.category?.slug === activeCategorySlug);
+  }, [products, activeCategorySlug]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -196,10 +55,10 @@ export function ShopPage() {
         <div className="relative mx-auto max-w-7xl px-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            <span className="text-gradient-dtf">Blanks.</span> Prints. Ready to ship.
+            <span className="text-gradient-dtf">Blanks.</span> Prints. Quoted fast.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Browse our catalogue. Pick what you need. Checkout securely — nationwide shipping from Mbombela.
+            Browse our catalogue, build your cart and request a custom quote — our team responds within one business day.
           </p>
         </div>
       </section>
@@ -207,7 +66,6 @@ export function ShopPage() {
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col gap-8 lg:flex-row">
-            {/* Sidebar */}
             <aside className="lg:w-64 lg:shrink-0">
               <div className="lg:sticky lg:top-28">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -215,121 +73,81 @@ export function ShopPage() {
                 </p>
                 <nav className="flex flex-col gap-1">
                   <button
-                    onClick={() => setActiveCollection(null)}
+                    onClick={() => setActiveCategorySlug(null)}
                     className={cn(
                       "w-full rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors",
-                      activeCollection === null
+                      activeCategorySlug === null
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
                     )}
                   >
                     All products
-                    {data && <span className="ml-2 text-xs opacity-70">({data.length})</span>}
+                    {products && <span className="ml-2 text-xs opacity-70">({products.length})</span>}
                   </button>
 
-                  {tree.map((node) => {
-                    const parentKey = `parent:${node.name}`;
-                    const isParentActive = activeCollection === parentKey;
-                    const hasChildren = node.children.length > 0;
-                    const isOpen =
-                      expanded[node.name] ??
-                      (isParentActive ||
-                        node.children.some((c) => c.node.handle === activeCollection));
-
-                    return (
-                      <div key={node.name} className="flex flex-col">
-                        <div className="flex items-stretch gap-1">
-                          <button
-                            onClick={() => setActiveCollection(parentKey)}
-                            className={cn(
-                              "flex-1 rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
-                              isParentActive
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
-                            )}
-                          >
-                            {node.name}
-                            <span className="ml-2 text-xs opacity-70">
-                              ({node.childProductIds.size})
-                            </span>
-                          </button>
-                          {hasChildren && (
-                            <button
-                              onClick={() => toggle(node.name)}
-                              aria-label={isOpen ? "Collapse" : "Expand"}
-                              className="rounded-lg border border-border bg-background px-2 text-muted-foreground hover:border-primary/40 hover:text-primary"
-                            >
-                              <ChevronDown
-                                className={cn(
-                                  "h-4 w-4 transition-transform",
-                                  isOpen ? "rotate-0" : "-rotate-90",
-                                )}
-                              />
-                            </button>
-                          )}
-                        </div>
-                        {hasChildren && isOpen && (
-                          <div className="mt-1 ml-3 flex flex-col gap-1 border-l border-border pl-3">
-                            {node.children.map((c) => (
-                              <button
-                                key={c.node.id}
-                                onClick={() => setActiveCollection(c.node.handle)}
-                                className={cn(
-                                  "w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors",
-                                  activeCollection === c.node.handle
-                                    ? "bg-primary/10 text-primary font-medium"
-                                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                                )}
-                              >
-                                {c.node.title}
-                                <span className="ml-2 text-xs opacity-70">
-                                  ({c.node.products.edges.length})
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {(categories ?? []).filter((c) => c.productCount > 0).map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => setActiveCategorySlug(c.slug)}
+                      className={cn(
+                        "w-full rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
+                        activeCategorySlug === c.slug
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                      )}
+                    >
+                      {c.name}
+                      <span className="ml-2 text-xs opacity-70">({c.productCount})</span>
+                    </button>
+                  ))}
                 </nav>
-
               </div>
             </aside>
 
-            {/* Products grid */}
             <div className="flex-1 min-w-0">
               {isLoading ? (
-                <div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
-              ) : !filtered || filtered.length === 0 ? (
+                <div className="flex justify-center py-24">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="text-center py-24">
                   <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
                   <h2 className="mt-4 text-xl font-semibold">No products found</h2>
-                  <p className="mt-2 text-muted-foreground">Try a different category or add products to the store.</p>
+                  <p className="mt-2 text-muted-foreground">Try a different category.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered.map((p) => {
-                    const img = p.node.images.edges[0]?.node;
-                    const price = p.node.priceRange.minVariantPrice;
+                    const img = p.images[0];
                     return (
                       <Link
-                        key={p.node.id}
+                        key={p.id}
                         to="/products/$handle"
-                        params={{ handle: p.node.handle }}
+                        params={{ handle: p.handle }}
                         className="group rounded-xl border border-border bg-card overflow-hidden transition-all hover:shadow-lg hover:border-primary/30"
                       >
                         <div className="aspect-square bg-muted overflow-hidden">
                           {img ? (
-                            <img src={img.url} alt={img.altText ?? p.node.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                            <img
+                              src={img.url}
+                              alt={img.alt ?? p.title}
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
                           ) : (
-                            <div className="h-full w-full flex items-center justify-center text-muted-foreground"><ShoppingBag /></div>
+                            <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+                              <ShoppingBag />
+                            </div>
                           )}
                         </div>
                         <div className="p-4">
-                          <h3 className="font-semibold text-foreground line-clamp-1">{p.node.title}</h3>
-                          <p className="mt-1 text-sm text-muted-foreground">From {price.currencyCode} {parseFloat(price.amount).toFixed(2)}</p>
-                          <Button variant="outline" size="sm" className="mt-3 w-full">View</Button>
+                          <h3 className="font-semibold text-foreground line-clamp-1">{p.title}</h3>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            From {p.price.currencyCode}{" "}
+                            {parseFloat(p.price.amount).toFixed(2)}
+                          </p>
+                          <Button variant="outline" size="sm" className="mt-3 w-full">
+                            View
+                          </Button>
                         </div>
                       </Link>
                     );

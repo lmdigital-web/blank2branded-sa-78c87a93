@@ -5,7 +5,7 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, Inbox, Package } from "lucide-react";
 import { toast } from "sonner";
 
 type Post = {
@@ -156,7 +156,17 @@ export function AdminPage() {
               <h1 className="text-3xl font-bold text-foreground">Blog Admin</h1>
               <p className="text-sm text-muted-foreground">Signed in as {user.email}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Link to="/admin/quotes">
+                <Button variant="outline">
+                  <Inbox className="mr-2 h-4 w-4" /> Quote Requests
+                </Button>
+              </Link>
+              <Link to="/admin/products">
+                <Button variant="outline">
+                  <Package className="mr-2 h-4 w-4" /> Products
+                </Button>
+              </Link>
               <Link to="/admin/posts/new">
                 <Button>
                   <Plus className="mr-2 h-4 w-4" /> New post

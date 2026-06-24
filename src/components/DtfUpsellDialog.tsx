@@ -1,25 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, Sparkles, Info } from "lucide-react";
-import { storefrontApiRequest, PRODUCT_BY_HANDLE_QUERY, type ShopifyVariant, type ShopifyProduct } from "@/lib/shopify";
+import { fetchProductByHandle, type CatalogueProduct } from "@/lib/catalogue";
 import { useCartStore } from "@/stores/cartStore";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const DTF_ADDON_HANDLE = "dtf-print-add-on";
 const SETUP_FEE_HANDLE = "artwork-setup-fee";
-
-type AddonProduct = {
-  id: string;
-  title: string;
-  handle: string;
-  description: string;
-  images: { edges: Array<{ node: { url: string; altText: string | null } }> };
-  variants: { edges: Array<{ node: ShopifyVariant }> };
-  priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
-};
 
 interface Props {
   open: boolean;
@@ -33,7 +30,6 @@ interface Props {
 export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: Props) {
   const addItem = useCartStore((s) => s.addItem);
   const items = useCartStore((s) => s.items);
-  const isLoading = useCartStore((s) => s.isLoading);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [ackSetup, setAckSetup] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -45,26 +41,20 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
     }
   }, [open]);
 
-  const { data: addon, isLoading: loadingAddon } = useQuery({
+  const { data: addon, isLoading: loadingAddon } = useQuery<CatalogueProduct | null>({
     queryKey: ["dtf-addon-product"],
     enabled: open,
-    queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle: DTF_ADDON_HANDLE });
-      return (d?.data?.productByHandle ?? null) as AddonProduct | null;
-    },
+    queryFn: () => fetchProductByHandle(DTF_ADDON_HANDLE),
   });
 
-  const { data: setupFee } = useQuery({
+  const { data: setupFee } = useQuery<CatalogueProduct | null>({
     queryKey: ["setup-fee-product"],
     enabled: open,
-    queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle: SETUP_FEE_HANDLE });
-      return (d?.data?.productByHandle ?? null) as AddonProduct | null;
-    },
+    queryFn: () => fetchProductByHandle(SETUP_FEE_HANDLE),
   });
 
-  const variants = useMemo(() => addon?.variants.edges.map((e) => e.node) ?? [], [addon]);
-  const setupVariant = setupFee?.variants.edges[0]?.node;
+  const variants = useMemo(() => addon?.variants ?? [], [addon]);
+  const setupVariant = setupFee?.variants[0];
   const setupAlreadyInCart = !!setupVariant && items.some((i) => i.variantId === setupVariant.id);
 
   const toggle = (id: string) => setSelected((s) => ({ ...s, [id]: !s[id] }));
@@ -80,7 +70,7 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
   const grandTotal = printsTotal + (addSetup ? setupFeeAmount : 0);
 
   const confirmDisabled =
-    submitting || isLoading || selectedCount === 0 || (!setupAlreadyInCart && !ackSetup);
+    submitting || selectedCount === 0 || (!setupAlreadyInCart && !ackSetup);
 
   const handleConfirm = async () => {
     if (!addon) return;
@@ -91,49 +81,33 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
     }
     setSubmitting(true);
     try {
-      const productShell = {
-        node: {
-          id: addon.id,
-          title: addon.title,
-          description: addon.description,
-          handle: addon.handle,
-          priceRange: addon.priceRange,
-          images: addon.images,
-          variants: addon.variants,
-          options: [{ name: "Placement", values: variants.map((v) => v.title) }],
-        },
-      } as unknown as ShopifyProduct;
-
+      const image = addon.images[0]?.url ?? null;
       for (const v of picks) {
         await addItem({
-          product: productShell,
+          productId: addon.id,
+          productHandle: addon.handle,
+          productTitle: addon.title,
           variantId: v.id,
           variantTitle: v.title,
+          image,
           price: v.price,
           quantity,
-          selectedOptions: v.selectedOptions ?? [{ name: "Placement", value: v.title }],
+          selectedOptions:
+            v.selectedOptions.length > 0
+              ? v.selectedOptions
+              : [{ name: "Placement", value: v.title }],
         });
       }
 
       // Add one-time setup fee (one per order — skip if already in cart).
       if (addSetup && setupFee && setupVariant) {
-        const setupShell = {
-          node: {
-            id: setupFee.id,
-            title: setupFee.title,
-            description: setupFee.description,
-            handle: setupFee.handle,
-            priceRange: setupFee.priceRange,
-            images: setupFee.images,
-            variants: setupFee.variants,
-            options: [{ name: "Title", values: ["Default Title"] }],
-          },
-        } as unknown as ShopifyProduct;
-
         await addItem({
-          product: setupShell,
+          productId: setupFee.id,
+          productHandle: setupFee.handle,
+          productTitle: setupFee.title,
           variantId: setupVariant.id,
           variantTitle: setupVariant.title,
+          image: setupFee.images[0]?.url ?? null,
           price: setupVariant.price,
           quantity: 1,
           selectedOptions: setupVariant.selectedOptions ?? [],
@@ -191,13 +165,17 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
                       <span
                         className={cn(
                           "flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2",
-                          isOn ? "border-primary bg-primary text-primary-foreground" : "border-border",
+                          isOn
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border",
                         )}
                       >
                         {isOn && <Check className="h-3 w-3" strokeWidth={3} />}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground line-clamp-1">{v.title}</p>
+                        <p className="text-sm font-semibold text-foreground line-clamp-1">
+                          {v.title}
+                        </p>
                         <p className="text-xs text-muted-foreground">Per print</p>
                       </div>
                     </div>
@@ -209,7 +187,6 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
               })}
             </div>
 
-            {/* Setup fee acknowledgement */}
             {selectedCount > 0 && setupVariant && (
               <div
                 className={cn(
@@ -225,8 +202,8 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
                   <div className="flex items-start gap-2 text-muted-foreground">
                     <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                     <span>
-                      One-time artwork setup fee of {currency} {setupFeeAmount.toFixed(2)} is already
-                      in your cart — won't be added again.
+                      One-time artwork setup fee of {currency} {setupFeeAmount.toFixed(2)} is
+                      already in your cart — won't be added again.
                     </span>
                   </div>
                 ) : (
@@ -293,7 +270,7 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
             No thanks
           </Button>
           <Button onClick={handleConfirm} disabled={confirmDisabled}>
-            {submitting || isLoading ? (
+            {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : selectedCount === 0 ? (
               "Select a placement"
