@@ -272,9 +272,7 @@ export function AdminQuotesPage() {
               })
             )}
           </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
+
 }
