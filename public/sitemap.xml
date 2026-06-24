@@ -36,18 +36,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blank2branded.co.za/products/lightweight-t-shirt-140gsm-premium-blank-cotton-tee-for-printing-branding-south-africa</loc>
-    <lastmod>2026-06-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://blank2branded.co.za/products/heavyweight-t-shirt-180gsm</loc>
-    <lastmod>2026-06-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://blank2branded.co.za/products/dtf-print-add-on</loc>
     <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
@@ -66,13 +54,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blank2branded.co.za/products/unisex-dry-fit-t-shirt</loc>
+    <loc>https://blank2branded.co.za/products/sweater</loc>
     <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blank2branded.co.za/products/sweater</loc>
+    <loc>https://blank2branded.co.za/products/heavyweight-t-shirt-180gsm</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/products/lightweight-t-shirt-140gsm-premium-blank-cotton-tee-for-printing-branding-south-africa</loc>
     <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -157,6 +151,12 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/dtf-print-1-meter-20cm-wide</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/products/unisex-dry-fit-t-shirt</loc>
     <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
