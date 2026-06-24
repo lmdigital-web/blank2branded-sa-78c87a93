@@ -1,7 +1,6 @@
 import { Link } from "@/lib/static-router";
 import dtfPrintingImg from "@/assets/dtf-printing.jpg";
 import blankApparelImg from "@/assets/blank-apparel.jpg";
-import heroBg from "@/assets/hero-bg.jpg";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import {
@@ -23,14 +22,22 @@ export function Home() {
 
       {/* HERO */}
       <section className="relative flex min-h-[90vh] items-center overflow-hidden border-b border-border">
-        {/* Background image */}
+        {/* Background image (LCP — preloaded in index.html) */}
         <div className="pointer-events-none absolute inset-0">
-          <img
-            src={heroBg}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full scale-105 object-cover blur-[2px]"
-          />
+          <picture>
+            <source media="(max-width: 767px)" srcSet="/hero-bg-mobile.webp" />
+            <source media="(min-width: 768px)" srcSet="/hero-bg.webp" />
+            <img
+              src="/hero-bg.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              fetchPriority="high"
+              width={1600}
+              height={906}
+              className="h-full w-full scale-105 object-cover blur-[2px]"
+            />
+          </picture>
           <div className="absolute inset-0 bg-background/40" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/55 to-background/10" />
         </div>
