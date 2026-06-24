@@ -16,6 +16,8 @@ import { BlogPostPage } from "@/routes/blog.$slug";
 import { LoginPage } from "@/routes/login";
 import { AdminPage } from "@/routes/admin";
 import { PostEditorPage } from "@/routes/admin.post-editor";
+import { AdminQuotesPage } from "@/routes/admin.quotes";
+import { AdminProductsPage } from "@/routes/admin.products";
 
 const queryClient = new QueryClient();
 
@@ -151,6 +153,8 @@ function AppContent() {
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
   else if (cleanPath === "/admin") page = <AdminPage />;
+  else if (cleanPath === "/admin/quotes") page = <AdminQuotesPage />;
+  else if (cleanPath === "/admin/products") page = <AdminProductsPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
