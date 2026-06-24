@@ -1,7 +1,8 @@
 import { Link } from "@/lib/static-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
+import logoSm from "@/assets/logo-sm.webp";
 import { CartDrawer } from "@/components/CartDrawer";
 
 type HeaderProps = {
@@ -38,8 +39,14 @@ export function Header({ variant = "overlay" }: HeaderProps) {
       >
         <Link to="/" className="flex items-center" aria-label="Blank2Branded home">
           <img
-            src={logo}
+            src={logoSm}
+            srcSet={`${logoSm} 600w, ${logo} 1536w`}
+            sizes="(max-width: 768px) 240px, 480px"
             alt="Blank2Branded — DTF, Blanks, Print & Press"
+            width={1536}
+            height={1024}
+            fetchPriority="high"
+            decoding="async"
             className={`w-auto transition-all duration-300 ${
               solid ? "h-14 md:h-16" : "h-24 md:h-40"
             }`}
@@ -77,16 +84,20 @@ export function Header({ variant = "overlay" }: HeaderProps) {
         <div className="flex items-center gap-2 md:hidden">
           <CartDrawer />
           <button
+            type="button"
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {open ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
           </button>
         </div>
       </div>
 
       {open && (
-        <div className="border-t border-border bg-background md:hidden">
+        <div id="mobile-nav" className="border-t border-border bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4">
             <Link to="/" className={linkCls} onClick={() => setOpen(false)}>Home</Link>
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
