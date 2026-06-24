@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Link, navigate } from "@/lib/static-router";
+import { AdminLayout } from "@/components/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Inbox, Mail, Phone, ChevronDown, ChevronRight, Trash2, ArrowLeft } from "lucide-react";
+import { Inbox, Mail, Phone, ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
 
 interface QuoteItem {
   productTitle: string;
