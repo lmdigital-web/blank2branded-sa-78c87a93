@@ -1,8 +1,8 @@
 import { Link } from "@/lib/static-router";
 import dtfPrintingImg from "@/assets/dtf-printing.jpg";
 import blankApparelImg from "@/assets/blank-apparel.jpg";
-import heroBg from "@/assets/hero-bg.webp";
-import heroBgMobile from "@/assets/hero-bg-mobile.webp";
+const heroBg = "/hero-bg.webp";
+const heroBgMobile = "/hero-bg-mobile.webp";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import {
