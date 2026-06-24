@@ -38,21 +38,15 @@ const STATUS_FILTERS: Array<{ label: string; value: "all" | "new" | "quoted" | "
 ];
 
 export function AdminQuotesPage() {
-  const { isAdmin, loading, user } = useIsAdmin();
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [filter, setFilter] = useState<"all" | "new" | "quoted" | "closed">("all");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (!isAdmin) return;
     void load();
-  }, [loading, user, isAdmin]);
+  }, []);
+
 
   async function load() {
     setLoadingData(true);
