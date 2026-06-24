@@ -14,7 +14,9 @@ import { ArrowLeft, Save, Trash2, Upload, Plus, GripVertical } from "lucide-reac
 interface Category {
   id: string;
   name: string;
+  parent_id: string | null;
 }
+
 
 interface ImageRow {
   id?: string;
