@@ -90,7 +90,7 @@ export function Header({ variant = "overlay" }: HeaderProps) {
       </div>
 
       {open && (
-        <div className="border-t border-border bg-background md:hidden">
+        <div id="mobile-nav" className="border-t border-border bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4">
             <Link to="/" className={linkCls} onClick={() => setOpen(false)}>Home</Link>
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
