@@ -18,6 +18,8 @@ import { AdminPage } from "@/routes/admin";
 import { PostEditorPage } from "@/routes/admin.post-editor";
 import { AdminQuotesPage } from "@/routes/admin.quotes";
 import { AdminProductsPage } from "@/routes/admin.products";
+import { ProductEditorPage } from "@/routes/admin.product-editor";
+
 
 const queryClient = new QueryClient();
 
