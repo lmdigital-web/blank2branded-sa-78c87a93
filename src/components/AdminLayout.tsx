@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Package,
+  FolderTree,
   Inbox,
   FileText,
   LogOut,
@@ -34,6 +35,12 @@ const NAV: NavItem[] = [
     to: "/admin/products",
     icon: <Package className="h-4 w-4" />,
     match: (p) => p.startsWith("/admin/products"),
+  },
+  {
+    label: "Categories",
+    to: "/admin/categories",
+    icon: <FolderTree className="h-4 w-4" />,
+    match: (p) => p.startsWith("/admin/categories"),
   },
   {
     label: "Quote Requests",
