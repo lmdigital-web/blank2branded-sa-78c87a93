@@ -14,7 +14,9 @@ import { ArrowLeft, Save, Trash2, Upload, Plus, GripVertical } from "lucide-reac
 interface Category {
   id: string;
   name: string;
+  parent_id: string | null;
 }
+
 
 interface ImageRow {
   id?: string;
@@ -83,6 +85,7 @@ export function ProductEditorPage() {
 
   const [form, setForm] = useState<FormState>(empty);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [mainCategoryId, setMainCategoryId] = useState<string>("");
   const [images, setImages] = useState<ImageRow[]>([]);
   const [variants, setVariants] = useState<VariantRow[]>([newVariant()]);
   const [saving, setSaving] = useState(false);
@@ -91,10 +94,28 @@ export function ProductEditorPage() {
   useEffect(() => {
     void supabase
       .from("shop_categories")
-      .select("id,name")
+      .select("id,name,parent_id")
       .order("name")
       .then(({ data }) => setCategories((data as Category[]) ?? []));
   }, []);
+
+  // Derive main category from the saved category_id (which may be a child)
+  useEffect(() => {
+    if (!form.category_id || categories.length === 0) return;
+    const cat = categories.find((c) => c.id === form.category_id);
+    if (!cat) return;
+    setMainCategoryId(cat.parent_id ?? cat.id);
+  }, [form.category_id, categories]);
+
+  const mainCategories = useMemo(
+    () => categories.filter((c) => !c.parent_id),
+    [categories],
+  );
+  const subCategories = useMemo(
+    () => categories.filter((c) => c.parent_id === mainCategoryId),
+    [categories, mainCategoryId],
+  );
+
 
   useEffect(() => {
     if (isNew || !productId) return;
@@ -546,19 +567,57 @@ export function ProductEditorPage() {
 
           <div className="rounded-lg border border-border bg-card p-5">
             <h3 className="font-semibold">Category</h3>
+            <Label className="mt-3 block text-xs">Main category</Label>
             <select
-              value={form.category_id}
-              onChange={(e) => update("category_id", e.target.value)}
-              className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              value={mainCategoryId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setMainCategoryId(id);
+                // Reset to main (or none); user can pick a sub next
+                update("category_id", id);
+              }}
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">— None —</option>
-              {categories.map((c) => (
+              {mainCategories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
               ))}
             </select>
+
+            <Label className="mt-3 block text-xs">Sub-category</Label>
+            <select
+              value={
+                form.category_id && form.category_id !== mainCategoryId
+                  ? form.category_id
+                  : ""
+              }
+              onChange={(e) => {
+                const sub = e.target.value;
+                update("category_id", sub || mainCategoryId);
+              }}
+              disabled={!mainCategoryId || subCategories.length === 0}
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50"
+            >
+              <option value="">
+                {mainCategoryId
+                  ? subCategories.length === 0
+                    ? "— No sub-categories —"
+                    : "— None (use main) —"
+                  : "— Pick a main first —"}
+              </option>
+              {subCategories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Products assigned to a sub-category also appear under its main category.
+            </p>
           </div>
+
 
           <div className="rounded-lg border border-border bg-card p-5">
             <h3 className="font-semibold">Base price</h3>
