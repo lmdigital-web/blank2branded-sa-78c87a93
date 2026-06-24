@@ -171,7 +171,7 @@ function AppContent() {
 
   return (
     <>
-      {page}
+      <Suspense fallback={null}>{page}</Suspense>
       <WhatsAppButton />
       <Toaster />
     </>
