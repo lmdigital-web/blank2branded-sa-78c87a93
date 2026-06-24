@@ -40,12 +40,19 @@ export function Header({ variant = "overlay" }: HeaderProps) {
       >
         <Link to="/" className="flex items-center" aria-label="Blank2Branded home">
           <img
-            src={logo}
+            src={logoSm}
+            srcSet={`${logoSm} 320w, ${logo} 480w`}
+            sizes="(max-width: 768px) 144px, 240px"
+            width={480}
+            height={319}
             alt="Blank2Branded — DTF, Blanks, Print & Press"
+            fetchPriority="high"
+            decoding="async"
             className={`w-auto transition-all duration-300 ${
               solid ? "h-14 md:h-16" : "h-24 md:h-40"
             }`}
           />
+
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
