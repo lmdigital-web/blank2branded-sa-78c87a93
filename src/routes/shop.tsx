@@ -10,7 +10,7 @@ import {
   type CatalogueCategory,
 } from "@/lib/catalogue";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
 
