@@ -77,10 +77,14 @@ export function Header({ variant = "overlay" }: HeaderProps) {
         <div className="flex items-center gap-2 md:hidden">
           <CartDrawer />
           <button
+            type="button"
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-charcoal/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {open ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
           </button>
         </div>
       </div>
