@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Link, navigate } from "@/lib/static-router";
+import { AdminLayout } from "@/components/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Inbox, Mail, Phone, ChevronDown, ChevronRight, Trash2, ArrowLeft } from "lucide-react";
+import { Inbox, Mail, Phone, ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
 
 interface QuoteItem {
   productTitle: string;
@@ -40,21 +38,15 @@ const STATUS_FILTERS: Array<{ label: string; value: "all" | "new" | "quoted" | "
 ];
 
 export function AdminQuotesPage() {
-  const { isAdmin, loading, user } = useIsAdmin();
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [filter, setFilter] = useState<"all" | "new" | "quoted" | "closed">("all");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (!isAdmin) return;
     void load();
-  }, [loading, user, isAdmin]);
+  }, []);
+
 
   async function load() {
     setLoadingData(true);
@@ -92,42 +84,17 @@ export function AdminQuotesPage() {
     }
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center">Loading…</div>;
-  if (!user) return null;
-  if (!isAdmin) {
-    return (
-      <div className="flex min-h-screen flex-col">
-        <Header variant="solid" />
-        <main className="flex flex-1 items-center justify-center px-4">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold">Access denied</h1>
-            <p className="mt-2 text-muted-foreground">You don't have admin permissions.</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   const visible = quotes.filter((q) => (filter === "all" ? true : q.status === filter));
   const newCount = quotes.filter((q) => q.status === "new").length;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header variant="solid" />
-      <main className="flex-1 bg-muted/30 py-12">
-        <div className="mx-auto max-w-5xl px-6">
-          <Link
-            to="/admin"
-            className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to admin
-          </Link>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 className="flex items-center gap-2 text-3xl font-bold">
-                <Inbox className="h-7 w-7" /> Quote Requests
-              </h1>
+    <AdminLayout title="Quote Requests">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="flex items-center gap-2 text-2xl font-bold">
+            <Inbox className="h-6 w-6" /> Quote Requests
+          </h1>
+
               <p className="text-sm text-muted-foreground">
                 {newCount} new · {quotes.length} total
               </p>
@@ -305,9 +272,7 @@ export function AdminQuotesPage() {
               })
             )}
           </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
+
 }
