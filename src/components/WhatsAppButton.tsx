@@ -1,15 +1,28 @@
 import { MessageCircle } from "lucide-react";
 
 const WHATSAPP_NUMBER = "27698384045";
+const MESSAGE = "Hi Blank2Branded, I'd like a quote (min 3 pieces).";
 
 export function WhatsAppButton() {
-  const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    "Hi Blank2Branded, I'd like a quote (min 5 pieces).",
-  )}`;
+  const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGE)}`;
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const opened = window.open(href, "_blank", "noopener,noreferrer");
+    if (!opened) {
+      // Popup blocked or sandboxed iframe — break out to top.
+      try {
+        window.top!.location.href = href;
+      } catch {
+        window.location.href = href;
+      }
+    }
+  };
 
   return (
     <a
       href={href}
+      onClick={handleClick}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
