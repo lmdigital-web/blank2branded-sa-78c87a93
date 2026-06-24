@@ -22,6 +22,13 @@ const AdminQuotesPage = lazy(() => import("@/routes/admin.quotes").then((m) => (
 const AdminProductsPage = lazy(() => import("@/routes/admin.products").then((m) => ({ default: m.AdminProductsPage })));
 const ProductEditorPage = lazy(() => import("@/routes/admin.product-editor").then((m) => ({ default: m.ProductEditorPage })));
 const AdminCategoriesPage = lazy(() => import("@/routes/admin.categories").then((m) => ({ default: m.AdminCategoriesPage })));
+const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
+const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.status").then((m) => ({ default: m.CheckoutSuccessPage })));
+const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.status").then((m) => ({ default: m.CheckoutCancelledPage })));
+const AccountPage = lazy(() => import("@/routes/account").then((m) => ({ default: m.AccountPage })));
+const AccountOrderPage = lazy(() => import("@/routes/account.order").then((m) => ({ default: m.AccountOrderPage })));
+const AdminOrdersPage = lazy(() => import("@/routes/admin.orders").then((m) => ({ default: m.AdminOrdersPage })));
+const AdminOrderDetailPage = lazy(() => import("@/routes/admin.order").then((m) => ({ default: m.AdminOrderDetailPage })));
 
 
 
@@ -167,6 +174,13 @@ function AppContent() {
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
 
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
+  else if (cleanPath === "/admin/orders") page = <AdminOrdersPage />;
+  else if (/^\/admin\/orders\/[^/]+$/.test(cleanPath)) page = <AdminOrderDetailPage />;
+  else if (cleanPath === "/checkout") page = <CheckoutPage />;
+  else if (cleanPath === "/checkout/success") page = <CheckoutSuccessPage />;
+  else if (cleanPath === "/checkout/cancelled") page = <CheckoutCancelledPage />;
+  else if (cleanPath === "/account") page = <AccountPage />;
+  else if (/^\/account\/orders\/[^/]+$/.test(cleanPath)) page = <AccountOrderPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (
