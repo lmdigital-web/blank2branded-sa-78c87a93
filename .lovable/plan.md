@@ -1,80 +1,86 @@
-# Custom Ecommerce Build Plan
+# Deploy to Cloudflare Workers from GitHub
 
-Replace the quote-request flow with a full ecommerce checkout backed by PayFast, plus a customer portal and admin order management. All data lives in Lovable Cloud.
+## Goal
+Auto-deploy the app to Cloudflare Workers on every push to `main` in `github.com/lmdigital-web/blank2branded-sa`, with SSR + server functions + Supabase backend fully working.
 
-## Confirmed decisions
+## What I'll change in the codebase
 
-- **Gateway:** PayFast (cards, Instant EFT, Snapscan, etc.)
-- **Quote flow:** Removed entirely; replaced with Checkout
-- **MOQ:** Hard-block — every order must contain **3+ Apparel items** (DTF Prints / Print Services / Other are exempt and don't count toward the 3)
-- **Guest checkout:** Disabled — customers must sign up / sign in
-- **Shipping:** Flat **R120** nationwide
-- **VAT:** None — prices are inclusive, no VAT line on invoices
+1. **Fix `vite.config.ts`** — remove `nitro: { preset: 'static' }`. It conflicts with the Cloudflare Workers target already wired in `wrangler.jsonc` (which points to `src/server.ts`). Without removing it, the build emits a static site instead of a Worker and SSR + server functions break.
 
-## Database (new tables)
+2. **Update `wrangler.jsonc`** — add:
+   - `main`: keep `src/server.ts` ✓ (already set)
+   - `assets` block pointing at the client build output directory so static assets (JS/CSS/images) are served from the Worker
+   - `observability` enabled for logs
 
-```text
-customer_addresses   - saved shipping/billing addresses per user
-orders               - one row per order (status, totals, payment ref, shipping addr snapshot)
-order_items          - line items snapshot (product_id, variant_id, sku, name, price, qty)
-order_events         - status history / audit trail (paid, shipped, etc.)
-```
+3. **Add `.github/workflows/deploy.yml`** — GitHub Actions workflow that:
+   - Installs `bun`
+   - Runs `bun install` and `bun run build`
+   - Runs `bunx wrangler deploy` with secrets from GitHub Actions
+   - Triggers on push to `main`
 
-Statuses: `pending_payment` → `paid` → `in_production` → `shipped` → `delivered` (plus `cancelled`, `refunded`).
-RLS: customers see their own orders/addresses; admins see all. Service role used by edge functions.
+   (Alternative: skip this and use Cloudflare's "Workers Builds" UI to connect the GitHub repo — no workflow file needed. I'll set up Actions as the default since it's more controllable; you can switch to Workers Builds if preferred.)
 
-## Customer-facing pages
+4. **Add `.dev.vars.example`** — documents the env vars Cloudflare needs (no real values committed).
 
-- **Cart drawer** — keep current UI, swap "Request Quote" button for "Checkout". Show MOQ blocker if <3 apparel items.
-- **`/checkout`** (auth required) — shipping address form (saved addresses + new), order summary, R120 shipping line, total, "Pay with PayFast" button.
-- **`/checkout/success`** — landed here after PayFast redirect; polls order status, shows confirmation.
-- **`/checkout/cancelled`** — payment cancelled, return to cart.
-- **`/account`** — customer portal landing (orders list, addresses, profile).
-- **`/account/orders/:id`** — order detail with status timeline + tracking number.
+## What you need to do (one-time, in dashboards)
 
-## Admin
+### A. Cloudflare account
+1. Sign in at https://dash.cloudflare.com
+2. Note your **Account ID** (right sidebar of any Workers page)
+3. Create an **API Token**: My Profile → API Tokens → Create Token → "Edit Cloudflare Workers" template → Create. Copy the token.
 
-- **`/admin/orders`** — list + filters by status, search by order number/email.
-- **`/admin/orders/:id`** — line items, customer info, address, status updates, tracking number entry, internal notes.
-- Sidebar adds an **Orders** entry (with "new" badge).
-- Existing **Quotes** page kept read-only for historical records, eventually removable.
+### B. GitHub repo secrets
+In `github.com/lmdigital-web/blank2branded-sa` → Settings → Secrets and variables → Actions → New repository secret. Add:
 
-## Edge functions
+| Name | Value |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | from step A.3 |
+| `CLOUDFLARE_ACCOUNT_ID` | from step A.2 |
 
-1. **`create-payfast-checkout`** — validates cart server-side against `shop_product_variants`, recomputes totals (never trusts client prices), enforces MOQ, creates `orders` + `order_items` rows in `pending_payment`, builds a signed PayFast redirect URL, returns it.
-2. **`payfast-itn`** — PayFast webhook (Instant Transaction Notification). Verifies signature + source IP + posts back to PayFast for validation, marks order `paid`, writes `order_events` row, sends confirmation email via Resend.
-3. **`update-order-status`** — admin-only: status changes, tracking number, triggers customer email (shipped, etc.).
+### C. Cloudflare Worker environment variables
+After the first deploy creates the Worker, go to Workers & Pages → `tanstack-start-app` → Settings → Variables and Secrets, and add:
 
-## PayFast integration
+**Plain variables (build-time, used by Vite):**
+- `VITE_SUPABASE_URL` = `https://enpdahmqwhdukbnykqyy.supabase.co`
+- `VITE_SUPABASE_PUBLISHABLE_KEY` = (the publishable key from your `.env`)
+- `VITE_SUPABASE_PROJECT_ID` = `enpdahmqwhdukbnykqyy`
 
-- Sandbox first (`https://sandbox.payfast.co.za/eng/process`) → switch to live (`https://www.payfast.co.za/eng/process`) once you've tested.
-- Secrets needed (I'll request them in a follow-up message): `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY`, `PAYFAST_PASSPHRASE`, `PAYFAST_MODE` (`sandbox`/`live`).
-- Order number format: `B2B-{yyyymmdd}-{seq}` used as `m_payment_id` for reconciliation.
+**Secrets (runtime, server-only):**
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SHOPIFY_ACCESS_TOKEN`
+- `SHOPIFY_STOREFRONT_ACCESS_TOKEN`
+- `SHOPIFY_ONLINE_ACCESS_TOKEN`
+- `LOVABLE_API_KEY`
 
-## Emails (Resend, already wired)
+Get values from Lovable Cloud (already present in this project's secrets). The `VITE_*` ones also need to be available at **build time** in GitHub Actions — I'll wire those into the workflow as repo secrets too (they're publishable, safe to store in GitHub).
 
-- Order confirmation (after successful ITN)
-- Shipped notification (with tracking number)
-- All sent from `hello@blank2branded.co.za`
+### D. Update Supabase redirect URLs
+Add your new Cloudflare Workers URL (`https://tanstack-start-app.<your-subdomain>.workers.dev`) to:
+- Supabase Auth → URL Configuration → Site URL / Redirect URLs
 
-## Implementation order
+### E. Update Shopify app URLs (if you use OAuth callbacks)
+Update the Shopify app's allowed redirect URIs to include the Workers domain.
 
-1. Migration: orders / order_items / order_events / customer_addresses + RLS + grants
-2. Edge function: `create-payfast-checkout`
-3. Edge function: `payfast-itn` (webhook)
-4. Checkout page + success/cancel pages
-5. Cart drawer update (Checkout button, MOQ block)
-6. Customer portal (`/account`, `/account/orders/:id`)
-7. Admin orders pages + sidebar
-8. Email templates for confirmation + shipped
-9. Remove Request Quote dialog from product pages
+## After deploy
+- Worker URL: `https://tanstack-start-app.<your-subdomain>.workers.dev`
+- Custom domain: in Cloudflare → Workers → your worker → Settings → Domains & Routes → Add Custom Domain. Point your my20i DNS at Cloudflare nameservers first.
 
-## After approval
+## Technical notes
+- The app uses TanStack Start with the Cloudflare Worker preset (`src/server.ts` is the Worker entry). `wrangler.jsonc` already targets it correctly.
+- Supabase stays on Lovable Cloud — Cloudflare just calls it over HTTPS. No data migration needed.
+- `LOVABLE_API_KEY` works outside Lovable as long as it's set as a Worker secret.
+- Build output: `bun run build` produces `dist/` (client assets) and `.output/` (Worker bundle). `wrangler deploy` uploads both.
 
-I'll need from you (in a follow-up — don't paste yet):
-- PayFast **Merchant ID**
-- PayFast **Merchant Key**
-- PayFast **Passphrase** (set one in PayFast Settings → Integration if you haven't)
-- Confirmation to start in **sandbox** mode
+## Order of execution
+1. I make the 3-4 file changes
+2. You add the 2 GitHub secrets (API token + Account ID)
+3. Push to `main` (or I trigger via Lovable→GitHub sync)
+4. First deploy runs; Worker is created
+5. You add the 10 env vars/secrets in Cloudflare dashboard
+6. Push again (or redeploy from Cloudflare UI) to pick up the env vars
+7. Update Supabase + Shopify redirect URLs
+8. (Optional) Custom domain
 
-Build will be done in stages with the preview working after each stage so you can test.
+Ready to start on step 1?

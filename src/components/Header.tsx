@@ -1,11 +1,8 @@
 import { Link } from "@/lib/static-router";
-import { Menu, User, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import logo from "@/assets/logo.webp";
-import logoSm from "@/assets/logo-sm.webp";
+import logo from "@/assets/logo.png";
 import { CartDrawer } from "@/components/CartDrawer";
-import { useSession } from "@/lib/auth";
-
 
 type HeaderProps = {
   variant?: "overlay" | "solid";
@@ -14,11 +11,7 @@ type HeaderProps = {
 export function Header({ variant = "overlay" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user } = useSession();
   const solid = variant === "solid" || scrolled;
-  const accountHref = user ? "/account" : "/login";
-  const accountLabel = user ? "My account" : "Sign in";
-
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -45,14 +38,8 @@ export function Header({ variant = "overlay" }: HeaderProps) {
       >
         <Link to="/" className="flex items-center" aria-label="Blank2Branded home">
           <img
-            src={logoSm}
-            srcSet={`${logoSm} 360w, ${logo} 960w`}
-            sizes="(max-width: 768px) 180px, 480px"
+            src={logo}
             alt="Blank2Branded — DTF, Blanks, Print & Press"
-            width={360}
-            height={240}
-            fetchPriority="high"
-            decoding="async"
             className={`w-auto transition-all duration-300 ${
               solid ? "h-14 md:h-16" : "h-24 md:h-40"
             }`}
@@ -84,41 +71,22 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           >
             Shop Now
           </Link>
-          <Link
-            to={accountHref}
-            aria-label={accountLabel}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <User className="h-5 w-5" aria-hidden="true" />
-          </Link>
           <CartDrawer />
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
-          <Link
-            to={accountHref}
-            aria-label={accountLabel}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <User className="h-5 w-5" aria-hidden="true" />
-          </Link>
           <CartDrawer />
           <button
-            type="button"
             onClick={() => setOpen(!open)}
-
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label="Toggle menu"
           >
-            {open ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
       {open && (
-        <div id="mobile-nav" className="border-t border-border bg-background md:hidden">
+        <div className="border-t border-border bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4">
             <Link to="/" className={linkCls} onClick={() => setOpen(false)}>Home</Link>
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
@@ -134,10 +102,6 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             >
               Shop Now
             </Link>
-            <Link to={accountHref} className={linkCls} onClick={() => setOpen(false)}>
-              {accountLabel}
-            </Link>
-
           </div>
         </div>
       )}

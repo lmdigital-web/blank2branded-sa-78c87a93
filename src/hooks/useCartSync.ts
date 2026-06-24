@@ -1,4 +1,12 @@
-// Local cart — no remote sync needed. Kept as a no-op for backwards compatibility.
+import { useEffect } from "react";
+import { useCartStore } from "@/stores/cartStore";
+
 export function useCartSync() {
-  /* no-op */
+  const syncCart = useCartStore((s) => s.syncCart);
+  useEffect(() => {
+    syncCart();
+    const onVis = () => { if (document.visibilityState === "visible") syncCart(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [syncCart]);
 }

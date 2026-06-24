@@ -1,36 +1,21 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Suspense, lazy, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useCurrentPath } from "@/lib/static-router";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { Toaster } from "@/components/ui/sonner";
 import { useCartSync } from "@/hooks/useCartSync";
 import { Home } from "@/routes/index";
-
-// Lazy-load everything except the homepage to shrink the initial JS payload.
-const AboutPage = lazy(() => import("@/routes/about").then((m) => ({ default: m.AboutPage })));
-const BlanksPage = lazy(() => import("@/routes/blanks").then((m) => ({ default: m.BlanksPage })));
-const ContactPage = lazy(() => import("@/routes/contact").then((m) => ({ default: m.ContactPage })));
-const DtfPage = lazy(() => import("@/routes/dtf").then((m) => ({ default: m.DtfPage })));
-const ShopPage = lazy(() => import("@/routes/shop").then((m) => ({ default: m.ShopPage })));
-const ProductPage = lazy(() => import("@/routes/products.$handle").then((m) => ({ default: m.ProductPage })));
-const BlogIndexPage = lazy(() => import("@/routes/blog").then((m) => ({ default: m.BlogIndexPage })));
-const BlogPostPage = lazy(() => import("@/routes/blog.$slug").then((m) => ({ default: m.BlogPostPage })));
-const LoginPage = lazy(() => import("@/routes/login").then((m) => ({ default: m.LoginPage })));
-const AdminPage = lazy(() => import("@/routes/admin").then((m) => ({ default: m.AdminPage })));
-const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) => ({ default: m.PostEditorPage })));
-const AdminQuotesPage = lazy(() => import("@/routes/admin.quotes").then((m) => ({ default: m.AdminQuotesPage })));
-const AdminProductsPage = lazy(() => import("@/routes/admin.products").then((m) => ({ default: m.AdminProductsPage })));
-const ProductEditorPage = lazy(() => import("@/routes/admin.product-editor").then((m) => ({ default: m.ProductEditorPage })));
-const AdminCategoriesPage = lazy(() => import("@/routes/admin.categories").then((m) => ({ default: m.AdminCategoriesPage })));
-const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
-const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.status").then((m) => ({ default: m.CheckoutSuccessPage })));
-const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.status").then((m) => ({ default: m.CheckoutCancelledPage })));
-const AccountPage = lazy(() => import("@/routes/account").then((m) => ({ default: m.AccountPage })));
-const AccountOrderPage = lazy(() => import("@/routes/account.order").then((m) => ({ default: m.AccountOrderPage })));
-const AdminOrdersPage = lazy(() => import("@/routes/admin.orders").then((m) => ({ default: m.AdminOrdersPage })));
-const AdminOrderDetailPage = lazy(() => import("@/routes/admin.order").then((m) => ({ default: m.AdminOrderDetailPage })));
-
-
+import { AboutPage } from "@/routes/about";
+import { BlanksPage } from "@/routes/blanks";
+import { ContactPage } from "@/routes/contact";
+import { DtfPage } from "@/routes/dtf";
+import { ShopPage } from "@/routes/shop";
+import { ProductPage } from "@/routes/products.$handle";
+import { BlogIndexPage } from "@/routes/blog";
+import { BlogPostPage } from "@/routes/blog.$slug";
+import { LoginPage } from "@/routes/login";
+import { AdminPage } from "@/routes/admin";
+import { PostEditorPage } from "@/routes/admin.post-editor";
 
 const queryClient = new QueryClient();
 
@@ -166,26 +151,13 @@ function AppContent() {
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
   else if (cleanPath === "/admin") page = <AdminPage />;
-  else if (cleanPath === "/admin/quotes") page = <AdminQuotesPage />;
-  else if (cleanPath === "/admin/products") page = <AdminProductsPage />;
-  else if (cleanPath === "/admin/categories") page = <AdminCategoriesPage />;
-  else if (cleanPath === "/admin/products/new") page = <ProductEditorPage />;
-  else if (/^\/admin\/products\/[^/]+$/.test(cleanPath)) page = <ProductEditorPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
-
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
-  else if (cleanPath === "/admin/orders") page = <AdminOrdersPage />;
-  else if (/^\/admin\/orders\/[^/]+$/.test(cleanPath)) page = <AdminOrderDetailPage />;
-  else if (cleanPath === "/checkout") page = <CheckoutPage />;
-  else if (cleanPath === "/checkout/success") page = <CheckoutSuccessPage />;
-  else if (cleanPath === "/checkout/cancelled") page = <CheckoutCancelledPage />;
-  else if (cleanPath === "/account") page = <AccountPage />;
-  else if (/^\/account\/orders\/[^/]+$/.test(cleanPath)) page = <AccountOrderPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (
     <>
-      <Suspense fallback={null}>{page}</Suspense>
+      {page}
       <WhatsAppButton />
       <Toaster />
     </>
