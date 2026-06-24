@@ -85,6 +85,7 @@ export function ProductEditorPage() {
 
   const [form, setForm] = useState<FormState>(empty);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [mainCategoryId, setMainCategoryId] = useState<string>("");
   const [images, setImages] = useState<ImageRow[]>([]);
   const [variants, setVariants] = useState<VariantRow[]>([newVariant()]);
   const [saving, setSaving] = useState(false);
@@ -93,10 +94,28 @@ export function ProductEditorPage() {
   useEffect(() => {
     void supabase
       .from("shop_categories")
-      .select("id,name")
+      .select("id,name,parent_id")
       .order("name")
       .then(({ data }) => setCategories((data as Category[]) ?? []));
   }, []);
+
+  // Derive main category from the saved category_id (which may be a child)
+  useEffect(() => {
+    if (!form.category_id || categories.length === 0) return;
+    const cat = categories.find((c) => c.id === form.category_id);
+    if (!cat) return;
+    setMainCategoryId(cat.parent_id ?? cat.id);
+  }, [form.category_id, categories]);
+
+  const mainCategories = useMemo(
+    () => categories.filter((c) => !c.parent_id),
+    [categories],
+  );
+  const subCategories = useMemo(
+    () => categories.filter((c) => c.parent_id === mainCategoryId),
+    [categories, mainCategoryId],
+  );
+
 
   useEffect(() => {
     if (isNew || !productId) return;
