@@ -1,6 +1,6 @@
 import { Link } from "@/lib/static-router";
 import { Instagram, Facebook, Mail, Music2 } from "lucide-react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 
 export function Footer() {
   return (
