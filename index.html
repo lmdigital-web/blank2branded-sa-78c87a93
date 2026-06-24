@@ -44,6 +44,22 @@
       rel="stylesheet"
     />
 
+    <!-- Preload hero LCP image (responsive) -->
+    <link
+      rel="preload"
+      as="image"
+      href="/hero-bg-mobile.webp"
+      media="(max-width: 767px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/hero-bg.webp"
+      media="(min-width: 768px)"
+      fetchpriority="high"
+    />
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
