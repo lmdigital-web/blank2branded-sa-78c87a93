@@ -157,7 +157,10 @@ function AppContent() {
   else if (cleanPath === "/admin") page = <AdminPage />;
   else if (cleanPath === "/admin/quotes") page = <AdminQuotesPage />;
   else if (cleanPath === "/admin/products") page = <AdminProductsPage />;
+  else if (cleanPath === "/admin/products/new") page = <ProductEditorPage />;
+  else if (/^\/admin\/products\/[^/]+$/.test(cleanPath)) page = <ProductEditorPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
+
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
