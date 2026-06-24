@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Link, navigate } from "@/lib/static-router";
+import { AdminLayout } from "@/components/AdminLayout";
+import { Link } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, Inbox, Package } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
 import { toast } from "sonner";
+
 
 type Post = {
   id: string;
