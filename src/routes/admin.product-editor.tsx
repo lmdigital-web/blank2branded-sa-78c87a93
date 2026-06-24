@@ -113,16 +113,18 @@ export function ProductEditorPage() {
         navigate("/admin/products");
         return;
       }
+      const d = data as any;
       setForm({
-        title: data.title ?? "",
-        handle: data.handle ?? "",
-        description: data.description ?? "",
-        status: (data.status as "draft" | "published") ?? "draft",
-        base_price: data.base_price != null ? String(data.base_price) : "",
-        category_id: data.category_id ?? "",
-        meta_title: data.meta_title ?? "",
-        meta_description: data.meta_description ?? "",
+        title: d.title ?? "",
+        handle: d.handle ?? "",
+        description: d.description ?? "",
+        status: (d.status as "draft" | "published") ?? "draft",
+        base_price: d.base_price != null ? String(d.base_price) : "",
+        category_id: d.category_id ?? "",
+        meta_title: d.meta_title ?? "",
+        meta_description: d.meta_description ?? "",
       });
+
       const imgs = ((data as any).shop_product_images ?? [])
         .slice()
         .sort((a: any, b: any) => a.position - b.position)
