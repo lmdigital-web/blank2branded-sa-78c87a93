@@ -84,14 +84,29 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           >
             Shop Now
           </Link>
+          <Link
+            to={accountHref}
+            aria-label={accountLabel}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <User className="h-5 w-5" aria-hidden="true" />
+          </Link>
           <CartDrawer />
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
+          <Link
+            to={accountHref}
+            aria-label={accountLabel}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <User className="h-5 w-5" aria-hidden="true" />
+          </Link>
           <CartDrawer />
           <button
             type="button"
             onClick={() => setOpen(!open)}
+
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-nav"
