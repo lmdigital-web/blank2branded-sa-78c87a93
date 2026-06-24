@@ -1,9 +1,11 @@
 import { Link } from "@/lib/static-router";
-import { Menu, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/logo.webp";
 import logoSm from "@/assets/logo-sm.webp";
 import { CartDrawer } from "@/components/CartDrawer";
+import { useSession } from "@/lib/auth";
+
 
 type HeaderProps = {
   variant?: "overlay" | "solid";
