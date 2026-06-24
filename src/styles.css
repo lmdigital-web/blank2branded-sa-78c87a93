@@ -96,6 +96,13 @@
     letter-spacing: -0.02em;
     font-weight: 700;
   }
+
+  /* Global keyboard focus ring — visible on every interactive element */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
 @keyframes dash-flow {
