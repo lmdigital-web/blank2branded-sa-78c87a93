@@ -1,5 +1,5 @@
 import { Link } from "@/lib/static-router";
-import { Instagram, Facebook, Mail } from "lucide-react";
+import { Instagram, Facebook, Mail, Music2 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 export function Footer() {
@@ -14,11 +14,14 @@ export function Footer() {
               & blank apparel for South African brands, businesses and individuals. Minimum 5 pieces per order.
             </p>
             <div className="mt-6 flex gap-3">
-              <a href="#" aria-label="Instagram" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
+              <a href="https://www.instagram.com/blank2brandedza" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" aria-label="Facebook" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
+              <a href="https://www.facebook.com/blank2brandedza" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
                 <Facebook className="h-4 w-4" />
+              </a>
+              <a href="https://www.tiktok.com/@blank2brandedza" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
+                <Music2 className="h-4 w-4" />
               </a>
               <a href="mailto:hello@blank2branded.co.za" aria-label="Email" className="rounded border border-background/20 p-2 hover:border-primary hover:text-primary">
                 <Mail className="h-4 w-4" />
