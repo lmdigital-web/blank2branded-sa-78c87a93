@@ -16,6 +16,7 @@ import shopHeroBg from "@/assets/shop-hero-bg.jpg";
 
 export function ShopPage() {
   const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
+  const [expandedParents, setExpandedParents] = useState<Record<string, boolean>>({});
 
   const { data: products, isLoading } = useQuery<CatalogueProduct[]>({
     queryKey: ["catalogue-products"],
@@ -27,11 +28,44 @@ export function ShopPage() {
     queryFn: fetchCategoriesWithCounts,
   });
 
+  // Build hierarchy with rolled-up counts
+  const { parents, childrenByParent, slugsInScope } = useMemo(() => {
+    const all = categories ?? [];
+    const byId = new Map(all.map((c) => [c.id, c]));
+    const children = new Map<string, CatalogueCategory[]>();
+    const roots: CatalogueCategory[] = [];
+    for (const c of all) {
+      if (c.parentId && byId.has(c.parentId)) {
+        const list = children.get(c.parentId) ?? [];
+        list.push(c);
+        children.set(c.parentId, list);
+      } else {
+        roots.push(c);
+      }
+    }
+    // Slugs in scope when a parent is selected: itself + children
+    const scope = new Map<string, string[]>();
+    for (const r of roots) {
+      const kids = children.get(r.id) ?? [];
+      scope.set(r.slug, [r.slug, ...kids.map((k) => k.slug)]);
+    }
+    return { parents: roots, childrenByParent: children, slugsInScope: scope };
+  }, [categories]);
+
   const filtered = useMemo(() => {
     if (!products) return [];
     if (!activeCategorySlug) return products;
-    return products.filter((p) => p.category?.slug === activeCategorySlug);
-  }, [products, activeCategorySlug]);
+    const scope = slugsInScope.get(activeCategorySlug) ?? [activeCategorySlug];
+    return products.filter((p) => p.category && scope.includes(p.category.slug));
+  }, [products, activeCategorySlug, slugsInScope]);
+
+  const rolledUpCount = (parent: CatalogueCategory): number => {
+    const kids = childrenByParent.get(parent.id) ?? [];
+    return parent.productCount + kids.reduce((s, k) => s + k.productCount, 0);
+  };
+
+  const toggleParent = (id: string) =>
+    setExpandedParents((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="min-h-screen bg-background">
