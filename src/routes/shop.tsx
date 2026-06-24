@@ -10,12 +10,13 @@ import {
   type CatalogueCategory,
 } from "@/lib/catalogue";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
 
 export function ShopPage() {
   const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
+  const [expandedParents, setExpandedParents] = useState<Record<string, boolean>>({});
 
   const { data: products, isLoading } = useQuery<CatalogueProduct[]>({
     queryKey: ["catalogue-products"],
@@ -27,11 +28,44 @@ export function ShopPage() {
     queryFn: fetchCategoriesWithCounts,
   });
 
+  // Build hierarchy with rolled-up counts
+  const { parents, childrenByParent, slugsInScope } = useMemo(() => {
+    const all = categories ?? [];
+    const byId = new Map(all.map((c) => [c.id, c]));
+    const children = new Map<string, CatalogueCategory[]>();
+    const roots: CatalogueCategory[] = [];
+    for (const c of all) {
+      if (c.parentId && byId.has(c.parentId)) {
+        const list = children.get(c.parentId) ?? [];
+        list.push(c);
+        children.set(c.parentId, list);
+      } else {
+        roots.push(c);
+      }
+    }
+    // Slugs in scope when a parent is selected: itself + children
+    const scope = new Map<string, string[]>();
+    for (const r of roots) {
+      const kids = children.get(r.id) ?? [];
+      scope.set(r.slug, [r.slug, ...kids.map((k) => k.slug)]);
+    }
+    return { parents: roots, childrenByParent: children, slugsInScope: scope };
+  }, [categories]);
+
   const filtered = useMemo(() => {
     if (!products) return [];
     if (!activeCategorySlug) return products;
-    return products.filter((p) => p.category?.slug === activeCategorySlug);
-  }, [products, activeCategorySlug]);
+    const scope = slugsInScope.get(activeCategorySlug) ?? [activeCategorySlug];
+    return products.filter((p) => p.category && scope.includes(p.category.slug));
+  }, [products, activeCategorySlug, slugsInScope]);
+
+  const rolledUpCount = (parent: CatalogueCategory): number => {
+    const kids = childrenByParent.get(parent.id) ?? [];
+    return parent.productCount + kids.reduce((s, k) => s + k.productCount, 0);
+  };
+
+  const toggleParent = (id: string) =>
+    setExpandedParents((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,21 +119,81 @@ export function ShopPage() {
                     {products && <span className="ml-2 text-xs opacity-70">({products.length})</span>}
                   </button>
 
-                  {(categories ?? []).filter((c) => c.productCount > 0).map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => setActiveCategorySlug(c.slug)}
-                      className={cn(
-                        "w-full rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
-                        activeCategorySlug === c.slug
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
-                      )}
-                    >
-                      {c.name}
-                      <span className="ml-2 text-xs opacity-70">({c.productCount})</span>
-                    </button>
-                  ))}
+                  {parents.map((parent) => {
+                    const kids = (childrenByParent.get(parent.id) ?? []).filter(
+                      (k) => k.productCount > 0,
+                    );
+                    const totalCount = rolledUpCount(parent);
+                    if (totalCount === 0) return null;
+                    const isActive = activeCategorySlug === parent.slug;
+                    const isExpanded =
+                      expandedParents[parent.id] ??
+                      (isActive ||
+                        kids.some((k) => k.slug === activeCategorySlug));
+                    const hasKids = kids.length > 0;
+                    return (
+                      <div key={parent.id} className="flex flex-col gap-1">
+                        <div
+                          className={cn(
+                            "flex items-stretch rounded-lg border overflow-hidden transition-colors",
+                            isActive
+                              ? "border-primary"
+                              : "border-border hover:border-primary/40",
+                          )}
+                        >
+                          <button
+                            onClick={() => setActiveCategorySlug(parent.slug)}
+                            className={cn(
+                              "flex-1 px-4 py-2 text-left text-sm font-semibold transition-colors",
+                              isActive
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-background text-foreground hover:text-primary",
+                            )}
+                          >
+                            {parent.name}
+                            <span className="ml-2 text-xs opacity-70">({totalCount})</span>
+                          </button>
+                          {hasKids && (
+                            <button
+                              onClick={() => toggleParent(parent.id)}
+                              aria-label={isExpanded ? "Collapse" : "Expand"}
+                              className={cn(
+                                "px-2 transition-colors border-l",
+                                isActive
+                                  ? "bg-primary text-primary-foreground border-primary-foreground/20"
+                                  : "bg-background text-muted-foreground hover:text-primary border-border",
+                              )}
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                        {hasKids && isExpanded && (
+                          <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
+                            {kids.map((c) => (
+                              <button
+                                key={c.id}
+                                onClick={() => setActiveCategorySlug(c.slug)}
+                                className={cn(
+                                  "w-full rounded-md border px-3 py-1.5 text-left text-sm font-medium transition-colors",
+                                  activeCategorySlug === c.slug
+                                    ? "border-primary bg-primary text-primary-foreground"
+                                    : "border-transparent bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                                )}
+                              >
+                                {c.name}
+                                <span className="ml-2 text-xs opacity-70">({c.productCount})</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </nav>
               </div>
             </aside>
