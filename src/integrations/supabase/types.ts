@@ -35,6 +35,238 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_addresses: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string | null
+          line1: string
+          line2: string | null
+          phone: string
+          postal_code: string
+          province: string
+          recipient_name: string
+          suburb: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city: string
+          country?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          line1: string
+          line2?: string | null
+          phone: string
+          postal_code: string
+          province: string
+          recipient_name: string
+          suburb?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          line1?: string
+          line2?: string | null
+          phone?: string
+          postal_code?: string
+          province?: string
+          recipient_name?: string
+          suburb?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      order_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          event_type: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          order_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          event_type: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          order_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          event_type?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          line_total: number
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          sku: string | null
+          unit_price: number
+          variant_id: string | null
+          variant_label: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          line_total: number
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          sku?: string | null
+          unit_price: number
+          variant_id?: string | null
+          variant_label?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          line_total?: number
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          sku?: string | null
+          unit_price?: number
+          variant_id?: string | null
+          variant_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          internal_notes: string | null
+          order_number: string
+          paid_at: string | null
+          payfast_payment_id: string | null
+          payfast_token: string | null
+          payment_mode: string
+          payment_provider: string
+          ship_city: string
+          ship_country: string
+          ship_line1: string
+          ship_line2: string | null
+          ship_postal_code: string
+          ship_province: string
+          ship_suburb: string | null
+          shipping_amount: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total_amount: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          internal_notes?: string | null
+          order_number: string
+          paid_at?: string | null
+          payfast_payment_id?: string | null
+          payfast_token?: string | null
+          payment_mode?: string
+          payment_provider?: string
+          ship_city: string
+          ship_country?: string
+          ship_line1: string
+          ship_line2?: string | null
+          ship_postal_code: string
+          ship_province: string
+          ship_suburb?: string | null
+          shipping_amount?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total_amount: number
+          tracking_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          internal_notes?: string | null
+          order_number?: string
+          paid_at?: string | null
+          payfast_payment_id?: string | null
+          payfast_token?: string | null
+          payment_mode?: string
+          payment_provider?: string
+          ship_city?: string
+          ship_country?: string
+          ship_line1?: string
+          ship_line2?: string | null
+          ship_postal_code?: string
+          ship_province?: string
+          ship_suburb?: string | null
+          shipping_amount?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal?: number
+          total_amount?: number
+          tracking_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_views: {
         Row: {
           country: string | null
@@ -418,6 +650,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_order_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -428,6 +661,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      order_status:
+        | "pending_payment"
+        | "paid"
+        | "in_production"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
+        | "refunded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -556,6 +797,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      order_status: [
+        "pending_payment",
+        "paid",
+        "in_production",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "refunded",
+      ],
     },
   },
 } as const
