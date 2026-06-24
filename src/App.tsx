@@ -16,6 +16,8 @@ const BlogPostPage = lazy(() => import("@/routes/blog.$slug").then((m) => ({ def
 const LoginPage = lazy(() => import("@/routes/login").then((m) => ({ default: m.LoginPage })));
 const AdminPage = lazy(() => import("@/routes/admin").then((m) => ({ default: m.AdminPage })));
 const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) => ({ default: m.PostEditorPage })));
+const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
 
 const queryClient = new QueryClient();
 
@@ -83,6 +85,20 @@ const pageMeta: Record<
       "Guides, tips and news on DTF printing, blank apparel and custom t-shirt printing in South Africa. From the Blank2Branded team in Mbombela.",
     keywords:
       "DTF printing blog, DTF tips South Africa, blank apparel guides, custom t-shirt printing tips, Blank2Branded blog",
+  },
+  "/privacy": {
+    focusKeyword: "privacy policy",
+    title: "Privacy Policy | Blank2Branded South Africa",
+    description:
+      "How Blank2Branded collects, uses and protects your personal information under POPIA. South African DTF and blank apparel supplier based in Mbombela.",
+    keywords: "privacy policy, POPIA, Blank2Branded privacy, data protection South Africa",
+  },
+  "/terms": {
+    focusKeyword: "terms and conditions",
+    title: "Terms & Conditions | Blank2Branded South Africa",
+    description:
+      "Terms and conditions for buying DTF transfers and blank apparel from Blank2Branded — orders, delivery, returns and refunds for South African customers.",
+    keywords: "terms and conditions, returns policy, refund policy, Blank2Branded terms",
   },
 };
 
@@ -154,6 +170,8 @@ function AppContent() {
   else if (cleanPath === "/admin") page = <AdminPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
+  else if (cleanPath === "/privacy") page = <PrivacyPage />;
+  else if (cleanPath === "/terms") page = <TermsPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (
