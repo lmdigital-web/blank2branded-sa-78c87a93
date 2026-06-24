@@ -155,7 +155,7 @@ export async function fetchProductByHandle(handle: string): Promise<CataloguePro
 
 export async function fetchCategoriesWithCounts(): Promise<CatalogueCategory[]> {
   const [{ data: cats }, { data: prods }] = await Promise.all([
-    supabase.from("shop_categories").select("id,name,slug,position").order("position"),
+    supabase.from("shop_categories").select("id,name,slug,position,parent_id").order("position"),
     supabase.from("shop_products").select("category_id").eq("status", "published"),
   ]);
   const counts = new Map<string, number>();
@@ -166,6 +166,7 @@ export async function fetchCategoriesWithCounts(): Promise<CatalogueCategory[]> 
     id: c.id,
     name: c.name,
     slug: c.slug,
+    parentId: (c as { parent_id: string | null }).parent_id ?? null,
     productCount: counts.get(c.id) ?? 0,
   }));
 }
