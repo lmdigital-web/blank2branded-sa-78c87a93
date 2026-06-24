@@ -134,6 +134,10 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             >
               Shop Now
             </Link>
+            <Link to={accountHref} className={linkCls} onClick={() => setOpen(false)}>
+              {accountLabel}
+            </Link>
+
           </div>
         </div>
       )}
