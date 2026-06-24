@@ -12,6 +12,7 @@ import {
   LogOut,
   Menu,
   X,
+  ShoppingBag,
   Home as HomeIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,12 @@ const NAV: NavItem[] = [
     to: "/admin/products",
     icon: <Package className="h-4 w-4" />,
     match: (p) => p.startsWith("/admin/products"),
+  },
+  {
+    label: "Orders",
+    to: "/admin/orders",
+    icon: <ShoppingBag className="h-4 w-4" />,
+    match: (p) => p.startsWith("/admin/orders"),
   },
   {
     label: "Categories",
