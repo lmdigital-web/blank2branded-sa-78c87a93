@@ -14,7 +14,11 @@ type HeaderProps = {
 export function Header({ variant = "overlay" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useSession();
   const solid = variant === "solid" || scrolled;
+  const accountHref = user ? "/account" : "/login";
+  const accountLabel = user ? "My account" : "Sign in";
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
