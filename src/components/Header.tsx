@@ -1,9 +1,11 @@
 import { Link } from "@/lib/static-router";
-import { Menu, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/logo.webp";
 import logoSm from "@/assets/logo-sm.webp";
 import { CartDrawer } from "@/components/CartDrawer";
+import { useSession } from "@/lib/auth";
+
 
 type HeaderProps = {
   variant?: "overlay" | "solid";
@@ -12,7 +14,11 @@ type HeaderProps = {
 export function Header({ variant = "overlay" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useSession();
   const solid = variant === "solid" || scrolled;
+  const accountHref = user ? "/account" : "/login";
+  const accountLabel = user ? "My account" : "Sign in";
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -78,14 +84,29 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           >
             Shop Now
           </Link>
+          <Link
+            to={accountHref}
+            aria-label={accountLabel}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <User className="h-5 w-5" aria-hidden="true" />
+          </Link>
           <CartDrawer />
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
+          <Link
+            to={accountHref}
+            aria-label={accountLabel}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <User className="h-5 w-5" aria-hidden="true" />
+          </Link>
           <CartDrawer />
           <button
             type="button"
             onClick={() => setOpen(!open)}
+
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -113,6 +134,10 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             >
               Shop Now
             </Link>
+            <Link to={accountHref} className={linkCls} onClick={() => setOpen(false)}>
+              {accountLabel}
+            </Link>
+
           </div>
         </div>
       )}
