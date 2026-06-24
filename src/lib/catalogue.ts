@@ -26,6 +26,7 @@ export interface CatalogueCategory {
   id: string;
   name: string;
   slug: string;
+  parentId: string | null;
   productCount: number;
 }
 
