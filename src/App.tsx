@@ -20,6 +20,7 @@ const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
 const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
 const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
+const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
 
 const queryClient = new QueryClient();
 
@@ -118,6 +119,14 @@ const pageMeta: Record<
     keywords:
       "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
   },
+  "/catalogues": {
+    focusKeyword: "branded gifts catalogue South Africa",
+    title: "Catalogues | Branded Gifts, Bags & Corporate Gifting South Africa | Blank2Branded",
+    description:
+      "Browse our digital catalogues for branded gifts, bags, drinkware and corporate gifting in South Africa. Request a quote with print and embroidery options.",
+    keywords:
+      "branded gifts catalogue South Africa, corporate gifts catalogue, branded bags catalogue, conference bags South Africa, promotional products catalogue, Blank2Branded catalogues",
+  },
 };
 
 function ensureLink(rel: string): HTMLLinkElement {
@@ -192,6 +201,7 @@ function AppContent() {
   else if (cleanPath === "/terms") page = <TermsPage />;
   else if (cleanPath === "/display") page = <DisplayPage />;
   else if (cleanPath === "/sublimation") page = <SublimationPage />;
+  else if (cleanPath === "/catalogues") page = <CataloguesPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (
