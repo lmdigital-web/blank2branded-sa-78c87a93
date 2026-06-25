@@ -64,7 +64,7 @@ export function PostEditorPage() {
     if (!postId) return;
     supabase
       .from("posts")
-      .select("title,slug,excerpt,content,cover_image_url,status,meta_title,meta_description,keywords")
+      .select("title,slug,excerpt,content,cover_image_url,status,meta_title,meta_description,keywords,published_at")
       .eq("id", postId)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -73,16 +73,27 @@ export function PostEditorPage() {
           navigate("/admin");
           return;
         }
+        const status = (data.status as PostStatus) || "draft";
+        let sd = "";
+        let st = "";
+        if (status === "scheduled" && data.published_at) {
+          const d = new Date(data.published_at);
+          const pad = (n: number) => String(n).padStart(2, "0");
+          sd = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+          st = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
         setForm({
           title: data.title || "",
           slug: data.slug || "",
           excerpt: data.excerpt || "",
           content: data.content || "",
           cover_image_url: data.cover_image_url || "",
-          status: (data.status as "draft" | "published") || "draft",
+          status,
           meta_title: data.meta_title || "",
           meta_description: data.meta_description || "",
           keywords: data.keywords || "",
+          scheduled_date: sd,
+          scheduled_time: st,
         });
         setLoadingPost(false);
       });
@@ -98,34 +109,49 @@ export function PostEditorPage() {
     }
   }
 
-  async function onSave(publish: boolean) {
+  async function onSave(action: "draft" | "publish" | "schedule") {
     if (!form.title.trim()) return toast.error("Title is required");
     if (!form.slug.trim()) return toast.error("Slug is required");
     if (!form.content.trim() || form.content === "<p></p>") return toast.error("Content is required");
 
+    let scheduledAt: Date | null = null;
+    if (action === "schedule") {
+      if (!form.scheduled_date || !form.scheduled_time) {
+        return toast.error("Pick a date and time to schedule");
+      }
+      scheduledAt = new Date(`${form.scheduled_date}T${form.scheduled_time}`);
+      if (isNaN(scheduledAt.getTime())) return toast.error("Invalid schedule date/time");
+      if (scheduledAt.getTime() <= Date.now()) {
+        return toast.error("Scheduled time must be in the future");
+      }
+    }
+
     setSaving(true);
-    const payload = {
+    const nextStatus: PostStatus =
+      action === "publish" ? "published" : action === "schedule" ? "scheduled" : "draft";
+
+    const payload: any = {
       title: form.title.trim(),
       slug: slugify(form.slug),
       excerpt: form.excerpt.trim() || null,
       content: form.content,
       cover_image_url: form.cover_image_url.trim() || null,
-      status: publish ? "published" : form.status,
+      status: nextStatus,
       meta_title: form.meta_title.trim() || null,
       meta_description: form.meta_description.trim() || null,
       keywords: form.keywords.trim() || null,
-      published_at: publish ? new Date().toISOString() : null,
       author_id: user!.id,
     };
+
+    if (action === "publish") payload.published_at = new Date().toISOString();
+    else if (action === "schedule") payload.published_at = scheduledAt!.toISOString();
+    else payload.published_at = null;
 
     let res;
     if (mode === "new") {
       res = await supabase.from("posts").insert(payload).select("id").single();
     } else {
-      // Don't overwrite published_at on edits if already published and we're not republishing
-      const update: any = { ...payload };
-      if (!publish) delete update.published_at;
-      res = await supabase.from("posts").update(update).eq("id", postId!).select("id").single();
+      res = await supabase.from("posts").update(payload).eq("id", postId!).select("id").single();
     }
     setSaving(false);
 
@@ -133,7 +159,11 @@ export function PostEditorPage() {
       toast.error(res.error.message);
       return;
     }
-    toast.success(publish ? "Post published" : "Post saved");
+    toast.success(
+      action === "publish" ? "Post published" :
+      action === "schedule" ? `Scheduled for ${scheduledAt!.toLocaleString("en-ZA")}` :
+      "Draft saved"
+    );
     navigate("/admin");
   }
 
