@@ -11,9 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send } from "lucide-react";
 
 type Mode = "new" | "edit";
+
+type PostStatus = "draft" | "scheduled" | "published";
 
 type FormState = {
   title: string;
@@ -21,10 +23,12 @@ type FormState = {
   excerpt: string;
   content: string;
   cover_image_url: string;
-  status: "draft" | "published";
+  status: PostStatus;
   meta_title: string;
   meta_description: string;
   keywords: string;
+  scheduled_date: string; // YYYY-MM-DD
+  scheduled_time: string; // HH:MM
 };
 
 const empty: FormState = {
@@ -37,6 +41,8 @@ const empty: FormState = {
   meta_title: "",
   meta_description: "",
   keywords: "",
+  scheduled_date: "",
+  scheduled_time: "",
 };
 
 export function PostEditorPage() {
@@ -58,7 +64,7 @@ export function PostEditorPage() {
     if (!postId) return;
     supabase
       .from("posts")
-      .select("title,slug,excerpt,content,cover_image_url,status,meta_title,meta_description,keywords")
+      .select("title,slug,excerpt,content,cover_image_url,status,meta_title,meta_description,keywords,published_at")
       .eq("id", postId)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -67,16 +73,27 @@ export function PostEditorPage() {
           navigate("/admin");
           return;
         }
+        const status = (data.status as PostStatus) || "draft";
+        let sd = "";
+        let st = "";
+        if (status === "scheduled" && data.published_at) {
+          const d = new Date(data.published_at);
+          const pad = (n: number) => String(n).padStart(2, "0");
+          sd = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+          st = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
         setForm({
           title: data.title || "",
           slug: data.slug || "",
           excerpt: data.excerpt || "",
           content: data.content || "",
           cover_image_url: data.cover_image_url || "",
-          status: (data.status as "draft" | "published") || "draft",
+          status,
           meta_title: data.meta_title || "",
           meta_description: data.meta_description || "",
           keywords: data.keywords || "",
+          scheduled_date: sd,
+          scheduled_time: st,
         });
         setLoadingPost(false);
       });
@@ -92,34 +109,49 @@ export function PostEditorPage() {
     }
   }
 
-  async function onSave(publish: boolean) {
+  async function onSave(action: "draft" | "publish" | "schedule") {
     if (!form.title.trim()) return toast.error("Title is required");
     if (!form.slug.trim()) return toast.error("Slug is required");
     if (!form.content.trim() || form.content === "<p></p>") return toast.error("Content is required");
 
+    let scheduledAt: Date | null = null;
+    if (action === "schedule") {
+      if (!form.scheduled_date || !form.scheduled_time) {
+        return toast.error("Pick a date and time to schedule");
+      }
+      scheduledAt = new Date(`${form.scheduled_date}T${form.scheduled_time}`);
+      if (isNaN(scheduledAt.getTime())) return toast.error("Invalid schedule date/time");
+      if (scheduledAt.getTime() <= Date.now()) {
+        return toast.error("Scheduled time must be in the future");
+      }
+    }
+
     setSaving(true);
-    const payload = {
+    const nextStatus: PostStatus =
+      action === "publish" ? "published" : action === "schedule" ? "scheduled" : "draft";
+
+    const payload: any = {
       title: form.title.trim(),
       slug: slugify(form.slug),
       excerpt: form.excerpt.trim() || null,
       content: form.content,
       cover_image_url: form.cover_image_url.trim() || null,
-      status: publish ? "published" : form.status,
+      status: nextStatus,
       meta_title: form.meta_title.trim() || null,
       meta_description: form.meta_description.trim() || null,
       keywords: form.keywords.trim() || null,
-      published_at: publish ? new Date().toISOString() : null,
       author_id: user!.id,
     };
+
+    if (action === "publish") payload.published_at = new Date().toISOString();
+    else if (action === "schedule") payload.published_at = scheduledAt!.toISOString();
+    else payload.published_at = null;
 
     let res;
     if (mode === "new") {
       res = await supabase.from("posts").insert(payload).select("id").single();
     } else {
-      // Don't overwrite published_at on edits if already published and we're not republishing
-      const update: any = { ...payload };
-      if (!publish) delete update.published_at;
-      res = await supabase.from("posts").update(update).eq("id", postId!).select("id").single();
+      res = await supabase.from("posts").update(payload).eq("id", postId!).select("id").single();
     }
     setSaving(false);
 
@@ -127,7 +159,11 @@ export function PostEditorPage() {
       toast.error(res.error.message);
       return;
     }
-    toast.success(publish ? "Post published" : "Post saved");
+    toast.success(
+      action === "publish" ? "Post published" :
+      action === "schedule" ? `Scheduled for ${scheduledAt!.toLocaleString("en-ZA")}` :
+      "Draft saved"
+    );
     navigate("/admin");
   }
 
@@ -151,12 +187,15 @@ export function PostEditorPage() {
           </Link>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-3xl font-bold">{mode === "new" ? "New Post" : "Edit Post"}</h1>
-            <div className="flex gap-2">
-              <Button variant="outline" disabled={saving} onClick={() => onSave(false)}>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" disabled={saving} onClick={() => onSave("draft")}>
                 <Save className="mr-2 h-4 w-4" /> Save draft
               </Button>
-              <Button disabled={saving} onClick={() => onSave(true)}>
-                Publish
+              <Button variant="secondary" disabled={saving} onClick={() => onSave("schedule")}>
+                <CalendarClock className="mr-2 h-4 w-4" /> Schedule post
+              </Button>
+              <Button disabled={saving} onClick={() => onSave("publish")}>
+                <Send className="mr-2 h-4 w-4" /> Publish now
               </Button>
             </div>
           </div>
@@ -262,9 +301,34 @@ export function PostEditorPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <CalendarClock className="h-4 w-4" /> Schedule
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Pick a future date &amp; time, then click <strong>Schedule post</strong>. It will auto-publish at that time (your local timezone).
+                </p>
+                <Label htmlFor="sched_date" className="mt-3 block text-sm">Date</Label>
+                <Input
+                  id="sched_date"
+                  type="date"
+                  value={form.scheduled_date}
+                  onChange={(e) => update("scheduled_date", e.target.value)}
+                  className="mt-1"
+                />
+                <Label htmlFor="sched_time" className="mt-3 block text-sm">Time</Label>
+                <Input
+                  id="sched_time"
+                  type="time"
+                  value={form.scheduled_time}
+                  onChange={(e) => update("scheduled_time", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+
+              <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">Status</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Currently: <span className="font-medium text-foreground">{form.status}</span>
+                  Currently: <span className="font-medium text-foreground capitalize">{form.status}</span>
                 </p>
               </div>
             </aside>

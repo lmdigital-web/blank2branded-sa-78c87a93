@@ -52,9 +52,10 @@ export function BlogPostPage() {
     setNotFound(false);
     supabase
       .from("posts")
-      .select("id,slug,title,excerpt,content,cover_image_url,published_at,meta_title,meta_description,keywords")
+      .select("id,slug,title,excerpt,content,cover_image_url,published_at,meta_title,meta_description,keywords,status")
       .eq("slug", slug)
-      .eq("status", "published")
+      .in("status", ["published", "scheduled"])
+      .lte("published_at", new Date().toISOString())
       .maybeSingle()
       .then(({ data }) => {
         if (!data) {
