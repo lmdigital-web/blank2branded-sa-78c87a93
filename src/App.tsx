@@ -19,6 +19,7 @@ const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) 
 const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
 const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
+const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,14 @@ const pageMeta: Record<
     keywords:
       "branded gazebos South Africa, pull up banners South Africa, harp banners, banner walls, branded table cloths, fence wrap, corporate flags, A-frame banners, pop up banners, branded umbrellas, pennant flags, display products South Africa",
   },
+  "/sublimation": {
+    focusKeyword: "sublimation printing South Africa",
+    title: "Sublimation Printing South Africa | Custom Golf Shirts, Jerseys, Tees | Blank2Branded",
+    description:
+      "All-over sublimation printed apparel for Mens, Ladies and Kids — custom golf shirts, rugby jerseys, t-shirts, vests, skirts and sets. Edge-to-edge full-colour print. Request a quote.",
+    keywords:
+      "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
+  },
 };
 
 function ensureLink(rel: string): HTMLLinkElement {
@@ -182,6 +191,7 @@ function AppContent() {
   else if (cleanPath === "/privacy") page = <PrivacyPage />;
   else if (cleanPath === "/terms") page = <TermsPage />;
   else if (cleanPath === "/display") page = <DisplayPage />;
+  else if (cleanPath === "/sublimation") page = <SublimationPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (
