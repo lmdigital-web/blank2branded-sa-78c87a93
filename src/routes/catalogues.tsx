@@ -83,11 +83,8 @@ export function CataloguesPage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {CATALOGUES.map((cat) => (
-              <a
+              <div
                 key={cat.url}
-                href={cat.url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl"
               >
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
