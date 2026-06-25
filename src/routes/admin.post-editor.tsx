@@ -187,12 +187,15 @@ export function PostEditorPage() {
           </Link>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-3xl font-bold">{mode === "new" ? "New Post" : "Edit Post"}</h1>
-            <div className="flex gap-2">
-              <Button variant="outline" disabled={saving} onClick={() => onSave(false)}>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" disabled={saving} onClick={() => onSave("draft")}>
                 <Save className="mr-2 h-4 w-4" /> Save draft
               </Button>
-              <Button disabled={saving} onClick={() => onSave(true)}>
-                Publish
+              <Button variant="secondary" disabled={saving} onClick={() => onSave("schedule")}>
+                <CalendarClock className="mr-2 h-4 w-4" /> Schedule post
+              </Button>
+              <Button disabled={saving} onClick={() => onSave("publish")}>
+                <Send className="mr-2 h-4 w-4" /> Publish now
               </Button>
             </div>
           </div>
@@ -298,9 +301,34 @@ export function PostEditorPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <CalendarClock className="h-4 w-4" /> Schedule
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Pick a future date &amp; time, then click <strong>Schedule post</strong>. It will auto-publish at that time (your local timezone).
+                </p>
+                <Label htmlFor="sched_date" className="mt-3 block text-sm">Date</Label>
+                <Input
+                  id="sched_date"
+                  type="date"
+                  value={form.scheduled_date}
+                  onChange={(e) => update("scheduled_date", e.target.value)}
+                  className="mt-1"
+                />
+                <Label htmlFor="sched_time" className="mt-3 block text-sm">Time</Label>
+                <Input
+                  id="sched_time"
+                  type="time"
+                  value={form.scheduled_time}
+                  onChange={(e) => update("scheduled_time", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+
+              <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">Status</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Currently: <span className="font-medium text-foreground">{form.status}</span>
+                  Currently: <span className="font-medium text-foreground capitalize">{form.status}</span>
                 </p>
               </div>
             </aside>
