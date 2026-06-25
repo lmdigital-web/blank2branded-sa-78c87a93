@@ -83,11 +83,8 @@ export function CataloguesPage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {CATALOGUES.map((cat) => (
-              <a
+              <div
                 key={cat.url}
-                href={cat.url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl"
               >
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -98,10 +95,15 @@ export function CataloguesPage() {
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-charcoal">{cat.title}</h2>
                 <p className="mt-2 flex-1 text-sm text-muted-foreground">{cat.description}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                  Open Catalogue <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </a>
+                <a
+                  href={cat.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-md bg-gradient-dtf px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-lg"
+                >
+                  Open Catalogue <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
             ))}
           </div>
         </div>
