@@ -1,136 +1,126 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ExternalLink, BookOpen } from "lucide-react";
+import { ExternalLink, BookOpen, MessageCircle } from "lucide-react";
+
+const WA_NUMBER = "27698384045";
 
 type Catalogue = {
   title: string;
   description: string;
   url: string;
+  tag: string;
 };
 
-type CatalogueSection = {
-  section: string;
-  blurb: string;
-  catalogues: Catalogue[];
-};
-
-const SECTIONS: CatalogueSection[] = [
+const CATALOGUES: Catalogue[] = [
   {
-    section: "Apparel & Workwear",
-    blurb:
-      "Corporate apparel, workwear, safety gear and uniforms — ready for branding with print or embroidery.",
-    catalogues: [
-      {
-        title: "2026 Apparel & Workwear Catalogue",
-        description:
-          "Full range of apparel, workwear and safety gear for branding.",
-        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2026-Apparel-Workwear-Catalogue/index.html",
-      },
-    ],
+    title: "2026 Apparel & Workwear",
+    tag: "Apparel & Workwear",
+    description:
+      "Corporate apparel, workwear, safety gear and uniforms — ready for print or embroidery.",
+    url: "https://paznsaapp02.blob.core.windows.net/catalogues/2026-Apparel-Workwear-Catalogue/index.html",
   },
   {
-    section: "Sports & Headwear",
-    blurb:
-      "Sportswear, team kits, caps, beanies and headwear — ideal for clubs, schools and promotional events.",
-    catalogues: [
-      {
-        title: "2024 Sports & Headwear Catalogue",
-        description:
-          "Sportswear and headwear options ready for branding and team kits.",
-        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2024-Sports-and-Headwear-Catalogue/index.html",
-      },
-    ],
+    title: "2024 Sports & Headwear",
+    tag: "Sports & Headwear",
+    description:
+      "Sportswear, team kits, caps, beanies and headwear for clubs, schools and promos.",
+    url: "https://paznsaapp02.blob.core.windows.net/catalogues/2024-Sports-and-Headwear-Catalogue/index.html",
   },
   {
-    section: "Sublimation & Display",
-    blurb:
-      "Full-colour sublimation apparel and display solutions — banners, flags, gazebos and event branding.",
-    catalogues: [
-      {
-        title: "2026 Sublimation & Display Catalogue",
-        description:
-          "Sublimated kits and display products for events, expos and team branding.",
-        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2026%20Sublimation%20Display%20catalogue/index.html",
-      },
-    ],
+    title: "2026 Sublimation & Display",
+    tag: "Sublimation & Display",
+    description:
+      "Full-colour sublimation kits, banners, flags, gazebos and event branding.",
+    url: "https://paznsaapp02.blob.core.windows.net/catalogues/2026%20Sublimation%20Display%20catalogue/index.html",
   },
   {
-    section: "Bags & Gifts",
-    blurb:
-      "Corporate gifting, conference bags, backpacks, drinkware and lifestyle gifts — perfect for branded giveaways and staff packs.",
-    catalogues: [
-      {
-        title: "2024 Gifts & Bags Catalogue",
-        description:
-          "Browse the full range of branded bags and corporate gifts available for print and embroidery.",
-        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2024-Gifts-and-bags-Catalogue/index.html",
-      },
-    ],
+    title: "2024 Gifts & Bags",
+    tag: "Bags & Gifts",
+    description:
+      "Conference bags, backpacks, drinkware and lifestyle gifts for branded giveaways.",
+    url: "https://paznsaapp02.blob.core.windows.net/catalogues/2024-Gifts-and-bags-Catalogue/index.html",
   },
 ];
-
 
 export function CataloguesPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Header variant="solid" />
+      <Header />
 
-      <section className="bg-gradient-to-b from-primary/10 to-background py-16">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <h1 className="text-4xl font-bold text-charcoal md:text-5xl">Catalogues</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
-            Browse our supplier catalogues. Click any catalogue to open the full digital flipbook in a
-            new tab — then send us the codes of what you like for a quote.
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
+        <div className="pointer-events-none absolute inset-0 opacity-25">
+          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-6">
+          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+            Supplier Catalogues
           </p>
+          <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
+            <span className="text-gradient-dtf">Browse</span> our full ranges.
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+            Open any catalogue below to view the full digital flipbook, then WhatsApp us the product codes you like and we'll come back with a quote within 4 business hours.
+          </p>
+          <div className="mt-8">
+            <a
+              href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi Blank2Branded, I'd like a quote on items from your catalogue.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md bg-gradient-dtf px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.03]"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Quote on WhatsApp
+            </a>
+          </div>
         </div>
       </section>
 
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-6 space-y-16">
-          {SECTIONS.map((sec) => (
-            <div key={sec.section}>
-              <div className="mb-6 border-l-4 border-primary pl-4">
-                <h2 className="text-2xl font-bold text-charcoal md:text-3xl">{sec.section}</h2>
-                <p className="mt-1 text-sm text-muted-foreground md:text-base">{sec.blurb}</p>
-              </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {sec.catalogues.map((cat) => (
-                  <a
-                    key={cat.url}
-                    href={cat.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex flex-col rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
-                  >
-                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <BookOpen className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-charcoal">{cat.title}</h3>
-                    <p className="mt-2 flex-1 text-sm text-muted-foreground">{cat.description}</p>
-                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                      Open Catalogue <ExternalLink className="h-4 w-4" />
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
+      {/* CATALOGUE CARDS */}
+      <section className="py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {CATALOGUES.map((cat) => (
+              <a
+                key={cat.url}
+                href={cat.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl"
+              >
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-magenta">
+                  {cat.tag}
+                </p>
+                <h2 className="mt-2 text-xl font-bold text-charcoal">{cat.title}</h2>
+                <p className="mt-2 flex-1 text-sm text-muted-foreground">{cat.description}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                  Open Catalogue <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
+      {/* CTA */}
       <section className="bg-muted/30 py-12">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-2xl font-bold text-charcoal">Found something you like?</h2>
           <p className="mt-2 text-muted-foreground">
-            WhatsApp us the product code(s) from the catalogue and we'll send you a quote with branding
-            options.
+            WhatsApp us the product code(s) from the catalogue and we'll send you a quote with branding options.
           </p>
           <a
-            href="https://wa.me/27698384045?text=Hi%20Blank2Branded%2C%20I%27d%20like%20a%20quote%20on%20items%20from%20your%20catalogue."
+            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi Blank2Branded, I'd like a quote on items from your catalogue.")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg"
           >
+            <MessageCircle className="h-4 w-4" />
             Request a Quote on WhatsApp
           </a>
         </div>
