@@ -58,20 +58,10 @@ type Collection = {
   };
 };
 
-// Top-level categories — order shown in sidebar. Anything else falls under "Other".
-const TOP_LEVEL = [
-  "Apparel",
-  "Bags",
-  "Chef Wear",
-  "Display",
-  "Gifting",
-  "Head Wear",
-  "Homeware",
-  "Sport",
-  "Sublimation",
-  "Work Wear",
-  "Promotions",
-] as const;
+// Only these top-level parents are surfaced. Apparel's children get flattened
+// into top-level categories alongside DTF Prints.
+const KEEP_PARENTS = ["Apparel", "DTF Prints"] as const;
+const FLATTEN_PARENTS = new Set(["apparel"]);
 
 const SPLIT_RE = /\s+[—\-/>]\s+/; // " — ", " - ", " / ", " > "
 
@@ -81,16 +71,14 @@ function splitTitle(title: string): { parent: string | null; child: string } {
   return { parent: null, child: title.trim() };
 }
 
-type TreeNode = {
+type CategoryItem = {
+  key: string; // collection handle or `parent:Name`
   name: string;
-  parentCollection: Collection | null; // collection whose title === parent name (if any)
-  children: Collection[];
-  childProductIds: Set<string>; // union of all children + own products
+  productIds: Set<string>;
 };
 
 export function ShopPage() {
   const [activeCollection, setActiveCollection] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products"],
@@ -108,70 +96,74 @@ export function ShopPage() {
     },
   });
 
-  // Build tree: parent name -> { parentCollection, children[] }
-  const tree = useMemo<TreeNode[]>(() => {
+  // Build a flat list: Apparel children become top-level entries; DTF Prints stays as-is.
+  const categories = useMemo<CategoryItem[]>(() => {
     if (!collections) return [];
-    const map = new Map<string, TreeNode>();
-    const ensure = (name: string): TreeNode => {
-      const key = name.toLowerCase();
-      let n = map.get(key);
-      if (!n) {
-        n = { name, parentCollection: null, children: [], childProductIds: new Set() };
-        map.set(key, n);
-      }
-      return n;
-    };
+
+    const apparelChildren: CategoryItem[] = [];
+    const otherKept = new Map<string, CategoryItem>(); // key -> item
 
     for (const c of collections) {
       const { parent, child } = splitTitle(c.node.title);
-      if (parent) {
-        const node = ensure(parent);
-        // override display name to use child portion
-        const childCol: Collection = { ...c, node: { ...c.node, title: child } };
-        node.children.push(childCol);
-        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
-      } else {
-        // Title with no separator: treat as a parent itself
-        const node = ensure(c.node.title);
-        node.parentCollection = c;
-        c.node.products.edges.forEach((e) => node.childProductIds.add(e.node.id));
+      const ids = new Set(c.node.products.edges.map((e) => e.node.id));
+
+      if (parent && FLATTEN_PARENTS.has(parent.toLowerCase())) {
+        apparelChildren.push({ key: c.node.handle, name: child, productIds: ids });
+        continue;
+      }
+
+      // Standalone (no separator) collection that matches a kept parent name
+      if (!parent) {
+        const match = KEEP_PARENTS.find(
+          (p) => p.toLowerCase() === c.node.title.toLowerCase(),
+        );
+        if (match) {
+          const existing = otherKept.get(match.toLowerCase());
+          if (existing) {
+            ids.forEach((id) => existing.productIds.add(id));
+          } else {
+            otherKept.set(match.toLowerCase(), {
+              key: c.node.handle,
+              name: match,
+              productIds: ids,
+            });
+          }
+        }
+        continue;
+      }
+
+      // "DTF Prints — Something" style: aggregate under the parent
+      const keptParent = KEEP_PARENTS.find(
+        (p) => p.toLowerCase() === parent.toLowerCase(),
+      );
+      if (keptParent) {
+        const k = keptParent.toLowerCase();
+        const existing = otherKept.get(k);
+        if (existing) {
+          ids.forEach((id) => existing.productIds.add(id));
+        } else {
+          otherKept.set(k, {
+            key: `parent:${keptParent}`,
+            name: keptParent,
+            productIds: ids,
+          });
+        }
       }
     }
 
-    // Order: TOP_LEVEL first (in defined order), then anything else alphabetical
-    const ordered: TreeNode[] = [];
-    for (const name of TOP_LEVEL) {
-      const n = map.get(name.toLowerCase());
-      if (n) {
-        ordered.push(n);
-        map.delete(name.toLowerCase());
-      }
-    }
-    [...map.values()].sort((a, b) => a.name.localeCompare(b.name)).forEach((n) => ordered.push(n));
-    return ordered;
+    apparelChildren.sort((a, b) => a.name.localeCompare(b.name));
+    const dtf = otherKept.get("dtf prints");
+    return dtf ? [...apparelChildren, dtf] : apparelChildren;
   }, [collections]);
 
   const filtered = useMemo(() => {
     if (!data) return [];
     if (!activeCollection) return data;
+    const cat = categories.find((c) => c.key === activeCollection);
+    if (!cat) return data;
+    return data.filter((p) => cat.productIds.has(p.node.id));
+  }, [data, categories, activeCollection]);
 
-    // Parent selection (prefix "parent:")
-    if (activeCollection.startsWith("parent:")) {
-      const name = activeCollection.slice(7);
-      const node = tree.find((t) => t.name.toLowerCase() === name.toLowerCase());
-      if (!node) return data;
-      return data.filter((p) => node.childProductIds.has(p.node.id));
-    }
-
-    // Child collection selection (handle)
-    const col = collections?.find((c) => c.node.handle === activeCollection);
-    if (!col) return data;
-    const ids = new Set(col.node.products.edges.map((e) => e.node.id));
-    return data.filter((p) => ids.has(p.node.id));
-  }, [data, collections, activeCollection, tree]);
-
-  const toggle = (name: string) =>
-    setExpanded((s) => ({ ...s, [name]: !(s[name] ?? false) }));
 
 
   return (
