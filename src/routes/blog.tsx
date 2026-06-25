@@ -26,8 +26,9 @@ export function BlogIndexPage() {
     setLoading(true);
     supabase
       .from("posts")
-      .select("id,slug,title,excerpt,cover_image_url,published_at,meta_description")
-      .eq("status", "published")
+      .select("id,slug,title,excerpt,cover_image_url,published_at,meta_description,status")
+      .in("status", ["published", "scheduled"])
+      .lte("published_at", new Date().toISOString())
       .order("published_at", { ascending: false })
       .limit(PAGE_SIZE)
       .then(({ data }) => {

@@ -11,9 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send } from "lucide-react";
 
 type Mode = "new" | "edit";
+
+type PostStatus = "draft" | "scheduled" | "published";
 
 type FormState = {
   title: string;
@@ -21,10 +23,12 @@ type FormState = {
   excerpt: string;
   content: string;
   cover_image_url: string;
-  status: "draft" | "published";
+  status: PostStatus;
   meta_title: string;
   meta_description: string;
   keywords: string;
+  scheduled_date: string; // YYYY-MM-DD
+  scheduled_time: string; // HH:MM
 };
 
 const empty: FormState = {
@@ -37,6 +41,8 @@ const empty: FormState = {
   meta_title: "",
   meta_description: "",
   keywords: "",
+  scheduled_date: "",
+  scheduled_time: "",
 };
 
 export function PostEditorPage() {
