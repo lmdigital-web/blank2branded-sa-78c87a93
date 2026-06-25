@@ -1,0 +1,1 @@
+GRANT SELECT ON public.posts TO anon, authenticated;
