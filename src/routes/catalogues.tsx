@@ -16,6 +16,45 @@ type CatalogueSection = {
 
 const SECTIONS: CatalogueSection[] = [
   {
+    section: "Apparel & Workwear",
+    blurb:
+      "Corporate apparel, workwear, safety gear and uniforms — ready for branding with print or embroidery.",
+    catalogues: [
+      {
+        title: "2026 Apparel & Workwear Catalogue",
+        description:
+          "Full range of apparel, workwear and safety gear for branding.",
+        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2026-Apparel-Workwear-Catalogue/index.html",
+      },
+    ],
+  },
+  {
+    section: "Sports & Headwear",
+    blurb:
+      "Sportswear, team kits, caps, beanies and headwear — ideal for clubs, schools and promotional events.",
+    catalogues: [
+      {
+        title: "2024 Sports & Headwear Catalogue",
+        description:
+          "Sportswear and headwear options ready for branding and team kits.",
+        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2024-Sports-and-Headwear-Catalogue/index.html",
+      },
+    ],
+  },
+  {
+    section: "Sublimation & Display",
+    blurb:
+      "Full-colour sublimation apparel and display solutions — banners, flags, gazebos and event branding.",
+    catalogues: [
+      {
+        title: "2026 Sublimation & Display Catalogue",
+        description:
+          "Sublimated kits and display products for events, expos and team branding.",
+        url: "https://paznsaapp02.blob.core.windows.net/catalogues/2026%20Sublimation%20Display%20catalogue/index.html",
+      },
+    ],
+  },
+  {
     section: "Bags & Gifts",
     blurb:
       "Corporate gifting, conference bags, backpacks, drinkware and lifestyle gifts — perfect for branded giveaways and staff packs.",
@@ -29,6 +68,7 @@ const SECTIONS: CatalogueSection[] = [
     ],
   },
 ];
+
 
 export function CataloguesPage() {
   return (
