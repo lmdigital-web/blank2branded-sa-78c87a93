@@ -18,6 +18,7 @@ const AdminPage = lazy(() => import("@/routes/admin").then((m) => ({ default: m.
 const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) => ({ default: m.PostEditorPage })));
 const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
+const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,14 @@ const pageMeta: Record<
       "Terms and conditions for buying DTF transfers and blank apparel from Blank2Branded — orders, delivery, returns and refunds for South African customers.",
     keywords: "terms and conditions, returns policy, refund policy, Blank2Branded terms",
   },
+  "/display": {
+    focusKeyword: "branded display products South Africa",
+    title: "Branded Display & Signage South Africa | Gazebos, Banners, Flags | Blank2Branded",
+    description:
+      "Branded gazebos, banner walls, pull-up banners, flags, table cloths and more. Custom display solutions for events and expos across South Africa. Request a quote.",
+    keywords:
+      "branded gazebos South Africa, pull up banners South Africa, harp banners, banner walls, branded table cloths, fence wrap, corporate flags, A-frame banners, pop up banners, branded umbrellas, pennant flags, display products South Africa",
+  },
 };
 
 function ensureLink(rel: string): HTMLLinkElement {
@@ -172,6 +181,7 @@ function AppContent() {
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
   else if (cleanPath === "/privacy") page = <PrivacyPage />;
   else if (cleanPath === "/terms") page = <TermsPage />;
+  else if (cleanPath === "/display") page = <DisplayPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
 
   return (

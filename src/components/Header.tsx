@@ -68,6 +68,9 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           <Link to="/blanks" className={linkCls} activeProps={{ className: "text-primary" }}>
             Blanks
           </Link>
+          <Link to="/display" className={linkCls} activeProps={{ className: "text-primary" }}>
+            Display
+          </Link>
           <Link to="/blog" className={linkCls} activeProps={{ className: "text-primary" }}>
             Blog
           </Link>
@@ -105,6 +108,7 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
             <Link to="/dtf" className={linkCls} onClick={() => setOpen(false)}>DTF Prints</Link>
             <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>Blanks</Link>
+            <Link to="/display" className={linkCls} onClick={() => setOpen(false)}>Display</Link>
             <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>Blog</Link>
             
             <Link to="/contact" className={linkCls} onClick={() => setOpen(false)}>Contact</Link>
