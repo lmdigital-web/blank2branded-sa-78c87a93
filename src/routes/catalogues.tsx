@@ -95,10 +95,15 @@ export function CataloguesPage() {
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-charcoal">{cat.title}</h2>
                 <p className="mt-2 flex-1 text-sm text-muted-foreground">{cat.description}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                  Open Catalogue <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </a>
+                <a
+                  href={cat.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-md bg-gradient-dtf px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-lg"
+                >
+                  Open Catalogue <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
             ))}
           </div>
         </div>
