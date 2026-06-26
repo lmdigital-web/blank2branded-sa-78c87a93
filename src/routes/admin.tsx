@@ -45,6 +45,12 @@ export function AdminPage() {
 
   async function loadData() {
     setLoadingData(true);
+    // Auto-promote scheduled posts whose time has passed to "published"
+    await supabase
+      .from("posts")
+      .update({ status: "published" })
+      .eq("status", "scheduled")
+      .lte("published_at", new Date().toISOString());
     const [postsRes, viewsRes] = await Promise.all([
       supabase
         .from("posts")
@@ -60,6 +66,7 @@ export function AdminPage() {
     setViews((viewsRes.data as View[]) ?? []);
     setLoadingData(false);
   }
+
 
   const cutoffMs = useMemo(() => {
     if (range === "all") return 0;
