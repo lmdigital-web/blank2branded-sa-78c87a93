@@ -111,7 +111,7 @@ export function RichTextEditor({ value, onChange }: Props) {
 
   return (
     <div className="rounded-md border border-input bg-background">
-      <div className="flex flex-wrap items-center gap-1 border-b border-border p-2">
+      <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 rounded-t-md border-b border-border bg-background/95 p-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/75">
         <Btn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold"><Bold className="h-4 w-4" /></Btn>
         <Btn onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="Italic"><Italic className="h-4 w-4" /></Btn>
         <Btn onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")} title="Strike"><Strikethrough className="h-4 w-4" /></Btn>

@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink, Upload, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink, Upload, Loader2, RefreshCw } from "lucide-react";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 import { uploadBlogImage } from "@/lib/upload-blog-image";
 import { useRef } from "react";
@@ -60,6 +60,8 @@ export function PostEditorPage() {
   const [loadingPost, setLoadingPost] = useState(!isNew);
   const [uploadingCover, setUploadingCover] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const [lastSeoScore, setLastSeoScore] = useState<number | null>(null);
+  const [rechecking, setRechecking] = useState(false);
 
   async function handleCoverUpload(file: File) {
     setUploadingCover(true);
@@ -394,7 +396,7 @@ export function PostEditorPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <h3 className="font-semibold">SEO Analysis</h3>
                   <span className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium ${seoB.color}`}>
                     {seo.score}/100 · {seoB.label}
@@ -406,6 +408,39 @@ export function PostEditorPage() {
                 <p className="mt-2 text-xs text-muted-foreground">
                   {seo.words} words · keyword density {seo.density.toFixed(2)}%
                 </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 w-full"
+                  disabled={rechecking}
+                  onClick={() => {
+                    setRechecking(true);
+                    setTimeout(() => {
+                      const prev = lastSeoScore;
+                      const delta = prev === null ? 0 : seo.score - prev;
+                      const msg =
+                        prev === null
+                          ? `SEO score: ${seo.score}/100`
+                          : delta > 0
+                            ? `SEO improved by ${delta} → ${seo.score}/100 🎉`
+                            : delta < 0
+                              ? `SEO dropped by ${Math.abs(delta)} → ${seo.score}/100`
+                              : `No change · still ${seo.score}/100`;
+                      (delta >= 0 ? toast.success : toast.error)(msg);
+                      setLastSeoScore(seo.score);
+                      setRechecking(false);
+                    }, 250);
+                  }}
+                >
+                  <RefreshCw className={`mr-2 h-4 w-4 ${rechecking ? "animate-spin" : ""}`} />
+                  {rechecking ? "Rechecking…" : "Recheck SEO"}
+                </Button>
+                {lastSeoScore !== null && (
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    Last checked: {lastSeoScore}/100
+                  </p>
+                )}
 
                 {failingChecks.length > 0 && (
                   <div className="mt-4">
