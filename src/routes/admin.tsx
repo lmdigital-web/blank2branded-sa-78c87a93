@@ -7,6 +7,7 @@ import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
 import { toast } from "sonner";
+import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
 
 type Post = {
   id: string;
@@ -207,6 +208,8 @@ export function AdminPage() {
               <BreakdownCard title="Top countries" icon={<Globe className="h-4 w-4" />} rows={topCountries} empty="No location data" />
             </div>
           </div>
+
+          <SearchConsolePanel />
 
           <div className="mt-8 overflow-hidden rounded-lg border border-border bg-card">
             <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3">

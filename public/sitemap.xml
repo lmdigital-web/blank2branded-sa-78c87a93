@@ -73,19 +73,19 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/sweater</loc>
-    <lastmod>2026-05-27</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/v-neck-t-shirt</loc>
-    <lastmod>2026-05-27</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/hoodie</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -115,13 +115,13 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/oxford-jacket</loc>
-    <lastmod>2026-05-27</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/fleece-hoodie-zip</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -160,5 +160,11 @@
     <lastmod>2026-05-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/brand-storytelling-through-apparel-make-your-clothes-speak</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
