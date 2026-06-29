@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save, CalendarClock, Send } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Mode = "new" | "edit";
 
@@ -188,6 +189,13 @@ export function PostEditorPage() {
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-3xl font-bold">{mode === "new" ? "New Post" : "Edit Post"}</h1>
             <div className="flex flex-wrap gap-2">
+              {mode === "edit" && postId && (
+                <Link to={`/admin/preview/${postId}`} target="_blank">
+                  <Button variant="outline" type="button">
+                    <Eye className="mr-2 h-4 w-4" /> Preview
+                  </Button>
+                </Link>
+              )}
               <Button variant="outline" disabled={saving} onClick={() => onSave("draft")}>
                 <Save className="mr-2 h-4 w-4" /> Save draft
               </Button>
