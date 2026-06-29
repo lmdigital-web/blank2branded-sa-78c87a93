@@ -11,8 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink, Upload, Loader2 } from "lucide-react";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
+import { uploadBlogImage } from "@/lib/upload-blog-image";
+import { useRef } from "react";
 
 type Mode = "new" | "edit";
 
