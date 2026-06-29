@@ -5,7 +5,7 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
@@ -40,6 +40,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
+  const [section, setSection] = useState<"blog" | "search">("blog");
 
   useEffect(() => {
     if (loading) return;
@@ -161,144 +162,224 @@ export function AdminPage() {
 
   const rangeLabel = range === "all" ? "all time" : `last ${range} days`;
 
+
+  const navItems = [
+    { id: "blog" as const, label: "Blog", icon: FileText },
+    { id: "search" as const, label: "Google Search", icon: Search },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header variant="solid" />
-      <main className="flex-1 bg-muted/30 py-12">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Blog Admin</h1>
-              <p className="text-sm text-muted-foreground">Signed in as {user.email}</p>
-            </div>
-            <div className="flex gap-2">
-              <Link to="/admin/posts/new">
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" /> New post
-                </Button>
-              </Link>
-              <Button variant="outline" onClick={onLogout}>
-                <LogOut className="mr-2 h-4 w-4" /> Sign out
-              </Button>
-            </div>
-          </div>
-
-          {/* Analytics dashboard */}
-          <div className="mt-8">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">Traffic — {rangeLabel}</h2>
-              <div className="inline-flex rounded-md border border-border bg-card p-1">
-                {(["7", "30", "all"] as Range[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => setRange(r)}
-                    className={`rounded px-3 py-1 text-xs font-medium transition ${range === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                  >
-                    {r === "all" ? "All time" : `Last ${r}d`}
-                  </button>
-                ))}
+      <main className="flex-1 bg-muted/30">
+        <div className="mx-auto flex max-w-7xl gap-6 px-4 py-8 md:px-6">
+          {/* Left sidebar nav */}
+          <aside className="hidden w-56 shrink-0 md:block">
+            <div className="sticky top-24 rounded-lg border border-border bg-card p-2">
+              <div className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Admin
+              </div>
+              <nav className="flex flex-col gap-1">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = section === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setSection(item.id)}
+                      className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
+              <div className="mt-2 border-t border-border pt-2">
+                <button
+                  onClick={onLogout}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
               </div>
             </div>
+          </aside>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <StatCard icon={<Eye className="h-4 w-4" />} label="Total views" value={totalViews.toLocaleString()} />
-              <StatCard icon={<TrendingUp className="h-4 w-4" />} label="Published posts" value={publishedCount.toString()} />
-              <StatCard
-                icon={<Eye className="h-4 w-4" />}
-                label="Avg views / published post"
-                value={publishedCount ? Math.round(totalViews / publishedCount).toLocaleString() : "0"}
-              />
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <BreakdownCard title="Top referrers" icon={<Link2 className="h-4 w-4" />} rows={topReferrers} empty="No traffic yet" />
-              <BreakdownCard title="Top countries" icon={<Globe className="h-4 w-4" />} rows={topCountries} empty="No location data" />
-            </div>
+          {/* Mobile section switcher */}
+          <div className="md:hidden mb-4 flex w-full gap-2 overflow-x-auto">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = section === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setSection(item.id)}
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-md border px-3 py-2 text-sm font-medium ${
+                    active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
 
-          <SearchConsolePanel />
-
-          <div className="mt-8 overflow-hidden rounded-lg border border-border bg-card">
-            <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Posts (sorted by views)</h2>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">
+                  {section === "blog" ? "Blog Admin" : "Google Search Console"}
+                </h1>
+                <p className="text-sm text-muted-foreground">Signed in as {user.email}</p>
+              </div>
+              {section === "blog" && (
+                <div className="flex gap-2">
+                  <Link to="/admin/posts/new">
+                    <Button>
+                      <Plus className="mr-2 h-4 w-4" /> New post
+                    </Button>
+                  </Link>
+                  <Button variant="outline" onClick={onLogout} className="md:hidden">
+                    <LogOut className="mr-2 h-4 w-4" /> Sign out
+                  </Button>
+                </div>
+              )}
             </div>
-            <table className="w-full">
-              <thead className="border-b border-border bg-muted/30 text-left text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">SEO</th>
-                  <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
-                  <th className="px-4 py-3">Updated</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loadingData ? (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
-                ) : posts.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No posts yet — create your first one.</td></tr>
-                ) : (
-                  sortedPosts.map((p) => {
-                    const count = viewsByPost.get(p.id) ?? 0;
-                    const seo = computeSeoScore({
-                      title: p.title || "",
-                      slug: p.slug || "",
-                      excerpt: p.excerpt || "",
-                      content: p.content || "",
-                      cover_image_url: p.cover_image_url || "",
-                      meta_title: p.meta_title || "",
-                      meta_description: p.meta_description || "",
-                      keywords: p.keywords || "",
-                    });
-                    const badge = seoBadge(seo.score);
-                    return (
-                      <tr key={p.id} className="border-b border-border last:border-0">
-                        <td className="px-4 py-3 font-medium">{p.title}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-block rounded px-2 py-0.5 text-xs ${p.status === "published" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div
-                            className={`inline-flex items-center gap-2 rounded border px-2 py-0.5 text-xs font-medium ${badge.color}`}
-                            title={`${badge.label} — ${seo.score}/100`}
-                          >
-                            <span className="tabular-nums">{seo.score}</span>
-                            <span className="hidden sm:inline">/ 100</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums font-semibold">
-                          {count.toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-muted-foreground">
-                          {new Date(p.updated_at).toLocaleDateString("en-ZA")}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-1">
-                            <Link to={`/admin/preview/${p.id}`} target="_blank">
-                              <Button size="sm" variant="ghost" title="Preview"><Eye className="h-4 w-4" /></Button>
-                            </Link>
-                            {p.status === "published" && (
-                              <Link to={`/blog/${p.slug}`} target="_blank">
-                                <Button size="sm" variant="ghost" title="View live"><ExternalLink className="h-4 w-4" /></Button>
-                              </Link>
-                            )}
-                            <Link to={`/admin/posts/${p.id}`}>
-                              <Button size="sm" variant="ghost" title="Edit"><Edit className="h-4 w-4" /></Button>
-                            </Link>
-                            <Button size="sm" variant="ghost" title="Delete" onClick={() => onDelete(p.id)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </td>
+
+            {section === "blog" && (
+              <>
+                {/* Analytics dashboard */}
+                <div className="mt-8">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="text-xl font-semibold">Traffic — {rangeLabel}</h2>
+                    <div className="inline-flex rounded-md border border-border bg-card p-1">
+                      {(["7", "30", "all"] as Range[]).map((r) => (
+                        <button
+                          key={r}
+                          onClick={() => setRange(r)}
+                          className={`rounded px-3 py-1 text-xs font-medium transition ${range === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                        >
+                          {r === "all" ? "All time" : `Last ${r}d`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <StatCard icon={<Eye className="h-4 w-4" />} label="Total views" value={totalViews.toLocaleString()} />
+                    <StatCard icon={<TrendingUp className="h-4 w-4" />} label="Published posts" value={publishedCount.toString()} />
+                    <StatCard
+                      icon={<Eye className="h-4 w-4" />}
+                      label="Avg views / published post"
+                      value={publishedCount ? Math.round(totalViews / publishedCount).toLocaleString() : "0"}
+                    />
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <BreakdownCard title="Top referrers" icon={<Link2 className="h-4 w-4" />} rows={topReferrers} empty="No traffic yet" />
+                    <BreakdownCard title="Top countries" icon={<Globe className="h-4 w-4" />} rows={topCountries} empty="No location data" />
+                  </div>
+                </div>
+
+                <div className="mt-8 overflow-hidden rounded-lg border border-border bg-card">
+                  <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Posts (sorted by views)</h2>
+                  </div>
+                  <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="border-b border-border bg-muted/30 text-left text-xs uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-4 py-3">Title</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">SEO</th>
+                        <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
+                        <th className="px-4 py-3">Updated</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                      {loadingData ? (
+                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+                      ) : posts.length === 0 ? (
+                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No posts yet — create your first one.</td></tr>
+                      ) : (
+                        sortedPosts.map((p) => {
+                          const count = viewsByPost.get(p.id) ?? 0;
+                          const seo = computeSeoScore({
+                            title: p.title || "",
+                            slug: p.slug || "",
+                            excerpt: p.excerpt || "",
+                            content: p.content || "",
+                            cover_image_url: p.cover_image_url || "",
+                            meta_title: p.meta_title || "",
+                            meta_description: p.meta_description || "",
+                            keywords: p.keywords || "",
+                          });
+                          const badge = seoBadge(seo.score);
+                          return (
+                            <tr key={p.id} className="border-b border-border last:border-0">
+                              <td className="px-4 py-3 font-medium">{p.title}</td>
+                              <td className="px-4 py-3">
+                                <span className={`inline-block rounded px-2 py-0.5 text-xs ${p.status === "published" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
+                                  {p.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div
+                                  className={`inline-flex items-center gap-2 rounded border px-2 py-0.5 text-xs font-medium ${badge.color}`}
+                                  title={`${badge.label} — ${seo.score}/100`}
+                                >
+                                  <span className="tabular-nums">{seo.score}</span>
+                                  <span className="hidden sm:inline">/ 100</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums font-semibold">
+                                {count.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-muted-foreground">
+                                {new Date(p.updated_at).toLocaleDateString("en-ZA")}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <div className="flex justify-end gap-1">
+                                  <Link to={`/admin/preview/${p.id}`} target="_blank">
+                                    <Button size="sm" variant="ghost" title="Preview"><Eye className="h-4 w-4" /></Button>
+                                  </Link>
+                                  {p.status === "published" && (
+                                    <Link to={`/blog/${p.slug}`} target="_blank">
+                                      <Button size="sm" variant="ghost" title="View live"><ExternalLink className="h-4 w-4" /></Button>
+                                    </Link>
+                                  )}
+                                  <Link to={`/admin/posts/${p.id}`}>
+                                    <Button size="sm" variant="ghost" title="Edit"><Edit className="h-4 w-4" /></Button>
+                                  </Link>
+                                  <Button size="sm" variant="ghost" title="Delete" onClick={() => onDelete(p.id)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {section === "search" && (
+              <div className="mt-8">
+                <SearchConsolePanel />
+              </div>
+            )}
           </div>
         </div>
       </main>
