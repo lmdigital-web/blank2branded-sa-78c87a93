@@ -349,10 +349,65 @@ export function PostEditorPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">SEO Analysis</h3>
+                  <span className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium ${seoB.color}`}>
+                    {seo.score}/100 · {seoB.label}
+                  </span>
+                </div>
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className={`h-full ${seoB.bar} transition-all`} style={{ width: `${seo.score}%` }} />
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {seo.words} words · keyword density {seo.density.toFixed(2)}%
+                </p>
+
+                {failingChecks.length > 0 && (
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Fix these ({failingChecks.length})
+                    </p>
+                    <ul className="space-y-2">
+                      {failingChecks.map((c) => (
+                        <li key={c.id} className="flex gap-2 text-sm">
+                          <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                          <div>
+                            <div className="font-medium leading-tight">{c.label}</div>
+                            <div className="text-xs text-muted-foreground">{c.hint}</div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {passingChecks.length > 0 && (
+                  <details className="mt-4">
+                    <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Passing ({passingChecks.length})
+                    </summary>
+                    <ul className="mt-2 space-y-1.5">
+                      {passingChecks.map((c) => (
+                        <li key={c.id} className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          <span className="leading-tight">{c.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </div>
+
+              <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">Status</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Currently: <span className="font-medium text-foreground capitalize">{form.status}</span>
                 </p>
+                {mode === "edit" && postId && (
+                  <Link to={`/admin/preview/${postId}`} target="_blank" className="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                    <ExternalLink className="h-3.5 w-3.5" /> Open preview in new tab
+                  </Link>
+                )}
               </div>
             </aside>
           </div>
