@@ -11,8 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink, Upload, Loader2 } from "lucide-react";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
+import { uploadBlogImage } from "@/lib/upload-blog-image";
+import { useRef } from "react";
 
 type Mode = "new" | "edit";
 
@@ -56,6 +58,21 @@ export function PostEditorPage() {
   const [form, setForm] = useState<FormState>(empty);
   const [saving, setSaving] = useState(false);
   const [loadingPost, setLoadingPost] = useState(!isNew);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleCoverUpload(file: File) {
+    setUploadingCover(true);
+    try {
+      const url = await uploadBlogImage(file);
+      update("cover_image_url", url);
+      toast.success("Cover image uploaded");
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally {
+      setUploadingCover(false);
+    }
+  }
 
   useEffect(() => {
     if (loading) return;
@@ -269,7 +286,35 @@ export function PostEditorPage() {
             <aside className="space-y-5">
               <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">Featured image</h3>
-                <Label htmlFor="cover" className="mt-3 block text-sm">Image URL</Label>
+                <div className="mt-3 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={uploadingCover}
+                    onClick={() => coverInputRef.current?.click()}
+                  >
+                    {uploadingCover ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                    {uploadingCover ? "Uploading…" : "Upload image"}
+                  </Button>
+                  {form.cover_image_url && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => update("cover_image_url", "")}>
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleCoverUpload(f);
+                    e.target.value = "";
+                  }}
+                />
+                <Label htmlFor="cover" className="mt-4 block text-xs text-muted-foreground">Or paste an image URL</Label>
                 <Input
                   id="cover"
                   value={form.cover_image_url}

@@ -3,7 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bold,
   Italic,
@@ -15,10 +15,14 @@ import {
   Quote,
   Link as LinkIcon,
   Image as ImageIcon,
+  Upload,
+  Loader2,
   Undo,
   Redo,
   Code,
 } from "lucide-react";
+import { uploadBlogImage } from "@/lib/upload-blog-image";
+import { toast } from "sonner";
 
 type Props = {
   value: string;
@@ -26,6 +30,9 @@ type Props = {
 };
 
 export function RichTextEditor({ value, onChange }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -42,8 +49,35 @@ export function RichTextEditor({ value, onChange }: Props) {
         class:
           "prose prose-slate max-w-none min-h-[400px] focus:outline-none px-4 py-3",
       },
+      handlePaste(view, event) {
+        const files = Array.from(event.clipboardData?.files || []).filter((f) => f.type.startsWith("image/"));
+        if (files.length === 0) return false;
+        event.preventDefault();
+        files.forEach((f) => handleUpload(f));
+        return true;
+      },
+      handleDrop(view, event) {
+        const files = Array.from((event as DragEvent).dataTransfer?.files || []).filter((f) => f.type.startsWith("image/"));
+        if (files.length === 0) return false;
+        event.preventDefault();
+        files.forEach((f) => handleUpload(f));
+        return true;
+      },
     },
   });
+
+  async function handleUpload(file: File) {
+    setUploading(true);
+    try {
+      const url = await uploadBlogImage(file);
+      editor?.chain().focus().setImage({ src: url }).run();
+      toast.success("Image uploaded");
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
@@ -102,13 +136,30 @@ export function RichTextEditor({ value, onChange }: Props) {
         </Btn>
         <Btn
           onClick={() => {
-            const url = window.prompt("Image URL");
+            const url = window.prompt("Image URL (or use Upload button)");
             if (url) editor.chain().focus().setImage({ src: url }).run();
           }}
-          title="Image"
+          title="Insert image by URL"
         >
           <ImageIcon className="h-4 w-4" />
         </Btn>
+        <Btn
+          onClick={() => fileInputRef.current?.click()}
+          title="Upload image"
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+        </Btn>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleUpload(f);
+            e.target.value = "";
+          }}
+        />
         <span className="mx-1 h-5 w-px bg-border" />
         <Btn onClick={() => editor.chain().focus().undo().run()} title="Undo"><Undo className="h-4 w-4" /></Btn>
         <Btn onClick={() => editor.chain().focus().redo().run()} title="Redo"><Redo className="h-4 w-4" /></Btn>
