@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
+import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
   id: string;
@@ -16,6 +17,12 @@ type Post = {
   status: string;
   published_at: string | null;
   updated_at: string;
+  excerpt: string | null;
+  content: string | null;
+  cover_image_url: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  keywords: string | null;
 };
 
 type View = {
@@ -55,7 +62,7 @@ export function AdminPage() {
     const [postsRes, viewsRes] = await Promise.all([
       supabase
         .from("posts")
-        .select("id,slug,title,status,published_at,updated_at")
+        .select("id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords")
         .order("updated_at", { ascending: false }),
       supabase
         .from("post_views")
