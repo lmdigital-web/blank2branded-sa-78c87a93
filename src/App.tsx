@@ -16,6 +16,7 @@ const BlogPostPage = lazy(() => import("@/routes/blog.$slug").then((m) => ({ def
 const LoginPage = lazy(() => import("@/routes/login").then((m) => ({ default: m.LoginPage })));
 const AdminPage = lazy(() => import("@/routes/admin").then((m) => ({ default: m.AdminPage })));
 const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) => ({ default: m.PostEditorPage })));
+const PostPreviewPage = lazy(() => import("@/routes/admin.preview").then((m) => ({ default: m.PostPreviewPage })));
 const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
 const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
@@ -197,6 +198,7 @@ function AppContent() {
   else if (cleanPath === "/admin") page = <AdminPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
+  else if (/^\/admin\/preview\/[^/]+$/.test(cleanPath)) page = <PostPreviewPage />;
   else if (cleanPath === "/privacy") page = <PrivacyPage />;
   else if (cleanPath === "/terms") page = <TermsPage />;
   else if (cleanPath === "/display") page = <DisplayPage />;
