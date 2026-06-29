@@ -30,6 +30,9 @@ type Props = {
 };
 
 export function RichTextEditor({ value, onChange }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -46,8 +49,35 @@ export function RichTextEditor({ value, onChange }: Props) {
         class:
           "prose prose-slate max-w-none min-h-[400px] focus:outline-none px-4 py-3",
       },
+      handlePaste(view, event) {
+        const files = Array.from(event.clipboardData?.files || []).filter((f) => f.type.startsWith("image/"));
+        if (files.length === 0) return false;
+        event.preventDefault();
+        files.forEach((f) => handleUpload(f));
+        return true;
+      },
+      handleDrop(view, event) {
+        const files = Array.from((event as DragEvent).dataTransfer?.files || []).filter((f) => f.type.startsWith("image/"));
+        if (files.length === 0) return false;
+        event.preventDefault();
+        files.forEach((f) => handleUpload(f));
+        return true;
+      },
     },
   });
+
+  async function handleUpload(file: File) {
+    setUploading(true);
+    try {
+      const url = await uploadBlogImage(file);
+      editor?.chain().focus().setImage({ src: url }).run();
+      toast.success("Image uploaded");
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
