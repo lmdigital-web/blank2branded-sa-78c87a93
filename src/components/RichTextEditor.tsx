@@ -3,7 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bold,
   Italic,
@@ -15,10 +15,14 @@ import {
   Quote,
   Link as LinkIcon,
   Image as ImageIcon,
+  Upload,
+  Loader2,
   Undo,
   Redo,
   Code,
 } from "lucide-react";
+import { uploadBlogImage } from "@/lib/upload-blog-image";
+import { toast } from "sonner";
 
 type Props = {
   value: string;
