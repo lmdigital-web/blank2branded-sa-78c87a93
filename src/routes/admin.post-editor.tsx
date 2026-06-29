@@ -58,6 +58,21 @@ export function PostEditorPage() {
   const [form, setForm] = useState<FormState>(empty);
   const [saving, setSaving] = useState(false);
   const [loadingPost, setLoadingPost] = useState(!isNew);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleCoverUpload(file: File) {
+    setUploadingCover(true);
+    try {
+      const url = await uploadBlogImage(file);
+      update("cover_image_url", url);
+      toast.success("Cover image uploaded");
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally {
+      setUploadingCover(false);
+    }
+  }
 
   useEffect(() => {
     if (loading) return;
