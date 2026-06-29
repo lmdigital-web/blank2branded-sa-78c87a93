@@ -60,6 +60,8 @@ export function PostEditorPage() {
   const [loadingPost, setLoadingPost] = useState(!isNew);
   const [uploadingCover, setUploadingCover] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const [lastSeoScore, setLastSeoScore] = useState<number | null>(null);
+  const [rechecking, setRechecking] = useState(false);
 
   async function handleCoverUpload(file: File) {
     setUploadingCover(true);
