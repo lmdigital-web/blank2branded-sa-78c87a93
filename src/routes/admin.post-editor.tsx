@@ -286,7 +286,35 @@ export function PostEditorPage() {
             <aside className="space-y-5">
               <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">Featured image</h3>
-                <Label htmlFor="cover" className="mt-3 block text-sm">Image URL</Label>
+                <div className="mt-3 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={uploadingCover}
+                    onClick={() => coverInputRef.current?.click()}
+                  >
+                    {uploadingCover ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                    {uploadingCover ? "Uploading…" : "Upload image"}
+                  </Button>
+                  {form.cover_image_url && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => update("cover_image_url", "")}>
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleCoverUpload(f);
+                    e.target.value = "";
+                  }}
+                />
+                <Label htmlFor="cover" className="mt-4 block text-xs text-muted-foreground">Or paste an image URL</Label>
                 <Input
                   id="cover"
                   value={form.cover_image_url}
