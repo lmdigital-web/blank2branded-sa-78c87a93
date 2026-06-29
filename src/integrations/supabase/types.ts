@@ -433,6 +433,56 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_submissions: {
+        Row: {
+          google_ping_ok: boolean
+          google_ping_status: number | null
+          id: string
+          indexing_checked_at: string | null
+          indexing_coverage: string | null
+          indexing_state: string | null
+          indexnow_ok: boolean
+          indexnow_status: number | null
+          post_id: string | null
+          submitted_at: string
+          url: string
+        }
+        Insert: {
+          google_ping_ok?: boolean
+          google_ping_status?: number | null
+          id?: string
+          indexing_checked_at?: string | null
+          indexing_coverage?: string | null
+          indexing_state?: string | null
+          indexnow_ok?: boolean
+          indexnow_status?: number | null
+          post_id?: string | null
+          submitted_at?: string
+          url: string
+        }
+        Update: {
+          google_ping_ok?: boolean
+          google_ping_status?: number | null
+          id?: string
+          indexing_checked_at?: string | null
+          indexing_coverage?: string | null
+          indexing_state?: string | null
+          indexnow_ok?: boolean
+          indexnow_status?: number | null
+          post_id?: string | null
+          submitted_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_submissions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shop_categories: {
         Row: {
           created_at: string
