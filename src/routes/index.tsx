@@ -3,6 +3,7 @@ import dtfPrintingImg from "@/assets/dtf-printing.jpg";
 import blankApparelImg from "@/assets/blank-apparel.jpg";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Testimonials } from "@/components/Testimonials";
 import {
   Printer,
   Shirt,
@@ -434,6 +435,8 @@ export function Home() {
           </Link>
         </div>
       </section>
+
+      <Testimonials />
 
       <Footer />
     </div>
