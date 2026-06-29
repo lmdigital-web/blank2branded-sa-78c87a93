@@ -5,9 +5,10 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search, Send } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
+import { IndexingPanel } from "@/components/admin/IndexingPanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -40,7 +41,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "search">("blog");
+  const [section, setSection] = useState<"blog" | "search" | "indexing">("blog");
 
   useEffect(() => {
     if (loading) return;
@@ -166,6 +167,7 @@ export function AdminPage() {
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
     { id: "search" as const, label: "Google Search", icon: Search },
+    { id: "indexing" as const, label: "Indexing", icon: Send },
   ];
 
   return (
@@ -235,7 +237,7 @@ export function AdminPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                  {section === "blog" ? "Blog Admin" : "Google Search Console"}
+                  {section === "blog" ? "Blog Admin" : section === "search" ? "Google Search Console" : "Indexing"}
                 </h1>
                 <p className="text-sm text-muted-foreground">Signed in as {user.email}</p>
               </div>
@@ -378,6 +380,12 @@ export function AdminPage() {
             {section === "search" && (
               <div className="mt-8">
                 <SearchConsolePanel />
+              </div>
+            )}
+
+            {section === "indexing" && (
+              <div className="mt-8">
+                <IndexingPanel />
               </div>
             )}
           </div>

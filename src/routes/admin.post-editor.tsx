@@ -179,6 +179,18 @@ export function PostEditorPage() {
       toast.error(res.error.message);
       return;
     }
+
+    // Fire-and-forget submission to Google + IndexNow on publish
+    if (action === "publish") {
+      const postId = (res.data as { id: string }).id;
+      supabase.functions
+        .invoke("notify-search-engines", { body: { post_id: postId } })
+        .then(({ error }) => {
+          if (error) console.error("notify-search-engines failed", error);
+          else toast.success("Submitted to Google + IndexNow");
+        });
+    }
+
     toast.success(
       action === "publish" ? "Post published" :
       action === "schedule" ? `Scheduled for ${scheduledAt!.toLocaleString("en-ZA")}` :
