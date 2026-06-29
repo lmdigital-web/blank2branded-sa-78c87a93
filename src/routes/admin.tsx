@@ -382,6 +382,12 @@ export function AdminPage() {
                 <SearchConsolePanel />
               </div>
             )}
+
+            {section === "indexing" && (
+              <div className="mt-8">
+                <IndexingPanel />
+              </div>
+            )}
           </div>
         </div>
       </main>
