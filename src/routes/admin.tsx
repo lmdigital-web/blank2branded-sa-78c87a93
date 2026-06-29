@@ -162,7 +162,6 @@ export function AdminPage() {
 
   const rangeLabel = range === "all" ? "all time" : `last ${range} days`;
 
-  const rangeLabel = range === "all" ? "all time" : `last ${range} days`;
 
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
