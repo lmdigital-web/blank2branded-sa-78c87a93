@@ -178,6 +178,21 @@ export function PostEditorPage() {
   const titleCount = form.meta_title.length;
   const descCount = form.meta_description.length;
 
+  const seo = computeSeoScore({
+    title: form.title,
+    slug: form.slug,
+    excerpt: form.excerpt,
+    content: form.content,
+    cover_image_url: form.cover_image_url,
+    meta_title: form.meta_title,
+    meta_description: form.meta_description,
+    keywords: form.keywords,
+  });
+  const seoB = seoBadge(seo.score);
+  const failingChecks = seo.checks.filter((c) => !c.pass);
+  const passingChecks = seo.checks.filter((c) => c.pass);
+
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header variant="solid" />
