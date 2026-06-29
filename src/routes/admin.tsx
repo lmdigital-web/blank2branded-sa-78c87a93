@@ -5,7 +5,7 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
