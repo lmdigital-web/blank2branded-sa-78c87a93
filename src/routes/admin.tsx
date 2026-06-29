@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
+import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
   id: string;
@@ -16,6 +17,12 @@ type Post = {
   status: string;
   published_at: string | null;
   updated_at: string;
+  excerpt: string | null;
+  content: string | null;
+  cover_image_url: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  keywords: string | null;
 };
 
 type View = {
@@ -55,7 +62,7 @@ export function AdminPage() {
     const [postsRes, viewsRes] = await Promise.all([
       supabase
         .from("posts")
-        .select("id,slug,title,status,published_at,updated_at")
+        .select("id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords")
         .order("updated_at", { ascending: false }),
       supabase
         .from("post_views")
@@ -220,6 +227,7 @@ export function AdminPage() {
                 <tr>
                   <th className="px-4 py-3">Title</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">SEO</th>
                   <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
                   <th className="px-4 py-3">Updated</th>
                   <th className="px-4 py-3 text-right">Actions</th>
@@ -227,12 +235,23 @@ export function AdminPage() {
               </thead>
               <tbody>
                 {loadingData ? (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
                 ) : posts.length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No posts yet — create your first one.</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No posts yet — create your first one.</td></tr>
                 ) : (
                   sortedPosts.map((p) => {
                     const count = viewsByPost.get(p.id) ?? 0;
+                    const seo = computeSeoScore({
+                      title: p.title || "",
+                      slug: p.slug || "",
+                      excerpt: p.excerpt || "",
+                      content: p.content || "",
+                      cover_image_url: p.cover_image_url || "",
+                      meta_title: p.meta_title || "",
+                      meta_description: p.meta_description || "",
+                      keywords: p.keywords || "",
+                    });
+                    const badge = seoBadge(seo.score);
                     return (
                       <tr key={p.id} className="border-b border-border last:border-0">
                         <td className="px-4 py-3 font-medium">{p.title}</td>
@@ -240,6 +259,15 @@ export function AdminPage() {
                           <span className={`inline-block rounded px-2 py-0.5 text-xs ${p.status === "published" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
                             {p.status}
                           </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div
+                            className={`inline-flex items-center gap-2 rounded border px-2 py-0.5 text-xs font-medium ${badge.color}`}
+                            title={`${badge.label} — ${seo.score}/100`}
+                          >
+                            <span className="tabular-nums">{seo.score}</span>
+                            <span className="hidden sm:inline">/ 100</span>
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums font-semibold">
                           {count.toLocaleString()}
@@ -249,9 +277,12 @@ export function AdminPage() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex justify-end gap-1">
+                            <Link to={`/admin/preview/${p.id}`} target="_blank">
+                              <Button size="sm" variant="ghost" title="Preview"><Eye className="h-4 w-4" /></Button>
+                            </Link>
                             {p.status === "published" && (
                               <Link to={`/blog/${p.slug}`} target="_blank">
-                                <Button size="sm" variant="ghost" title="View"><ExternalLink className="h-4 w-4" /></Button>
+                                <Button size="sm" variant="ghost" title="View live"><ExternalLink className="h-4 w-4" /></Button>
                               </Link>
                             )}
                             <Link to={`/admin/posts/${p.id}`}>

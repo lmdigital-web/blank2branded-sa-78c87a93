@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { slugify } from "@/lib/slugify";
 import { toast } from "sonner";
-import { ArrowLeft, Save, CalendarClock, Send } from "lucide-react";
+import { ArrowLeft, Save, CalendarClock, Send, Eye, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Mode = "new" | "edit";
 
@@ -177,6 +178,21 @@ export function PostEditorPage() {
   const titleCount = form.meta_title.length;
   const descCount = form.meta_description.length;
 
+  const seo = computeSeoScore({
+    title: form.title,
+    slug: form.slug,
+    excerpt: form.excerpt,
+    content: form.content,
+    cover_image_url: form.cover_image_url,
+    meta_title: form.meta_title,
+    meta_description: form.meta_description,
+    keywords: form.keywords,
+  });
+  const seoB = seoBadge(seo.score);
+  const failingChecks = seo.checks.filter((c) => !c.pass);
+  const passingChecks = seo.checks.filter((c) => c.pass);
+
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header variant="solid" />
@@ -188,6 +204,13 @@ export function PostEditorPage() {
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-3xl font-bold">{mode === "new" ? "New Post" : "Edit Post"}</h1>
             <div className="flex flex-wrap gap-2">
+              {mode === "edit" && postId && (
+                <Link to={`/admin/preview/${postId}`} target="_blank">
+                  <Button variant="outline" type="button">
+                    <Eye className="mr-2 h-4 w-4" /> Preview
+                  </Button>
+                </Link>
+              )}
               <Button variant="outline" disabled={saving} onClick={() => onSave("draft")}>
                 <Save className="mr-2 h-4 w-4" /> Save draft
               </Button>
@@ -326,10 +349,65 @@ export function PostEditorPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">SEO Analysis</h3>
+                  <span className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium ${seoB.color}`}>
+                    {seo.score}/100 · {seoB.label}
+                  </span>
+                </div>
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className={`h-full ${seoB.bar} transition-all`} style={{ width: `${seo.score}%` }} />
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {seo.words} words · keyword density {seo.density.toFixed(2)}%
+                </p>
+
+                {failingChecks.length > 0 && (
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Fix these ({failingChecks.length})
+                    </p>
+                    <ul className="space-y-2">
+                      {failingChecks.map((c) => (
+                        <li key={c.id} className="flex gap-2 text-sm">
+                          <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                          <div>
+                            <div className="font-medium leading-tight">{c.label}</div>
+                            <div className="text-xs text-muted-foreground">{c.hint}</div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {passingChecks.length > 0 && (
+                  <details className="mt-4">
+                    <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Passing ({passingChecks.length})
+                    </summary>
+                    <ul className="mt-2 space-y-1.5">
+                      {passingChecks.map((c) => (
+                        <li key={c.id} className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          <span className="leading-tight">{c.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </div>
+
+              <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">Status</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Currently: <span className="font-medium text-foreground capitalize">{form.status}</span>
                 </p>
+                {mode === "edit" && postId && (
+                  <Link to={`/admin/preview/${postId}`} target="_blank" className="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                    <ExternalLink className="h-3.5 w-3.5" /> Open preview in new tab
+                  </Link>
+                )}
               </div>
             </aside>
           </div>
