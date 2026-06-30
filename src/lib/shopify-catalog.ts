@@ -49,7 +49,7 @@ export async function fetchShopifyCatalog(force = false): Promise<CatalogProduct
     const all: CatalogProduct[] = [];
     let cursor: string | null = null;
     for (let i = 0; i < 20; i++) {
-      const res = await fetch(SHOPIFY_STOREFRONT_URL, {
+      const res: Response = await fetch(SHOPIFY_STOREFRONT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,10 +58,10 @@ export async function fetchShopifyCatalog(force = false): Promise<CatalogProduct
         body: JSON.stringify({ query: QUERY, variables: { first: 100, cursor } }),
       });
       if (!res.ok) throw new Error(`Shopify ${res.status}`);
-      const json = await res.json();
+      const json: any = await res.json();
       if (json.errors) throw new Error(json.errors[0]?.message ?? "Shopify error");
-      const page = json.data.products;
-      for (const e of page.edges) {
+      const page: any = json.data.products;
+      for (const e of page.edges as any[]) {
         const n = e.node;
         all.push({
           id: n.id,
