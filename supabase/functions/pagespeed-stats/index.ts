@@ -11,8 +11,17 @@ async function psi(url: string, strategy: "mobile" | "desktop") {
   const key = Deno.env.get("PAGESPEED_API_KEY");
   const params = new URLSearchParams({ url, strategy, category: "PERFORMANCE" });
   if (key) params.set("key", key);
-  const r = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
-  if (!r.ok) throw new Error(`PSI ${strategy} ${r.status}`);
+  // Retry once on 429/5xx with a short backoff
+  let r = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
+  if (r.status === 429 || r.status >= 500) {
+    await new Promise((res) => setTimeout(res, 1500));
+    r = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
+  }
+  if (!r.ok) {
+    const text = await r.text().catch(() => "");
+    const hint = r.status === 429 && !key ? " — add a PAGESPEED_API_KEY secret to lift the anonymous rate limit" : "";
+    throw new Error(`PSI ${strategy} ${r.status}${hint}${text ? `: ${text.slice(0, 200)}` : ""}`);
+  }
   const j = await r.json();
   const lh = j.lighthouseResult;
   const audits = lh?.audits ?? {};
@@ -42,12 +51,14 @@ Deno.serve(async (req) => {
     const { url } = await req.json().catch(() => ({ url: "https://blank2branded.co.za" }));
     const target = url || "https://blank2branded.co.za";
 
-    const [mobile, desktop] = await Promise.all([psi(target, "mobile"), psi(target, "desktop")]);
+    const [mobile, desktop] = [await psi(target, "mobile"), await psi(target, "desktop")];
 
     return new Response(JSON.stringify({ url: target, mobile, desktop, fetched_at: new Date().toISOString() }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e instanceof Error ? e.message : e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const msg = String(e instanceof Error ? e.message : e);
+    const status = msg.includes(" 429") ? 429 : 500;
+    return new Response(JSON.stringify({ error: msg }), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
