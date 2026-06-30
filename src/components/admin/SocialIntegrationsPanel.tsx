@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Share2, Save, Loader2 } from "lucide-react";
+import { Share2, Save, Loader2, Send } from "lucide-react";
 
 export function SocialIntegrationsPanel() {
   const [url, setUrl] = useState("");
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
 
   useEffect(() => {
     supabase
@@ -41,6 +42,32 @@ export function SocialIntegrationsPanel() {
     setSaving(false);
     if (error) toast.error(error.message);
     else toast.success("Social media settings saved");
+  }
+
+  async function onTest() {
+    const target = url.trim();
+    if (!target) return toast.error("Save a webhook URL first");
+    try { new URL(target); } catch { return toast.error("Invalid URL"); }
+    setTesting(true);
+    try {
+      const res = await fetch(target, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Test ping from Blank2Branded",
+          url: "https://blank2branded.co.za/blog/test-ping",
+          excerpt: "This is a test payload to verify your Make.com scenario receives data.",
+          featured_image: "https://blank2branded.co.za/og-image.jpg",
+          test: true,
+        }),
+      });
+      if (res.ok) toast.success(`Test ping sent (HTTP ${res.status})`);
+      else toast.error(`Receiver returned HTTP ${res.status}`);
+    } catch (e) {
+      toast.error(`Test failed: ${(e as Error).message}`);
+    } finally {
+      setTesting(false);
+    }
   }
 
   if (loading) return <div className="rounded-lg border border-border bg-card p-6">Loading…</div>;
@@ -87,7 +114,11 @@ export function SocialIntegrationsPanel() {
             <Switch id="auto-fb" checked={enabled} onCheckedChange={setEnabled} />
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={onTest} disabled={testing || !url.trim()}>
+              {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+              Send test ping
+            </Button>
             <Button onClick={onSave} disabled={saving}>
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save settings
