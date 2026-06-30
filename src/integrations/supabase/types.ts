@@ -14,6 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_clicks: {
+        Row: {
+          clicked_at: string
+          id: string
+          post_id: string | null
+          product_handle: string | null
+          product_id: string | null
+          ref_code: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          id?: string
+          post_id?: string | null
+          product_handle?: string | null
+          product_id?: string | null
+          ref_code?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          id?: string
+          post_id?: string | null
+          product_handle?: string | null
+          product_id?: string | null
+          ref_code?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_clicks_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_conversions: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_email: string | null
+          id: string
+          line_items: Json | null
+          order_number: string | null
+          ordered_at: string
+          post_id: string | null
+          ref_code: string | null
+          shopify_order_id: string
+          total_amount: number
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          id?: string
+          line_items?: Json | null
+          order_number?: string | null
+          ordered_at?: string
+          post_id?: string | null
+          ref_code?: string | null
+          shopify_order_id: string
+          total_amount?: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          id?: string
+          line_items?: Json | null
+          order_number?: string | null
+          ordered_at?: string
+          post_id?: string | null
+          ref_code?: string | null
+          shopify_order_id?: string
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_conversions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_link_issues: {
+        Row: {
+          created_at: string
+          id: string
+          issue_type: string
+          last_checked_at: string
+          post_id: string
+          resolved_at: string | null
+          status_code: number | null
+          suggested_handle: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_type: string
+          last_checked_at?: string
+          post_id: string
+          resolved_at?: string | null
+          status_code?: number | null
+          suggested_handle?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_type?: string
+          last_checked_at?: string
+          post_id?: string
+          resolved_at?: string | null
+          status_code?: number | null
+          suggested_handle?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_link_issues_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
