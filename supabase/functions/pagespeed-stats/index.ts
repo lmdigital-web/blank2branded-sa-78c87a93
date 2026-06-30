@@ -51,12 +51,14 @@ Deno.serve(async (req) => {
     const { url } = await req.json().catch(() => ({ url: "https://blank2branded.co.za" }));
     const target = url || "https://blank2branded.co.za";
 
-    const [mobile, desktop] = await Promise.all([psi(target, "mobile"), psi(target, "desktop")]);
+    const [mobile, desktop] = [await psi(target, "mobile"), await psi(target, "desktop")];
 
     return new Response(JSON.stringify({ url: target, mobile, desktop, fetched_at: new Date().toISOString() }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e instanceof Error ? e.message : e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const msg = String(e instanceof Error ? e.message : e);
+    const status = msg.includes(" 429") ? 429 : 500;
+    return new Response(JSON.stringify({ error: msg }), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
