@@ -381,6 +381,11 @@ export function AdminPage() {
                                   <span className="hidden sm:inline">/ 100</span>
                                 </div>
                               </td>
+                              {blogTab === "published" && (
+                                <td className="px-4 py-3">
+                                  <SocialPingBadge status={p.social_ping_status} error={p.social_ping_error} />
+                                </td>
+                              )}
                               <td className="px-4 py-3 text-right tabular-nums font-semibold">
                                 {count.toLocaleString()}
                               </td>
@@ -418,7 +423,8 @@ export function AdminPage() {
                             </tr>
                           );
                         })
-                      )}
+                        );
+                      })()}
                     </tbody>
                   </table>
                   </div>
