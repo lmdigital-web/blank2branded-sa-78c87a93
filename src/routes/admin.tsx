@@ -418,6 +418,18 @@ export function AdminPage() {
                 <ShopifySyncPanel />
               </div>
             )}
+
+            {section === "opportunities" && (
+              <div className="mt-8">
+                <OpportunitiesPanel />
+              </div>
+            )}
+
+            {section === "speed" && (
+              <div className="mt-8">
+                <SpeedPanel />
+              </div>
+            )}
           </div>
         </div>
       </main>
