@@ -206,7 +206,7 @@ export function PostEditorPage() {
       return;
     }
 
-    // Fire-and-forget submission to Google Indexing API + IndexNow on publish
+    // Fire-and-forget submission to Google Indexing API + IndexNow + Social webhook on publish
     if (action === "publish") {
       const newId = (res.data as { id: string }).id;
       supabase.functions
@@ -214,6 +214,14 @@ export function PostEditorPage() {
         .then(({ error }) => {
           if (error) console.error("notify-search-engines failed", error);
           else toast.success("Index Request Sent to Google + IndexNow");
+        });
+      supabase.functions
+        .invoke("social-webhook-dispatch", { body: { post_id: newId } })
+        .then(({ data, error }) => {
+          if (error) { console.error("social-webhook-dispatch failed", error); return; }
+          const d = data as { status?: string; skipped?: boolean } | null;
+          if (d?.status === "sent") toast.success("Social webhook delivered");
+          else if (d?.status === "failed") toast.error("Social webhook failed — see blog list");
         });
     }
 

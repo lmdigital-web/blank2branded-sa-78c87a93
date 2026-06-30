@@ -5,7 +5,7 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search, Send, ShoppingBag, Sparkles, Gauge, Users, AlertTriangle } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search, Send, ShoppingBag, Sparkles, Gauge, Users, AlertTriangle, Share2, CheckCircle2, AlertCircle, MinusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
 import { IndexingPanel } from "@/components/admin/IndexingPanel";
@@ -14,6 +14,7 @@ import { OpportunitiesPanel } from "@/components/admin/OpportunitiesPanel";
 import { SpeedPanel } from "@/components/admin/SpeedPanel";
 import { DecayPanel } from "@/components/admin/DecayPanel";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
+import { SocialIntegrationsPanel } from "@/components/admin/SocialIntegrationsPanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -29,6 +30,8 @@ type Post = {
   meta_title: string | null;
   meta_description: string | null;
   keywords: string | null;
+  social_ping_status: string | null;
+  social_ping_error: string | null;
 };
 
 type View = {
@@ -46,7 +49,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "decay" | "authors" | "search" | "indexing" | "shopify" | "opportunities" | "speed">("blog");
+  const [section, setSection] = useState<"blog" | "decay" | "authors" | "search" | "indexing" | "shopify" | "opportunities" | "speed" | "social">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
@@ -62,15 +65,20 @@ export function AdminPage() {
   async function loadData() {
     setLoadingData(true);
     // Auto-promote scheduled posts whose time has passed to "published"
-    await supabase
+    const { data: promoted } = await supabase
       .from("posts")
       .update({ status: "published" })
       .eq("status", "scheduled")
-      .lte("published_at", new Date().toISOString());
+      .lte("published_at", new Date().toISOString())
+      .select("id");
+    // Fire social webhooks for newly-promoted posts (fire-and-forget)
+    for (const row of (promoted as { id: string }[] | null) ?? []) {
+      supabase.functions.invoke("social-webhook-dispatch", { body: { post_id: row.id } });
+    }
     const [postsRes, viewsRes] = await Promise.all([
       supabase
         .from("posts")
-        .select("id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords")
+        .select("id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords,social_ping_status,social_ping_error")
         .order("updated_at", { ascending: false }),
       supabase
         .from("post_views")
@@ -182,6 +190,7 @@ export function AdminPage() {
     { id: "search" as const, label: "Google Search", icon: Search },
     { id: "indexing" as const, label: "Indexing", icon: Send },
     { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
+    { id: "social" as const, label: "Social Integrations", icon: Share2 },
   ];
 
   return (
@@ -329,6 +338,7 @@ export function AdminPage() {
                         <th className="px-4 py-3">Title</th>
                         <th className="px-4 py-3">Status</th>
                         <th className="px-4 py-3">SEO</th>
+                        {blogTab === "published" && <th className="px-4 py-3">Social</th>}
                         <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
                         <th className="px-4 py-3">Updated</th>
                         {blogTab === "scheduled" && <th className="px-4 py-3">Scheduled for</th>}
@@ -336,11 +346,11 @@ export function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {loadingData ? (
-                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
-                      ) : sortedPosts.length === 0 ? (
-                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
-                      ) : (
+                      {(() => {
+                        const colCount = 6 + (blogTab === "published" ? 1 : 0) + (blogTab === "scheduled" ? 1 : 0);
+                        if (loadingData) return <tr><td colSpan={colCount} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>;
+                        if (sortedPosts.length === 0) return <tr><td colSpan={colCount} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>;
+                        return (
                         sortedPosts.map((p) => {
                           const count = viewsByPost.get(p.id) ?? 0;
                           const seo = computeSeoScore({
@@ -371,6 +381,11 @@ export function AdminPage() {
                                   <span className="hidden sm:inline">/ 100</span>
                                 </div>
                               </td>
+                              {blogTab === "published" && (
+                                <td className="px-4 py-3">
+                                  <SocialPingBadge status={p.social_ping_status} error={p.social_ping_error} />
+                                </td>
+                              )}
                               <td className="px-4 py-3 text-right tabular-nums font-semibold">
                                 {count.toLocaleString()}
                               </td>
@@ -408,7 +423,8 @@ export function AdminPage() {
                             </tr>
                           );
                         })
-                      )}
+                        );
+                      })()}
                     </tbody>
                   </table>
                   </div>
@@ -455,6 +471,12 @@ export function AdminPage() {
             {section === "authors" && (
               <div className="mt-8">
                 <AuthorsPanel />
+              </div>
+            )}
+
+            {section === "social" && (
+              <div className="mt-8">
+                <SocialIntegrationsPanel />
               </div>
             )}
           </div>
@@ -516,5 +538,40 @@ function BreakdownCard({
         </ul>
       )}
     </div>
+  );
+}
+
+function SocialPingBadge({ status, error }: { status: string | null; error: string | null }) {
+  if (status === "sent") {
+    return (
+      <span
+        title="Webhook delivered successfully"
+        className="inline-flex items-center gap-1 rounded border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-800"
+      >
+        <CheckCircle2 className="h-3 w-3" />
+        Social Ping Sent
+      </span>
+    );
+  }
+  if (status === "failed") {
+    return (
+      <span
+        title={error ? `Webhook error: ${error}` : "Webhook failed"}
+        className="inline-flex items-center gap-1 rounded border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-800"
+      >
+        <AlertCircle className="h-3 w-3" />
+        Ping Failed
+      </span>
+    );
+  }
+  // disabled, null, or other
+  return (
+    <span
+      title="Auto-posting is disabled or no webhook URL configured"
+      className="inline-flex items-center gap-1 rounded border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground"
+    >
+      <MinusCircle className="h-3 w-3" />
+      Social Ping Disabled
+    </span>
   );
 }

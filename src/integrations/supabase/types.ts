@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          auto_post_facebook_enabled: boolean
+          id: string
+          social_webhook_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_post_facebook_enabled?: boolean
+          id?: string
+          social_webhook_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_post_facebook_enabled?: boolean
+          id?: string
+          social_webhook_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       authors: {
         Row: {
           avatar_url: string | null
@@ -495,6 +516,9 @@ export type Database = {
           meta_title: string | null
           published_at: string | null
           slug: string
+          social_ping_at: string | null
+          social_ping_error: string | null
+          social_ping_status: string | null
           status: string
           title: string
           updated_at: string
@@ -514,6 +538,9 @@ export type Database = {
           meta_title?: string | null
           published_at?: string | null
           slug: string
+          social_ping_at?: string | null
+          social_ping_error?: string | null
+          social_ping_status?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -533,6 +560,9 @@ export type Database = {
           meta_title?: string | null
           published_at?: string | null
           slug?: string
+          social_ping_at?: string | null
+          social_ping_error?: string | null
+          social_ping_status?: string | null
           status?: string
           title?: string
           updated_at?: string
