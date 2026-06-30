@@ -448,7 +448,7 @@ export function AdminPage() {
 
             {section === "decay" && (
               <div className="mt-8">
-                <DecayPanel onEdit={(slug) => navigate(`/admin/posts/${slug}`)} />
+                <DecayPanel />
               </div>
             )}
 
