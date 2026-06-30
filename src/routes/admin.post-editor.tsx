@@ -173,7 +173,7 @@ export function PostEditorPage() {
     const nextStatus: PostStatus =
       action === "publish" ? "published" : action === "schedule" ? "scheduled" : "draft";
 
-    const payload: Record<string, unknown> = {
+    const payload = {
       title: form.title.trim(),
       slug: slugify(form.slug),
       excerpt: form.excerpt.trim() || null,
@@ -186,6 +186,7 @@ export function PostEditorPage() {
       author_id: form.author_id || null,
       experience_notes: form.experience_notes.trim() || null,
       created_by: user!.id,
+      published_at: null as string | null,
     };
 
     if (action === "publish") payload.published_at = new Date().toISOString();
