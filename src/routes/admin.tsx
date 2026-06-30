@@ -540,3 +540,38 @@ function BreakdownCard({
     </div>
   );
 }
+
+function SocialPingBadge({ status, error }: { status: string | null; error: string | null }) {
+  if (status === "sent") {
+    return (
+      <span
+        title="Webhook delivered successfully"
+        className="inline-flex items-center gap-1 rounded border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-800"
+      >
+        <CheckCircle2 className="h-3 w-3" />
+        Social Ping Sent
+      </span>
+    );
+  }
+  if (status === "failed") {
+    return (
+      <span
+        title={error ? `Webhook error: ${error}` : "Webhook failed"}
+        className="inline-flex items-center gap-1 rounded border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-800"
+      >
+        <AlertCircle className="h-3 w-3" />
+        Ping Failed
+      </span>
+    );
+  }
+  // disabled, null, or other
+  return (
+    <span
+      title="Auto-posting is disabled or no webhook URL configured"
+      className="inline-flex items-center gap-1 rounded border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground"
+    >
+      <MinusCircle className="h-3 w-3" />
+      Social Ping Disabled
+    </span>
+  );
+}
