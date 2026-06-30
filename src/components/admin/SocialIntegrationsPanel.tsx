@@ -114,7 +114,11 @@ export function SocialIntegrationsPanel() {
             <Switch id="auto-fb" checked={enabled} onCheckedChange={setEnabled} />
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={onTest} disabled={testing || !url.trim()}>
+              {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+              Send test ping
+            </Button>
             <Button onClick={onSave} disabled={saving}>
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save settings
