@@ -44,6 +44,32 @@ export function SocialIntegrationsPanel() {
     else toast.success("Social media settings saved");
   }
 
+  async function onTest() {
+    const target = url.trim();
+    if (!target) return toast.error("Save a webhook URL first");
+    try { new URL(target); } catch { return toast.error("Invalid URL"); }
+    setTesting(true);
+    try {
+      const res = await fetch(target, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Test ping from Blank2Branded",
+          url: "https://blank2branded.co.za/blog/test-ping",
+          excerpt: "This is a test payload to verify your Make.com scenario receives data.",
+          featured_image: "https://blank2branded.co.za/og-image.jpg",
+          test: true,
+        }),
+      });
+      if (res.ok) toast.success(`Test ping sent (HTTP ${res.status})`);
+      else toast.error(`Receiver returned HTTP ${res.status}`);
+    } catch (e) {
+      toast.error(`Test failed: ${(e as Error).message}`);
+    } finally {
+      setTesting(false);
+    }
+  }
+
   if (loading) return <div className="rounded-lg border border-border bg-card p-6">Loading…</div>;
 
   return (
