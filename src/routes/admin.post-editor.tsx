@@ -191,7 +191,7 @@ export function PostEditorPage() {
 
     if (action === "publish") payload.published_at = new Date().toISOString();
     else if (action === "schedule") payload.published_at = scheduledAt!.toISOString();
-    else payload.published_at = null;
+    
 
     let res;
     if (mode === "new") {
