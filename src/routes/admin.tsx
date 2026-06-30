@@ -292,8 +292,22 @@ export function AdminPage() {
                 </div>
 
                 <div className="mt-8 overflow-hidden rounded-lg border border-border bg-card">
-                  <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/50 px-4 py-3">
                     <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Posts (sorted by views)</h2>
+                    <div className="inline-flex rounded-md border border-border bg-card p-1">
+                      {(["published", "scheduled", "draft"] as const).map((t) => {
+                        const count = posts.filter((p) => p.status === t).length;
+                        return (
+                          <button
+                            key={t}
+                            onClick={() => setBlogTab(t)}
+                            className={`rounded px-3 py-1 text-xs font-medium capitalize transition ${blogTab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                          >
+                            {t} ({count})
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div className="overflow-x-auto">
                   <table className="w-full">
