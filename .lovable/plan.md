@@ -1,81 +1,87 @@
-# Shopify Revenue & Content Sync
+# Advanced Page 1 Ranking Features
 
-A new admin section under `/admin` (sidebar item: **Shopify Sync**) with three panels, matching the existing card/table styling used by the Blog and Indexing panels.
+Four interlocking modules added to the existing admin dashboard. All work alongside current GSC, Indexing, Speed, and Shopify Sync tabs.
 
-## 1. Database (migration)
+---
 
-New tables (all in `public`, with RLS + GRANTs):
+## 1. Automatic JSON-LD Schema Engine
 
-- `blog_clicks` — `id, post_id (fk posts), product_handle, product_id, ref_code, session_id, clicked_at`
-  - Insert: anon + authenticated (public, so blog readers can log).
-  - Select: admins only (via `has_role`).
-- `blog_conversions` — `id, post_id, shopify_order_id (unique), order_number, ref_code, total_amount, currency, customer_email, line_items jsonb, ordered_at`
-  - Insert: service_role only (webhook).
-  - Select: admins only.
-- `blog_link_issues` — `id, post_id, url, status_code, issue_type ('404'|'deleted_product'|'redirect'|'unreachable'), suggested_handle, resolved_at, last_checked_at`
-  - Full CRUD: admins.
+**Goal:** every public page ships valid, dynamic schema in the `<head>` without manual authoring.
 
-## 2. Click tracking
+- Add `src/lib/schema-builder.ts` with builders for `Article`, `Organization`, `Product`, `BreadcrumbList`, `WebSite`.
+- Inject via `react-helmet-async` (already in project) on:
+  - `routes/blog.$slug.tsx` → `Article` + `BreadcrumbList` (uses post title, cover image, published_at, modified_at, author profile, focus keyword).
+  - `routes/products.$handle.tsx` → `Product` + `BreadcrumbList` (pulls live Shopify price, currency ZAR, availability from variant `availableForSale`, images, SKU, brand).
+  - `routes/shop.tsx`, `display.tsx`, etc. → `BreadcrumbList`.
+  - Sitewide `Organization` + `WebSite` stays in `index.html` (already there).
+- Admin: new **Schema** sub-tab under SEO showing a small validator that fetches a URL and reports which schema types were detected (uses existing `fetch`-based scan pattern).
 
-- Add `/r/blog/:postId/:productHandle` redirect route in `static-router` that:
-  1. Inserts a `blog_clicks` row (fire-and-forget).
-  2. Redirects to `/products/:handle?ref=blog-{postId}`.
-- Rewrite outbound shop links rendered inside `blog.$slug.tsx` to flow through this redirect (DOM walk on render). External Shopify-domain links also rewritten.
-- `products.$handle.tsx` reads `?ref=blog-...` and stores it on the cart store as `attribution.ref` so it flows into checkout (via `cartAttributes`/`note`).
+## 2. GSC Content Decay Monitor
 
-## 3. Conversion ingestion (Shopify webhook)
+**Goal:** spot pages losing traction before they fall off page 1.
 
-New edge function `shopify-order-webhook`:
-- Verifies HMAC with `SHOPIFY_WEBHOOK_SECRET` (request via `add_secret`).
-- Parses `orders/create` payload, extracts `note_attributes` / `landing_site` for `ref=blog-<postId>`, upserts a `blog_conversions` row.
-- User registers the webhook in Shopify admin (URL surfaced in the dashboard with a copy button).
+- New edge function `gsc-decay` that queries Search Console for two windows (last 30d vs prior 30d), top 50 URLs by current clicks, computes click + impression delta %.
+- New admin widget `src/components/admin/DecayPanel.tsx` titled **"Rankings at Risk (Content Decay)"** showing rows: URL, clicks Δ%, impressions Δ%, avg position change, **Optimize & Update** button that routes to the matching post editor (resolved by slug from URL path; Shopify products link to Shopify admin).
+- Pinned to the main Blog feed view and also available as its own tab card.
 
-## 4. Revenue Attribution Dashboard
+## 3. Instant Google Indexing API Integration
 
-New `src/components/admin/RevenuePanel.tsx`:
-- Table columns: Blog Title · Views · Clicks · Conversions · Revenue (ZAR) · CVR%.
-- Data: joins `posts` + aggregated `post_views`, `blog_clicks`, `blog_conversions`.
-- Range selector (7d / 30d / all) matching existing styling.
-- Top KPI cards: Total attributed revenue, Total conversions, Avg revenue/post.
+**Goal:** every publish/update fires an immediate indexing request.
 
-## 5. Dynamic Product Inserter
+- The existing `notify-search-engines` function already pings sitemaps + IndexNow. Extend with **Google Indexing API** (`URL_UPDATED` / `URL_DELETED`) using a service account JWT.
+- New secret: `GOOGLE_INDEXING_SERVICE_ACCOUNT_JSON` (full service account key JSON). User must:
+  1. Create service account in Google Cloud, download JSON key.
+  2. Add it as Owner on the Search Console property.
+  3. Enable Indexing API.
+  Agent will then store the JSON via add_secret.
+- Auto-fire triggers:
+  - Blog publish / scheduled-promote / update → call function.
+  - Shopify product webhook (future) or manual "Resync" button in Shopify Sync tab.
+- UI: badge **"Index Request Sent"** (green) / **"Pending"** (amber) / **"Failed"** (red) next to each post in admin lists, read from `seo_submissions.status` filtered by `provider='google_indexing'`.
 
-- New `src/lib/shopify-admin.ts` — fetches catalog via existing Storefront API (`products` query with inventory `availableForSale` + image + price). Cached in-memory for 5 min.
-- New TipTap node `ShopifyProductCard` (`src/components/editor/ShopifyProductCardNode.tsx`) storing only `{ handle }`. Render:
-  - Fetches latest product on mount (live price/inventory).
-  - Shows image, title, price, **Out of Stock** badge when `!availableForSale`.
-  - On frontend (blog post), if product missing → renders nothing (graceful).
-- Toolbar button in `RichTextEditor.tsx`: opens `ShopifyProductPicker` dialog with search input + paginated grid (thumbnail, title, price, stock badge). Select → inserts node.
-- Renderer used in `blog.$slug.tsx` so cards display on the live blog.
+## 4. E-E-A-T Quality Gate
 
-## 6. Broken Link & 404 Monitor
+**Goal:** enforce author authority + originality before publish.
 
-- New edge function `scan-blog-links`:
-  - Loads all published posts, extracts `<a href>` pointing to our Shopify storefront domain or `/products/`, `/collections/`.
-  - For each unique URL: HEAD request via Storefront API (`productByHandle` / `collectionByHandle`) — handle missing = `deleted_product`; otherwise HTTP HEAD to detect 404.
-  - Upserts results into `blog_link_issues`.
-- Admin panel `BrokenLinksPanel.tsx`:
-  - **SEO Health Alerts** card at top of Shopify Sync section with count.
-  - Table: Post · Broken URL · Issue · Replacement (searchable product dropdown) · **Fix Link** button.
-  - Fix action calls a `fix-blog-link` edge function that loads the post HTML, replaces the URL (string replace, scoped to that post), saves, marks `resolved_at`. Toast on success.
-- "Rescan now" button triggers the function; last scan time shown.
+- New table `public.authors` (name, slug, bio, credentials, avatar_url, email, website, social JSON, expertise tags).
+- Extend `public.posts`:
+  - `author_id uuid references public.authors`
+  - `experience_notes text` (Information Gain / First-Hand Experience)
+- Admin **Authors** sub-tab under Blog → CRUD form.
+- Post editor changes:
+  - **Author** dropdown (required; loads from `authors` table).
+  - **Information Gain / First-Hand Experience Notes** textarea (required min 80 chars to mark `published` or `scheduled`; saved as draft without it).
+  - SEO score gains 2 new checks (+5 pts each): has author with credentials, has experience notes ≥ 80 chars.
+- Public blog page renders author byline + JSON-LD `author` field from the linked profile (feeds module 1).
 
-## 7. Admin shell updates
+---
 
-`src/routes/admin.tsx`:
-- Adds nav item **Shopify Sync** (icon `ShoppingBag`) with three internal tabs: Revenue · Product Inserter Help · Link Health.
-- SEO Health Alerts widget rendered at top of any Shopify Sync tab when issues exist.
+## Technical details
 
-## Technical notes
+**New / changed files**
+- `src/lib/schema-builder.ts` (new)
+- `src/routes/blog.$slug.tsx`, `products.$handle.tsx` — add Helmet schema
+- `src/components/admin/DecayPanel.tsx` (new)
+- `src/components/admin/AuthorsPanel.tsx` (new)
+- `src/components/admin/SchemaValidator.tsx` (new)
+- `src/routes/admin.tsx` — register Decay widget + Authors tab + indexing badges
+- `src/routes/admin.post-editor.tsx` — author dropdown, experience notes, gated publish
+- `src/lib/seo-score.ts` — +2 E-E-A-T checks
+- `supabase/functions/gsc-decay/index.ts` (new)
+- `supabase/functions/notify-search-engines/index.ts` — add Google Indexing API call
 
-- Reuses existing `SHOPIFY_STOREFRONT_TOKEN` for catalog reads (no Admin API needed for product listing — Storefront `products` returns inventory via `availableForSale`).
-- Order webhook is the only Admin-side surface and uses HMAC, not Admin API calls.
-- All new tables follow the project's GRANT + RLS pattern; `has_role(auth.uid(),'admin')` for admin reads.
-- New secret needed: `SHOPIFY_WEBHOOK_SECRET` (requested via add_secret after plan approval).
-- Styling reuses `Card`, table classes, range pill group, and tab pill group already in `admin.tsx`.
+**Migrations**
+- `authors` table + grants + RLS (admin write, public read)
+- `posts.author_id`, `posts.experience_notes`
 
-## Out of scope
+**Secrets to request**
+- `GOOGLE_INDEXING_SERVICE_ACCOUNT_JSON` (after user creates the service account)
 
-- Multi-currency conversion (we store currency as-returned).
-- Historical backfill of orders prior to webhook setup (one-time CSV import can be added later).
-- Editing blog HTML beyond URL replacement in the link-fix flow.
+**Order of execution**
+1. Migrations (authors + post columns)
+2. Schema builder + Helmet wiring
+3. Authors panel + post editor gate + SEO score updates
+4. Decay edge function + panel
+5. Notify-search-engines extension (waits on user secret; module ships, badge shows "Setup required" until secret added)
+
+Tell me to proceed and I'll start with the migration.

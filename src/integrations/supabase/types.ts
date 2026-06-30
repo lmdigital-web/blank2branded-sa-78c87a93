@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      authors: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          credentials: string | null
+          email: string | null
+          expertise: string[] | null
+          id: string
+          name: string
+          slug: string
+          social: Json | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          credentials?: string | null
+          email?: string | null
+          expertise?: string[] | null
+          id?: string
+          name: string
+          slug: string
+          social?: Json | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          credentials?: string | null
+          email?: string | null
+          expertise?: string[] | null
+          id?: string
+          name?: string
+          slug?: string
+          social?: Json | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       blog_clicks: {
         Row: {
           clicked_at: string
@@ -441,7 +486,9 @@ export type Database = {
           content: string
           cover_image_url: string | null
           created_at: string
+          created_by: string | null
           excerpt: string | null
+          experience_notes: string | null
           id: string
           keywords: string | null
           meta_description: string | null
@@ -458,7 +505,9 @@ export type Database = {
           content?: string
           cover_image_url?: string | null
           created_at?: string
+          created_by?: string | null
           excerpt?: string | null
+          experience_notes?: string | null
           id?: string
           keywords?: string | null
           meta_description?: string | null
@@ -475,7 +524,9 @@ export type Database = {
           content?: string
           cover_image_url?: string | null
           created_at?: string
+          created_by?: string | null
           excerpt?: string | null
+          experience_notes?: string | null
           id?: string
           keywords?: string | null
           meta_description?: string | null
@@ -487,6 +538,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "posts_category_id_fkey"
             columns: ["category_id"]

@@ -5,13 +5,15 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search, Send, ShoppingBag, Sparkles, Gauge } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, Search, Send, ShoppingBag, Sparkles, Gauge, Users, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { SearchConsolePanel } from "@/components/admin/SearchConsolePanel";
 import { IndexingPanel } from "@/components/admin/IndexingPanel";
 import { ShopifySyncPanel } from "@/components/admin/ShopifySyncPanel";
 import { OpportunitiesPanel } from "@/components/admin/OpportunitiesPanel";
 import { SpeedPanel } from "@/components/admin/SpeedPanel";
+import { DecayPanel } from "@/components/admin/DecayPanel";
+import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -44,7 +46,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "search" | "indexing" | "shopify" | "opportunities" | "speed">("blog");
+  const [section, setSection] = useState<"blog" | "decay" | "authors" | "search" | "indexing" | "shopify" | "opportunities" | "speed">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
@@ -173,6 +175,8 @@ export function AdminPage() {
 
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
+    { id: "authors" as const, label: "Authors", icon: Users },
+    { id: "decay" as const, label: "Rankings at Risk", icon: AlertTriangle },
     { id: "opportunities" as const, label: "Opportunities", icon: Sparkles },
     { id: "speed" as const, label: "Speed", icon: Gauge },
     { id: "search" as const, label: "Google Search", icon: Search },
@@ -439,6 +443,18 @@ export function AdminPage() {
             {section === "speed" && (
               <div className="mt-8">
                 <SpeedPanel />
+              </div>
+            )}
+
+            {section === "decay" && (
+              <div className="mt-8">
+                <DecayPanel />
+              </div>
+            )}
+
+            {section === "authors" && (
+              <div className="mt-8">
+                <AuthorsPanel />
               </div>
             )}
           </div>

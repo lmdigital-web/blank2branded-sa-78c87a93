@@ -30,8 +30,10 @@ type FormState = {
   meta_title: string;
   meta_description: string;
   keywords: string;
-  scheduled_date: string; // YYYY-MM-DD
-  scheduled_time: string; // HH:MM
+  scheduled_date: string;
+  scheduled_time: string;
+  author_id: string;
+  experience_notes: string;
 };
 
 const empty: FormState = {
@@ -46,7 +48,11 @@ const empty: FormState = {
   keywords: "",
   scheduled_date: "",
   scheduled_time: "",
+  author_id: "",
+  experience_notes: "",
 };
+
+type AuthorOption = { id: string; name: string; credentials: string | null };
 
 export function PostEditorPage() {
   const path = useCurrentPath();
@@ -62,6 +68,13 @@ export function PostEditorPage() {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [lastSeoScore, setLastSeoScore] = useState<number | null>(null);
   const [rechecking, setRechecking] = useState(false);
+  const [authors, setAuthors] = useState<AuthorOption[]>([]);
+
+  useEffect(() => {
+    supabase.from("authors").select("id,name,credentials").order("name").then(({ data }) => {
+      setAuthors((data as AuthorOption[]) ?? []);
+    });
+  }, []);
 
   async function handleCoverUpload(file: File) {
     setUploadingCover(true);
@@ -84,7 +97,7 @@ export function PostEditorPage() {
     if (!postId) return;
     supabase
       .from("posts")
-      .select("title,slug,excerpt,content,cover_image_url,status,meta_title,meta_description,keywords,published_at")
+      .select("title,slug,excerpt,content,cover_image_url,status,meta_title,meta_description,keywords,published_at,author_id,experience_notes")
       .eq("id", postId)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -114,6 +127,8 @@ export function PostEditorPage() {
           keywords: data.keywords || "",
           scheduled_date: sd,
           scheduled_time: st,
+          author_id: (data as { author_id: string | null }).author_id || "",
+          experience_notes: (data as { experience_notes: string | null }).experience_notes || "",
         });
         setLoadingPost(false);
       });
@@ -134,6 +149,14 @@ export function PostEditorPage() {
     if (!form.slug.trim()) return toast.error("Slug is required");
     if (!form.content.trim() || form.content === "<p></p>") return toast.error("Content is required");
 
+    // E-E-A-T Quality Gate — required to publish or schedule
+    if (action !== "draft") {
+      if (!form.author_id) return toast.error("Assign an Author before publishing (E-E-A-T)");
+      if ((form.experience_notes || "").trim().length < 80) {
+        return toast.error("Add Information Gain / First-Hand Experience notes (≥80 chars) before publishing");
+      }
+    }
+
     let scheduledAt: Date | null = null;
     if (action === "schedule") {
       if (!form.scheduled_date || !form.scheduled_time) {
@@ -150,7 +173,7 @@ export function PostEditorPage() {
     const nextStatus: PostStatus =
       action === "publish" ? "published" : action === "schedule" ? "scheduled" : "draft";
 
-    const payload: any = {
+    const payload = {
       title: form.title.trim(),
       slug: slugify(form.slug),
       excerpt: form.excerpt.trim() || null,
@@ -160,12 +183,15 @@ export function PostEditorPage() {
       meta_title: form.meta_title.trim() || null,
       meta_description: form.meta_description.trim() || null,
       keywords: form.keywords.trim() || null,
-      author_id: user!.id,
+      author_id: form.author_id || null,
+      experience_notes: form.experience_notes.trim() || null,
+      created_by: user!.id,
+      published_at: null as string | null,
     };
 
     if (action === "publish") payload.published_at = new Date().toISOString();
     else if (action === "schedule") payload.published_at = scheduledAt!.toISOString();
-    else payload.published_at = null;
+    
 
     let res;
     if (mode === "new") {
@@ -180,14 +206,14 @@ export function PostEditorPage() {
       return;
     }
 
-    // Fire-and-forget submission to Google + IndexNow on publish
+    // Fire-and-forget submission to Google Indexing API + IndexNow on publish
     if (action === "publish") {
-      const postId = (res.data as { id: string }).id;
+      const newId = (res.data as { id: string }).id;
       supabase.functions
-        .invoke("notify-search-engines", { body: { post_id: postId } })
+        .invoke("notify-search-engines", { body: { post_id: newId } })
         .then(({ error }) => {
           if (error) console.error("notify-search-engines failed", error);
-          else toast.success("Submitted to Google + IndexNow");
+          else toast.success("Index Request Sent to Google + IndexNow");
         });
     }
 
@@ -209,6 +235,7 @@ export function PostEditorPage() {
   const titleCount = form.meta_title.length;
   const descCount = form.meta_description.length;
 
+  const selectedAuthor = authors.find((a) => a.id === form.author_id);
   const seo = computeSeoScore({
     title: form.title,
     slug: form.slug,
@@ -218,6 +245,9 @@ export function PostEditorPage() {
     meta_title: form.meta_title,
     meta_description: form.meta_description,
     keywords: form.keywords,
+    author_name: selectedAuthor?.name,
+    author_credentials: selectedAuthor?.credentials || "",
+    experience_notes: form.experience_notes,
   });
   const seoB = seoBadge(seo.score);
   const failingChecks = seo.checks.filter((c) => !c.pass);
@@ -339,6 +369,46 @@ export function PostEditorPage() {
                 {form.cover_image_url && (
                   <img src={form.cover_image_url} alt="" className="mt-3 aspect-video w-full rounded object-cover" />
                 )}
+              </div>
+
+              <div className="rounded-lg border border-border bg-card p-5">
+                <h3 className="font-semibold">E-E-A-T Quality Gate</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Required before publishing. Boosts trust signals for Google.
+                </p>
+
+                <Label htmlFor="author_id" className="mt-3 block text-sm">Author *</Label>
+                <select
+                  id="author_id"
+                  value={form.author_id}
+                  onChange={(e) => update("author_id", e.target.value)}
+                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">— Select an author —</option>
+                  {authors.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name}{a.credentials ? ` — ${a.credentials}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Manage author profiles under Admin → Authors.
+                </p>
+
+                <Label htmlFor="experience_notes" className="mt-4 block text-sm">
+                  Information Gain / First-Hand Experience *
+                  <span className={`ml-1 text-xs ${form.experience_notes.trim().length < 80 ? "text-destructive" : "text-muted-foreground"}`}>
+                    ({form.experience_notes.trim().length}/80 min)
+                  </span>
+                </Label>
+                <Textarea
+                  id="experience_notes"
+                  value={form.experience_notes}
+                  onChange={(e) => update("experience_notes", e.target.value)}
+                  placeholder="What unique data, case studies, or first-hand insights does this post add that Google can't find elsewhere?"
+                  rows={4}
+                  className="mt-1"
+                />
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
