@@ -30,6 +30,8 @@ type Post = {
   meta_title: string | null;
   meta_description: string | null;
   keywords: string | null;
+  social_ping_status: string | null;
+  social_ping_error: string | null;
 };
 
 type View = {
