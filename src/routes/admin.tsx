@@ -65,15 +65,20 @@ export function AdminPage() {
   async function loadData() {
     setLoadingData(true);
     // Auto-promote scheduled posts whose time has passed to "published"
-    await supabase
+    const { data: promoted } = await supabase
       .from("posts")
       .update({ status: "published" })
       .eq("status", "scheduled")
-      .lte("published_at", new Date().toISOString());
+      .lte("published_at", new Date().toISOString())
+      .select("id");
+    // Fire social webhooks for newly-promoted posts (fire-and-forget)
+    for (const row of (promoted as { id: string }[] | null) ?? []) {
+      supabase.functions.invoke("social-webhook-dispatch", { body: { post_id: row.id } });
+    }
     const [postsRes, viewsRes] = await Promise.all([
       supabase
         .from("posts")
-        .select("id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords")
+        .select("id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords,social_ping_status,social_ping_error")
         .order("updated_at", { ascending: false }),
       supabase
         .from("post_views")
