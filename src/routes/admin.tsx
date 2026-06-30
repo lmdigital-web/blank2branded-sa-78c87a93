@@ -243,7 +243,7 @@ export function AdminPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                  {section === "blog" ? "Blog Admin" : section === "search" ? "Google Search Console" : "Indexing"}
+                  {section === "blog" ? "Blog Admin" : section === "search" ? "Google Search Console" : section === "indexing" ? "Indexing" : "Shopify Sync"}
                 </h1>
                 <p className="text-sm text-muted-foreground">Signed in as {user.email}</p>
               </div>
