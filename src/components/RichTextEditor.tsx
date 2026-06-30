@@ -35,6 +35,7 @@ type Props = {
 export function RichTextEditor({ value, onChange }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -42,6 +43,7 @@ export function RichTextEditor({ value, onChange }: Props) {
       Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } }),
       Image,
       Placeholder.configure({ placeholder: "Write your blog post here..." }),
+      ShopifyProductNode,
     ],
     content: value || "",
     onUpdate({ editor }) {
