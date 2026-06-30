@@ -372,6 +372,46 @@ export function PostEditorPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
+                <h3 className="font-semibold">E-E-A-T Quality Gate</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Required before publishing. Boosts trust signals for Google.
+                </p>
+
+                <Label htmlFor="author_id" className="mt-3 block text-sm">Author *</Label>
+                <select
+                  id="author_id"
+                  value={form.author_id}
+                  onChange={(e) => update("author_id", e.target.value)}
+                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">— Select an author —</option>
+                  {authors.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name}{a.credentials ? ` — ${a.credentials}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Manage author profiles under Admin → Authors.
+                </p>
+
+                <Label htmlFor="experience_notes" className="mt-4 block text-sm">
+                  Information Gain / First-Hand Experience *
+                  <span className={`ml-1 text-xs ${form.experience_notes.trim().length < 80 ? "text-destructive" : "text-muted-foreground"}`}>
+                    ({form.experience_notes.trim().length}/80 min)
+                  </span>
+                </Label>
+                <Textarea
+                  id="experience_notes"
+                  value={form.experience_notes}
+                  onChange={(e) => update("experience_notes", e.target.value)}
+                  placeholder="What unique data, case studies, or first-hand insights does this post add that Google can't find elsewhere?"
+                  rows={4}
+                  className="mt-1"
+                />
+              </div>
+
+              <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-semibold">SEO</h3>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Optimise for Google. Leave blank to fall back to your title/excerpt.
