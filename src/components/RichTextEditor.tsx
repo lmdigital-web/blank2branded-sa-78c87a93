@@ -20,9 +20,12 @@ import {
   Undo,
   Redo,
   Code,
+  ShoppingBag,
 } from "lucide-react";
 import { uploadBlogImage } from "@/lib/upload-blog-image";
 import { toast } from "sonner";
+import { ShopifyProductNode } from "@/components/editor/ShopifyProductNode";
+import { ShopifyProductPicker } from "@/components/admin/ShopifyProductPicker";
 
 type Props = {
   value: string;
@@ -32,6 +35,7 @@ type Props = {
 export function RichTextEditor({ value, onChange }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -39,6 +43,7 @@ export function RichTextEditor({ value, onChange }: Props) {
       Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } }),
       Image,
       Placeholder.configure({ placeholder: "Write your blog post here..." }),
+      ShopifyProductNode,
     ],
     content: value || "",
     onUpdate({ editor }) {
@@ -163,8 +168,33 @@ export function RichTextEditor({ value, onChange }: Props) {
         <span className="mx-1 h-5 w-px bg-border" />
         <Btn onClick={() => editor.chain().focus().undo().run()} title="Undo"><Undo className="h-4 w-4" /></Btn>
         <Btn onClick={() => editor.chain().focus().redo().run()} title="Redo"><Redo className="h-4 w-4" /></Btn>
+        <span className="mx-1 h-5 w-px bg-border" />
+        <button
+          type="button"
+          title="Insert Shopify product card"
+          onClick={() => setPickerOpen(true)}
+          className="flex items-center gap-1 rounded bg-primary/10 px-2 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/20"
+        >
+          <ShoppingBag className="h-3.5 w-3.5" />
+          Product
+        </button>
       </div>
       <EditorContent editor={editor} />
+      <ShopifyProductPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={(p) => {
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "shopifyProduct",
+              attrs: { handle: p.handle, title: p.title },
+            })
+            .run();
+          toast.success(`Inserted "${p.title}"`);
+        }}
+      />
     </div>
   );
 }

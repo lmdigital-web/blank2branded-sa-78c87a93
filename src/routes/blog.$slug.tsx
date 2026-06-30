@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Link, useCurrentPath } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ArrowLeft } from "lucide-react";
+import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
 
 type Post = {
   id: string;
@@ -151,10 +152,7 @@ export function BlogPostPage() {
                 className="mt-8 aspect-video w-full rounded-lg object-cover"
               />
             )}
-            <div
-              className="prose prose-slate mt-8 max-w-none prose-headings:font-bold prose-a:text-primary"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <BlogContentRenderer html={post.content} postId={post.id} />
           </article>
         )}
       </main>

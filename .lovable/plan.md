@@ -1,86 +1,81 @@
-# Deploy to Cloudflare Workers from GitHub
+# Shopify Revenue & Content Sync
 
-## Goal
-Auto-deploy the app to Cloudflare Workers on every push to `main` in `github.com/lmdigital-web/blank2branded-sa`, with SSR + server functions + Supabase backend fully working.
+A new admin section under `/admin` (sidebar item: **Shopify Sync**) with three panels, matching the existing card/table styling used by the Blog and Indexing panels.
 
-## What I'll change in the codebase
+## 1. Database (migration)
 
-1. **Fix `vite.config.ts`** — remove `nitro: { preset: 'static' }`. It conflicts with the Cloudflare Workers target already wired in `wrangler.jsonc` (which points to `src/server.ts`). Without removing it, the build emits a static site instead of a Worker and SSR + server functions break.
+New tables (all in `public`, with RLS + GRANTs):
 
-2. **Update `wrangler.jsonc`** — add:
-   - `main`: keep `src/server.ts` ✓ (already set)
-   - `assets` block pointing at the client build output directory so static assets (JS/CSS/images) are served from the Worker
-   - `observability` enabled for logs
+- `blog_clicks` — `id, post_id (fk posts), product_handle, product_id, ref_code, session_id, clicked_at`
+  - Insert: anon + authenticated (public, so blog readers can log).
+  - Select: admins only (via `has_role`).
+- `blog_conversions` — `id, post_id, shopify_order_id (unique), order_number, ref_code, total_amount, currency, customer_email, line_items jsonb, ordered_at`
+  - Insert: service_role only (webhook).
+  - Select: admins only.
+- `blog_link_issues` — `id, post_id, url, status_code, issue_type ('404'|'deleted_product'|'redirect'|'unreachable'), suggested_handle, resolved_at, last_checked_at`
+  - Full CRUD: admins.
 
-3. **Add `.github/workflows/deploy.yml`** — GitHub Actions workflow that:
-   - Installs `bun`
-   - Runs `bun install` and `bun run build`
-   - Runs `bunx wrangler deploy` with secrets from GitHub Actions
-   - Triggers on push to `main`
+## 2. Click tracking
 
-   (Alternative: skip this and use Cloudflare's "Workers Builds" UI to connect the GitHub repo — no workflow file needed. I'll set up Actions as the default since it's more controllable; you can switch to Workers Builds if preferred.)
+- Add `/r/blog/:postId/:productHandle` redirect route in `static-router` that:
+  1. Inserts a `blog_clicks` row (fire-and-forget).
+  2. Redirects to `/products/:handle?ref=blog-{postId}`.
+- Rewrite outbound shop links rendered inside `blog.$slug.tsx` to flow through this redirect (DOM walk on render). External Shopify-domain links also rewritten.
+- `products.$handle.tsx` reads `?ref=blog-...` and stores it on the cart store as `attribution.ref` so it flows into checkout (via `cartAttributes`/`note`).
 
-4. **Add `.dev.vars.example`** — documents the env vars Cloudflare needs (no real values committed).
+## 3. Conversion ingestion (Shopify webhook)
 
-## What you need to do (one-time, in dashboards)
+New edge function `shopify-order-webhook`:
+- Verifies HMAC with `SHOPIFY_WEBHOOK_SECRET` (request via `add_secret`).
+- Parses `orders/create` payload, extracts `note_attributes` / `landing_site` for `ref=blog-<postId>`, upserts a `blog_conversions` row.
+- User registers the webhook in Shopify admin (URL surfaced in the dashboard with a copy button).
 
-### A. Cloudflare account
-1. Sign in at https://dash.cloudflare.com
-2. Note your **Account ID** (right sidebar of any Workers page)
-3. Create an **API Token**: My Profile → API Tokens → Create Token → "Edit Cloudflare Workers" template → Create. Copy the token.
+## 4. Revenue Attribution Dashboard
 
-### B. GitHub repo secrets
-In `github.com/lmdigital-web/blank2branded-sa` → Settings → Secrets and variables → Actions → New repository secret. Add:
+New `src/components/admin/RevenuePanel.tsx`:
+- Table columns: Blog Title · Views · Clicks · Conversions · Revenue (ZAR) · CVR%.
+- Data: joins `posts` + aggregated `post_views`, `blog_clicks`, `blog_conversions`.
+- Range selector (7d / 30d / all) matching existing styling.
+- Top KPI cards: Total attributed revenue, Total conversions, Avg revenue/post.
 
-| Name | Value |
-|---|---|
-| `CLOUDFLARE_API_TOKEN` | from step A.3 |
-| `CLOUDFLARE_ACCOUNT_ID` | from step A.2 |
+## 5. Dynamic Product Inserter
 
-### C. Cloudflare Worker environment variables
-After the first deploy creates the Worker, go to Workers & Pages → `tanstack-start-app` → Settings → Variables and Secrets, and add:
+- New `src/lib/shopify-admin.ts` — fetches catalog via existing Storefront API (`products` query with inventory `availableForSale` + image + price). Cached in-memory for 5 min.
+- New TipTap node `ShopifyProductCard` (`src/components/editor/ShopifyProductCardNode.tsx`) storing only `{ handle }`. Render:
+  - Fetches latest product on mount (live price/inventory).
+  - Shows image, title, price, **Out of Stock** badge when `!availableForSale`.
+  - On frontend (blog post), if product missing → renders nothing (graceful).
+- Toolbar button in `RichTextEditor.tsx`: opens `ShopifyProductPicker` dialog with search input + paginated grid (thumbnail, title, price, stock badge). Select → inserts node.
+- Renderer used in `blog.$slug.tsx` so cards display on the live blog.
 
-**Plain variables (build-time, used by Vite):**
-- `VITE_SUPABASE_URL` = `https://enpdahmqwhdukbnykqyy.supabase.co`
-- `VITE_SUPABASE_PUBLISHABLE_KEY` = (the publishable key from your `.env`)
-- `VITE_SUPABASE_PROJECT_ID` = `enpdahmqwhdukbnykqyy`
+## 6. Broken Link & 404 Monitor
 
-**Secrets (runtime, server-only):**
-- `SUPABASE_URL`
-- `SUPABASE_PUBLISHABLE_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `SHOPIFY_ACCESS_TOKEN`
-- `SHOPIFY_STOREFRONT_ACCESS_TOKEN`
-- `SHOPIFY_ONLINE_ACCESS_TOKEN`
-- `LOVABLE_API_KEY`
+- New edge function `scan-blog-links`:
+  - Loads all published posts, extracts `<a href>` pointing to our Shopify storefront domain or `/products/`, `/collections/`.
+  - For each unique URL: HEAD request via Storefront API (`productByHandle` / `collectionByHandle`) — handle missing = `deleted_product`; otherwise HTTP HEAD to detect 404.
+  - Upserts results into `blog_link_issues`.
+- Admin panel `BrokenLinksPanel.tsx`:
+  - **SEO Health Alerts** card at top of Shopify Sync section with count.
+  - Table: Post · Broken URL · Issue · Replacement (searchable product dropdown) · **Fix Link** button.
+  - Fix action calls a `fix-blog-link` edge function that loads the post HTML, replaces the URL (string replace, scoped to that post), saves, marks `resolved_at`. Toast on success.
+- "Rescan now" button triggers the function; last scan time shown.
 
-Get values from Lovable Cloud (already present in this project's secrets). The `VITE_*` ones also need to be available at **build time** in GitHub Actions — I'll wire those into the workflow as repo secrets too (they're publishable, safe to store in GitHub).
+## 7. Admin shell updates
 
-### D. Update Supabase redirect URLs
-Add your new Cloudflare Workers URL (`https://tanstack-start-app.<your-subdomain>.workers.dev`) to:
-- Supabase Auth → URL Configuration → Site URL / Redirect URLs
-
-### E. Update Shopify app URLs (if you use OAuth callbacks)
-Update the Shopify app's allowed redirect URIs to include the Workers domain.
-
-## After deploy
-- Worker URL: `https://tanstack-start-app.<your-subdomain>.workers.dev`
-- Custom domain: in Cloudflare → Workers → your worker → Settings → Domains & Routes → Add Custom Domain. Point your my20i DNS at Cloudflare nameservers first.
+`src/routes/admin.tsx`:
+- Adds nav item **Shopify Sync** (icon `ShoppingBag`) with three internal tabs: Revenue · Product Inserter Help · Link Health.
+- SEO Health Alerts widget rendered at top of any Shopify Sync tab when issues exist.
 
 ## Technical notes
-- The app uses TanStack Start with the Cloudflare Worker preset (`src/server.ts` is the Worker entry). `wrangler.jsonc` already targets it correctly.
-- Supabase stays on Lovable Cloud — Cloudflare just calls it over HTTPS. No data migration needed.
-- `LOVABLE_API_KEY` works outside Lovable as long as it's set as a Worker secret.
-- Build output: `bun run build` produces `dist/` (client assets) and `.output/` (Worker bundle). `wrangler deploy` uploads both.
 
-## Order of execution
-1. I make the 3-4 file changes
-2. You add the 2 GitHub secrets (API token + Account ID)
-3. Push to `main` (or I trigger via Lovable→GitHub sync)
-4. First deploy runs; Worker is created
-5. You add the 10 env vars/secrets in Cloudflare dashboard
-6. Push again (or redeploy from Cloudflare UI) to pick up the env vars
-7. Update Supabase + Shopify redirect URLs
-8. (Optional) Custom domain
+- Reuses existing `SHOPIFY_STOREFRONT_TOKEN` for catalog reads (no Admin API needed for product listing — Storefront `products` returns inventory via `availableForSale`).
+- Order webhook is the only Admin-side surface and uses HMAC, not Admin API calls.
+- All new tables follow the project's GRANT + RLS pattern; `has_role(auth.uid(),'admin')` for admin reads.
+- New secret needed: `SHOPIFY_WEBHOOK_SECRET` (requested via add_secret after plan approval).
+- Styling reuses `Card`, table classes, range pill group, and tab pill group already in `admin.tsx`.
 
-Ready to start on step 1?
+## Out of scope
+
+- Multi-currency conversion (we store currency as-returned).
+- Historical backfill of orders prior to webhook setup (one-time CSV import can be added later).
+- Editing blog HTML beyond URL replacement in the link-fix flow.
