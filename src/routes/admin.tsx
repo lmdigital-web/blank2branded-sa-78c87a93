@@ -42,6 +42,7 @@ export function AdminPage() {
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
   const [section, setSection] = useState<"blog" | "search" | "indexing">("blog");
+  const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
     if (loading) return;
