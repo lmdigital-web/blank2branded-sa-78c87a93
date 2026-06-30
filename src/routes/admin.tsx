@@ -473,6 +473,12 @@ export function AdminPage() {
                 <AuthorsPanel />
               </div>
             )}
+
+            {section === "social" && (
+              <div className="mt-8">
+                <SocialIntegrationsPanel />
+              </div>
+            )}
           </div>
         </div>
       </main>
