@@ -444,6 +444,7 @@ export function AdminPage() {
               <div className="mt-8">
                 <SpeedPanel />
               </div>
+            )}
 
             {section === "decay" && (
               <div className="mt-8">
