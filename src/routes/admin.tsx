@@ -327,6 +327,7 @@ export function AdminPage() {
                         <th className="px-4 py-3">SEO</th>
                         <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
                         <th className="px-4 py-3">Updated</th>
+                        {blogTab === "scheduled" && <th className="px-4 py-3">Scheduled for</th>}
                         <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
