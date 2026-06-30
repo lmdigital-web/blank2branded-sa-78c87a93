@@ -42,6 +42,7 @@ export function AdminPage() {
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
   const [section, setSection] = useState<"blog" | "search" | "indexing">("blog");
+  const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
     if (loading) return;
@@ -120,8 +121,11 @@ export function AdminPage() {
   }, [filteredViews]);
 
   const sortedPosts = useMemo(
-    () => [...posts].sort((a, b) => (viewsByPost.get(b.id) ?? 0) - (viewsByPost.get(a.id) ?? 0)),
-    [posts, viewsByPost],
+    () =>
+      [...posts]
+        .filter((p) => p.status === blogTab)
+        .sort((a, b) => (viewsByPost.get(b.id) ?? 0) - (viewsByPost.get(a.id) ?? 0)),
+    [posts, viewsByPost, blogTab],
   );
 
   async function onDelete(id: string) {
@@ -291,8 +295,22 @@ export function AdminPage() {
                 </div>
 
                 <div className="mt-8 overflow-hidden rounded-lg border border-border bg-card">
-                  <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/50 px-4 py-3">
                     <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Posts (sorted by views)</h2>
+                    <div className="inline-flex rounded-md border border-border bg-card p-1">
+                      {(["published", "scheduled", "draft"] as const).map((t) => {
+                        const count = posts.filter((p) => p.status === t).length;
+                        return (
+                          <button
+                            key={t}
+                            onClick={() => setBlogTab(t)}
+                            className={`rounded px-3 py-1 text-xs font-medium capitalize transition ${blogTab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                          >
+                            {t} ({count})
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div className="overflow-x-auto">
                   <table className="w-full">
@@ -309,8 +327,8 @@ export function AdminPage() {
                     <tbody>
                       {loadingData ? (
                         <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
-                      ) : posts.length === 0 ? (
-                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No posts yet — create your first one.</td></tr>
+                      ) : sortedPosts.length === 0 ? (
+                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
                       ) : (
                         sortedPosts.map((p) => {
                           const count = viewsByPost.get(p.id) ?? 0;
