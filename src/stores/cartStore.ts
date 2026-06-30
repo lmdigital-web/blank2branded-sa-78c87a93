@@ -46,10 +46,24 @@ function isCartNotFound(errors: Array<{ message: string }>): boolean {
   return errors.some((e) => /cart not found|does not exist/i.test(e.message));
 }
 
+function getBlogRef(): string | null {
+  try {
+    const fromUrl = new URLSearchParams(window.location.search).get("ref");
+    if (fromUrl && fromUrl.startsWith("blog-")) {
+      sessionStorage.setItem("b2b_blog_ref", fromUrl);
+      return fromUrl;
+    }
+    return sessionStorage.getItem("b2b_blog_ref");
+  } catch { return null; }
+}
+
 async function createCart(item: CartItem) {
-  const data = await storefrontApiRequest(CART_CREATE, {
-    input: { lines: [{ quantity: item.quantity, merchandiseId: item.variantId }] },
-  });
+  const ref = getBlogRef();
+  const input: Record<string, unknown> = {
+    lines: [{ quantity: item.quantity, merchandiseId: item.variantId }],
+  };
+  if (ref) input.attributes = [{ key: "ref", value: ref }];
+  const data = await storefrontApiRequest(CART_CREATE, { input });
   const errs = data?.data?.cartCreate?.userErrors ?? [];
   if (errs.length) { console.error(errs); return null; }
   const cart = data?.data?.cartCreate?.cart;
