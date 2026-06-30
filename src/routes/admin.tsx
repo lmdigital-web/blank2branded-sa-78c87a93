@@ -190,6 +190,7 @@ export function AdminPage() {
     { id: "search" as const, label: "Google Search", icon: Search },
     { id: "indexing" as const, label: "Indexing", icon: Send },
     { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
+    { id: "social" as const, label: "Social Integrations", icon: Share2 },
   ];
 
   return (
