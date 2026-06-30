@@ -173,6 +173,7 @@ export function AdminPage() {
     { id: "blog" as const, label: "Blog", icon: FileText },
     { id: "search" as const, label: "Google Search", icon: Search },
     { id: "indexing" as const, label: "Indexing", icon: Send },
+    { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
   ];
 
   return (
