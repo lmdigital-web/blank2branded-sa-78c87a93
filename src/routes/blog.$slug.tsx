@@ -152,10 +152,7 @@ export function BlogPostPage() {
                 className="mt-8 aspect-video w-full rounded-lg object-cover"
               />
             )}
-            <div
-              className="prose prose-slate mt-8 max-w-none prose-headings:font-bold prose-a:text-primary"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <BlogContentRenderer html={post.content} postId={post.id} />
           </article>
         )}
       </main>
