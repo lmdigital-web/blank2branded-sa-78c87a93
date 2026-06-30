@@ -338,6 +338,7 @@ export function AdminPage() {
                         <th className="px-4 py-3">Title</th>
                         <th className="px-4 py-3">Status</th>
                         <th className="px-4 py-3">SEO</th>
+                        {blogTab === "published" && <th className="px-4 py-3">Social</th>}
                         <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
                         <th className="px-4 py-3">Updated</th>
                         {blogTab === "scheduled" && <th className="px-4 py-3">Scheduled for</th>}
@@ -345,11 +346,11 @@ export function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {loadingData ? (
-                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
-                      ) : sortedPosts.length === 0 ? (
-                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
-                      ) : (
+                      {(() => {
+                        const colCount = 6 + (blogTab === "published" ? 1 : 0) + (blogTab === "scheduled" ? 1 : 0);
+                        if (loadingData) return <tr><td colSpan={colCount} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>;
+                        if (sortedPosts.length === 0) return <tr><td colSpan={colCount} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>;
+                        return (
                         sortedPosts.map((p) => {
                           const count = viewsByPost.get(p.id) ?? 0;
                           const seo = computeSeoScore({
