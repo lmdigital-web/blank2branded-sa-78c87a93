@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Link, useCurrentPath } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ArrowLeft } from "lucide-react";
+import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
 
 type Post = {
   id: string;
