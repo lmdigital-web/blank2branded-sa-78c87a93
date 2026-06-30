@@ -22,6 +22,7 @@ const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.
 const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
 const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
 const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
+const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
 
 const queryClient = new QueryClient();
 
