@@ -444,6 +444,17 @@ export function AdminPage() {
               <div className="mt-8">
                 <SpeedPanel />
               </div>
+
+            {section === "decay" && (
+              <div className="mt-8">
+                <DecayPanel onEdit={(slug) => navigate(`/admin/posts/${slug}`)} />
+              </div>
+            )}
+
+            {section === "authors" && (
+              <div className="mt-8">
+                <AuthorsPanel />
+              </div>
             )}
           </div>
         </div>
