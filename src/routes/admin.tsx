@@ -333,9 +333,9 @@ export function AdminPage() {
                     </thead>
                     <tbody>
                       {loadingData ? (
-                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
                       ) : sortedPosts.length === 0 ? (
-                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
+                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
                       ) : (
                         sortedPosts.map((p) => {
                           const count = viewsByPost.get(p.id) ?? 0;
