@@ -168,8 +168,33 @@ export function RichTextEditor({ value, onChange }: Props) {
         <span className="mx-1 h-5 w-px bg-border" />
         <Btn onClick={() => editor.chain().focus().undo().run()} title="Undo"><Undo className="h-4 w-4" /></Btn>
         <Btn onClick={() => editor.chain().focus().redo().run()} title="Redo"><Redo className="h-4 w-4" /></Btn>
+        <span className="mx-1 h-5 w-px bg-border" />
+        <button
+          type="button"
+          title="Insert Shopify product card"
+          onClick={() => setPickerOpen(true)}
+          className="flex items-center gap-1 rounded bg-primary/10 px-2 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/20"
+        >
+          <ShoppingBag className="h-3.5 w-3.5" />
+          Product
+        </button>
       </div>
       <EditorContent editor={editor} />
+      <ShopifyProductPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={(p) => {
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "shopifyProduct",
+              attrs: { handle: p.handle, title: p.title },
+            })
+            .run();
+          toast.success(`Inserted "${p.title}"`);
+        }}
+      />
     </div>
   );
 }
