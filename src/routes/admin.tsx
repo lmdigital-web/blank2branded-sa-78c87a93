@@ -408,6 +408,12 @@ export function AdminPage() {
                 <IndexingPanel />
               </div>
             )}
+
+            {section === "shopify" && (
+              <div className="mt-8">
+                <ShopifySyncPanel />
+              </div>
+            )}
           </div>
         </div>
       </main>
