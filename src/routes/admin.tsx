@@ -121,8 +121,11 @@ export function AdminPage() {
   }, [filteredViews]);
 
   const sortedPosts = useMemo(
-    () => [...posts].sort((a, b) => (viewsByPost.get(b.id) ?? 0) - (viewsByPost.get(a.id) ?? 0)),
-    [posts, viewsByPost],
+    () =>
+      [...posts]
+        .filter((p) => p.status === blogTab)
+        .sort((a, b) => (viewsByPost.get(b.id) ?? 0) - (viewsByPost.get(a.id) ?? 0)),
+    [posts, viewsByPost, blogTab],
   );
 
   async function onDelete(id: string) {
