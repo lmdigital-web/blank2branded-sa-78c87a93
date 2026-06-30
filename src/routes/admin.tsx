@@ -373,6 +373,16 @@ export function AdminPage() {
                               <td className="px-4 py-3 text-sm text-muted-foreground">
                                 {new Date(p.updated_at).toLocaleDateString("en-ZA")}
                               </td>
+                              {blogTab === "scheduled" && (
+                                <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
+                                  {p.published_at
+                                    ? new Date(p.published_at).toLocaleString("en-ZA", {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                      })
+                                    : "—"}
+                                </td>
+                              )}
                               <td className="px-4 py-3 text-right">
                                 <div className="flex justify-end gap-1">
                                   <Link to={`/admin/preview/${p.id}`} target="_blank">
