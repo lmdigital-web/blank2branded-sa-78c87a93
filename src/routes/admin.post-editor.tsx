@@ -206,22 +206,24 @@ export function PostEditorPage() {
       return;
     }
 
-    // Fire-and-forget submission to Google Indexing API + IndexNow + Social webhook on publish
-    if (action === "publish") {
-      const newId = (res.data as { id: string }).id;
+    // Fire whenever the resulting post is published (new publish OR re-save of an already-published post).
+    const newId = (res.data as { id: string }).id;
+    if (nextStatus === "published") {
       supabase.functions
         .invoke("notify-search-engines", { body: { post_id: newId } })
         .then(({ error }) => {
           if (error) console.error("notify-search-engines failed", error);
-          else toast.success("Index Request Sent to Google + IndexNow");
+          else if (action === "publish") toast.success("Index Request Sent to Google + IndexNow");
         });
       supabase.functions
-        .invoke("social-webhook-dispatch", { body: { post_id: newId } })
+        .invoke("social-webhook-dispatch", { body: { post_id: newId, force: true } })
         .then(({ data, error }) => {
-          if (error) { console.error("social-webhook-dispatch failed", error); return; }
-          const d = data as { status?: string; skipped?: boolean } | null;
-          if (d?.status === "sent") toast.success("Social webhook delivered");
-          else if (d?.status === "failed") toast.error("Social webhook failed — see blog list");
+          if (error) { console.error("social-webhook-dispatch failed", error); toast.error(`Social webhook error: ${error.message}`); return; }
+          const d = data as { status?: string; skipped?: boolean; error?: string | null } | null;
+          console.log("social-webhook-dispatch result:", d);
+          if (d?.status === "sent") toast.success("Social webhook delivered to Make.com");
+          else if (d?.status === "failed") toast.error(`Social webhook failed: ${d.error ?? "unknown"}`);
+          else if (d?.skipped) toast.message("Social webhook skipped (toggle off or no URL)");
         });
     }
 
