@@ -3,8 +3,9 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Link, useCurrentPath } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, UserCircle2 } from "lucide-react";
 import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
+import { articleSchema, breadcrumbSchema, injectJsonLd, type AuthorProfile } from "@/lib/schema-builder";
 
 type Post = {
   id: string;
@@ -14,9 +15,11 @@ type Post = {
   content: string;
   cover_image_url: string | null;
   published_at: string | null;
+  updated_at: string | null;
   meta_title: string | null;
   meta_description: string | null;
   keywords: string | null;
+  author_id: string | null;
 };
 
 const SITE_URL = "https://blank2branded.co.za";
@@ -44,6 +47,7 @@ export function BlogPostPage() {
   const path = useCurrentPath();
   const slug = path.replace(/^\/blog\//, "").replace(/\/$/, "");
   const [post, setPost] = useState<Post | null>(null);
+  const [author, setAuthor] = useState<AuthorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -53,17 +57,24 @@ export function BlogPostPage() {
     setNotFound(false);
     supabase
       .from("posts")
-      .select("id,slug,title,excerpt,content,cover_image_url,published_at,meta_title,meta_description,keywords,status")
+      .select("id,slug,title,excerpt,content,cover_image_url,published_at,updated_at,meta_title,meta_description,keywords,status,author_id")
       .eq("slug", slug)
       .in("status", ["published", "scheduled"])
       .lte("published_at", new Date().toISOString())
       .maybeSingle()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (!data) {
           setNotFound(true);
         } else {
           setPost(data as Post);
-          // Record view (best-effort)
+          if ((data as Post).author_id) {
+            const { data: a } = await supabase
+              .from("authors")
+              .select("name,slug,bio,credentials,avatar_url,website,social")
+              .eq("id", (data as Post).author_id!)
+              .maybeSingle();
+            if (a) setAuthor(a as AuthorProfile);
+          }
           supabase.from("post_views").insert({
             post_id: (data as Post).id,
             referrer: document.referrer || null,
@@ -90,29 +101,29 @@ export function BlogPostPage() {
     setMeta("twitter:title", title);
     setMeta("twitter:description", desc);
 
-    // Article JSON-LD
-    const existing = document.getElementById("article-jsonld");
-    if (existing) existing.remove();
-    const ld = document.createElement("script");
-    ld.id = "article-jsonld";
-    ld.type = "application/ld+json";
-    ld.textContent = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      headline: post.title,
-      description: desc,
-      image: post.cover_image_url || undefined,
-      datePublished: post.published_at,
-      author: { "@type": "Organization", name: "Blank2Branded" },
-      publisher: {
-        "@type": "Organization",
-        name: "Blank2Branded",
-        logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
-      },
-      mainEntityOfPage: url,
-    });
-    document.head.appendChild(ld);
-  }, [post]);
+    // Article + BreadcrumbList JSON-LD via the schema engine
+    injectJsonLd(
+      "article-jsonld",
+      articleSchema({
+        title: post.title,
+        description: desc,
+        slug: post.slug,
+        image: post.cover_image_url || undefined,
+        publishedAt: post.published_at,
+        modifiedAt: post.updated_at,
+        keywords: post.keywords,
+        author,
+      }),
+    );
+    injectJsonLd(
+      "breadcrumb-jsonld",
+      breadcrumbSchema([
+        { name: "Home", url: `${SITE_URL}/` },
+        { name: "Blog", url: `${SITE_URL}/blog` },
+        { name: post.title, url },
+      ]),
+    );
+  }, [post, author]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -136,14 +147,27 @@ export function BlogPostPage() {
               <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
                 {post.title}
               </h1>
-              {post.published_at && (
-                <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <time dateTime={post.published_at}>
-                    {new Date(post.published_at).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" })}
-                  </time>
-                </div>
-              )}
+              <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                {post.published_at && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <time dateTime={post.published_at}>
+                      {new Date(post.published_at).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" })}
+                    </time>
+                  </div>
+                )}
+                {author && (
+                  <div className="flex items-center gap-2">
+                    {author.avatar_url
+                      ? <img src={author.avatar_url} alt="" className="h-6 w-6 rounded-full object-cover" />
+                      : <UserCircle2 className="h-5 w-5" />}
+                    <span>
+                      By <span className="font-medium text-foreground">{author.name}</span>
+                      {author.credentials && <span className="text-muted-foreground"> · {author.credentials}</span>}
+                    </span>
+                  </div>
+                )}
+              </div>
             </header>
             {post.cover_image_url && (
               <img

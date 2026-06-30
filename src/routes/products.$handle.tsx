@@ -10,6 +10,7 @@ import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-rea
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
+import { productSchema, breadcrumbSchema, injectJsonLd, removeJsonLd, SITE_URL } from "@/lib/schema-builder";
 
 const DTF_ADDON_HANDLE = "dtf-print-add-on";
 // Products that are themselves prints — no upsell popup needed.
@@ -98,6 +99,39 @@ export function ProductPage() {
 
   const variants = product?.variants.edges.map((e) => e.node) ?? [];
   const options = product?.options ?? [];
+
+  // Inject Product + BreadcrumbList JSON-LD whenever product/variant changes.
+  useEffect(() => {
+    if (!product) return;
+    const firstAvail = variants.find((v) => v.availableForSale) ?? variants[0];
+    const price = firstAvail?.price;
+    injectJsonLd(
+      "product-jsonld",
+      productSchema({
+        title: product.title,
+        description: (product.description || "").slice(0, 5000),
+        handle: product.handle,
+        image: product.images.edges[0]?.node.url,
+        price: price?.amount,
+        currency: price?.currencyCode || "ZAR",
+        availability: firstAvail?.availableForSale ? "InStock" : "OutOfStock",
+        sku: firstAvail?.id?.split("/").pop() || null,
+        brand: "Blank2Branded",
+      }),
+    );
+    injectJsonLd(
+      "breadcrumb-jsonld",
+      breadcrumbSchema([
+        { name: "Home", url: `${SITE_URL}/` },
+        { name: "Shop", url: `${SITE_URL}/shop` },
+        { name: product.title, url: `${SITE_URL}/products/${product.handle}` },
+      ]),
+    );
+    return () => {
+      removeJsonLd("product-jsonld");
+      removeJsonLd("breadcrumb-jsonld");
+    };
+  }, [product, variants]);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
 

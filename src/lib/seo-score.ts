@@ -18,6 +18,10 @@ export type SeoInput = {
   meta_title: string;
   meta_description: string;
   keywords: string; // comma separated
+  // E-E-A-T signals (optional so existing callers stay valid)
+  author_name?: string | null;
+  author_credentials?: string | null;
+  experience_notes?: string | null;
 };
 
 function stripHtml(html: string) {
@@ -90,6 +94,8 @@ export function computeSeoScore(input: SeoInput) {
     { id: "alt", label: "All content images have alt text", pass: imgCount === 0 ? true : imgsMissingAlt === 0, weight: 4, hint: `${imgsMissingAlt} image(s) missing alt text.` },
     { id: "internal", label: "At least 1 internal link", pass: internalLinks >= 1, weight: 4, hint: "Link to /shop, /dtf, /blanks, /catalogues or a related blog." },
     { id: "external", label: "At least 1 external link", pass: externalLinks >= 1, weight: 2, hint: "Cite an authoritative external source." },
+    { id: "eeat-author", label: "Author assigned with credentials", pass: !!(input.author_name && (input.author_credentials || "").trim().length >= 10), weight: 5, hint: "Assign an author with a professional bio/credentials in the SEO panel." },
+    { id: "eeat-experience", label: "Information Gain / First-Hand Experience notes (≥80 chars)", pass: ((input.experience_notes || "").trim().length) >= 80, weight: 5, hint: "Add unique first-hand experience, case data, or insights Google can't find elsewhere." },
   ];
 
   const total = checks.reduce((s, c) => s + c.weight, 0);
