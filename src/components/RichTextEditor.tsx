@@ -20,9 +20,12 @@ import {
   Undo,
   Redo,
   Code,
+  ShoppingBag,
 } from "lucide-react";
 import { uploadBlogImage } from "@/lib/upload-blog-image";
 import { toast } from "sonner";
+import { ShopifyProductNode } from "@/components/editor/ShopifyProductNode";
+import { ShopifyProductPicker } from "@/components/admin/ShopifyProductPicker";
 
 type Props = {
   value: string;
