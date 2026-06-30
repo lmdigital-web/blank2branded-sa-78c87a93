@@ -327,14 +327,15 @@ export function AdminPage() {
                         <th className="px-4 py-3">SEO</th>
                         <th className="px-4 py-3 text-right">Views ({rangeLabel})</th>
                         <th className="px-4 py-3">Updated</th>
+                        {blogTab === "scheduled" && <th className="px-4 py-3">Scheduled for</th>}
                         <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {loadingData ? (
-                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
                       ) : sortedPosts.length === 0 ? (
-                        <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
+                        <tr><td colSpan={blogTab === "scheduled" ? 7 : 6} className="px-4 py-8 text-center text-muted-foreground">No {blogTab} posts.</td></tr>
                       ) : (
                         sortedPosts.map((p) => {
                           const count = viewsByPost.get(p.id) ?? 0;
@@ -372,6 +373,16 @@ export function AdminPage() {
                               <td className="px-4 py-3 text-sm text-muted-foreground">
                                 {new Date(p.updated_at).toLocaleDateString("en-ZA")}
                               </td>
+                              {blogTab === "scheduled" && (
+                                <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
+                                  {p.published_at
+                                    ? new Date(p.published_at).toLocaleString("en-ZA", {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                      })
+                                    : "—"}
+                                </td>
+                              )}
                               <td className="px-4 py-3 text-right">
                                 <div className="flex justify-end gap-1">
                                   <Link to={`/admin/preview/${p.id}`} target="_blank">
