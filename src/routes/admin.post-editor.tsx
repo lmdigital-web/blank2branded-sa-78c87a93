@@ -233,10 +233,19 @@ export function PostEditorPage() {
     }
 
     toast.success(
+      stay ? "Saved" :
       action === "publish" ? "Post published" :
       action === "schedule" ? `Scheduled for ${scheduledAt!.toLocaleString("en-ZA")}` :
       "Draft saved"
     );
+    if (stay) {
+      // If this was a new post, jump to the edit URL so subsequent saves update instead of insert
+      if (mode === "new") {
+        const newId = (res.data as { id: string }).id;
+        navigate(`/admin/posts/${newId}`);
+      }
+      return;
+    }
     navigate("/admin");
   }
 
