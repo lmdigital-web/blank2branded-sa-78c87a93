@@ -144,7 +144,12 @@ export function PostEditorPage() {
     }
   }
 
-  async function onSave(action: "draft" | "publish" | "schedule") {
+  async function onSave(action: "draft" | "publish" | "schedule" | "stay") {
+    // "stay" = save-in-place preserving current status, don't navigate away
+    const stay = action === "stay";
+    if (stay) {
+      action = form.status === "published" ? "publish" : form.status === "scheduled" ? "schedule" : "draft";
+    }
     if (!form.title.trim()) return toast.error("Title is required");
     if (!form.slug.trim()) return toast.error("Slug is required");
     if (!form.content.trim() || form.content === "<p></p>") return toast.error("Content is required");
@@ -228,10 +233,19 @@ export function PostEditorPage() {
     }
 
     toast.success(
+      stay ? "Saved" :
       action === "publish" ? "Post published" :
       action === "schedule" ? `Scheduled for ${scheduledAt!.toLocaleString("en-ZA")}` :
       "Draft saved"
     );
+    if (stay) {
+      // If this was a new post, jump to the edit URL so subsequent saves update instead of insert
+      if (mode === "new") {
+        const newId = (res.data as { id: string }).id;
+        navigate(`/admin/posts/${newId}`);
+      }
+      return;
+    }
     navigate("/admin");
   }
 
@@ -282,6 +296,9 @@ export function PostEditorPage() {
                   </Button>
                 </Link>
               )}
+              <Button variant="outline" disabled={saving} onClick={() => onSave("stay")}>
+                <Save className="mr-2 h-4 w-4" /> Save
+              </Button>
               <Button variant="outline" disabled={saving} onClick={() => onSave("draft")}>
                 <Save className="mr-2 h-4 w-4" /> Save draft
               </Button>
