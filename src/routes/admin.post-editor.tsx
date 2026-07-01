@@ -296,6 +296,9 @@ export function PostEditorPage() {
                   </Button>
                 </Link>
               )}
+              <Button variant="outline" disabled={saving} onClick={() => onSave("stay")}>
+                <Save className="mr-2 h-4 w-4" /> Save
+              </Button>
               <Button variant="outline" disabled={saving} onClick={() => onSave("draft")}>
                 <Save className="mr-2 h-4 w-4" /> Save draft
               </Button>
