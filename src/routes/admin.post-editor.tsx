@@ -144,7 +144,12 @@ export function PostEditorPage() {
     }
   }
 
-  async function onSave(action: "draft" | "publish" | "schedule") {
+  async function onSave(action: "draft" | "publish" | "schedule" | "stay") {
+    // "stay" = save-in-place preserving current status, don't navigate away
+    const stay = action === "stay";
+    if (stay) {
+      action = form.status === "published" ? "publish" : form.status === "scheduled" ? "schedule" : "draft";
+    }
     if (!form.title.trim()) return toast.error("Title is required");
     if (!form.slug.trim()) return toast.error("Slug is required");
     if (!form.content.trim() || form.content === "<p></p>") return toast.error("Content is required");
