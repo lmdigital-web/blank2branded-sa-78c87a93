@@ -27,6 +27,26 @@ Deno.serve(async (req) => {
   result.promoted = promoted?.length ?? 0;
   if (promErr) result.promoteError = promErr.message;
 
+  // 1b) Fire social webhook for every newly-promoted post
+  const pinged: string[] = [];
+  for (const p of promoted ?? []) {
+    try {
+      const r = await fetch(`${supabaseUrl}/functions/v1/social-webhook-dispatch`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify({ post_id: p.id }),
+      });
+      if (r.ok) pinged.push(p.slug);
+      else console.error("social-webhook-dispatch non-2xx", p.slug, r.status, await r.text().catch(() => ""));
+    } catch (e) {
+      console.error("social-webhook-dispatch failed", p.slug, (e as Error).message);
+    }
+  }
+  result.socialPinged = pinged;
+
   // 2) Find published posts without a submission, submit them
   const { data: published } = await admin
     .from("posts")
