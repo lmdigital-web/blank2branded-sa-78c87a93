@@ -99,6 +99,29 @@ function renderArticle(post: Post, authorName: string | null): string {
     </article>`;
 }
 
+function renderArticleJsonLd(post: Post, authorName: string | null): string {
+  const url = `${BASE_URL}/blog/${post.slug}`;
+  const image = absolutize(post.cover_image_url);
+  const data: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.meta_description || post.excerpt || "",
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    url,
+    ...(image ? { image: [image] } : {}),
+    ...(post.published_at ? { datePublished: post.published_at } : {}),
+    ...(post.updated_at ? { dateModified: post.updated_at } : {}),
+    ...(authorName ? { author: { "@type": "Person", name: authorName } } : {}),
+    publisher: {
+      "@type": "Organization",
+      name: "Blank2Branded",
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/og-default.jpg` },
+    },
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
+}
+
 function rewriteHead(template: string, post: Post): string {
   const title = post.meta_title || `${post.title} | Blank2Branded Blog`;
   const desc =
@@ -186,6 +209,9 @@ async function main() {
     if (!post.slug) continue;
     const authorName = post.author_id ? authors.get(post.author_id) || null : null;
     let html = rewriteHead(template, post);
+    // Inject Article JSON-LD into <head> so Medium's importer sees it up front.
+    const jsonLd = renderArticleJsonLd(post, authorName);
+    html = html.replace(/<\/head>/i, `    ${jsonLd}\n  </head>`);
     html = injectArticle(html, renderArticle(post, authorName));
     const out = resolve(distDir, "blog", post.slug, "index.html");
     mkdirSync(dirname(out), { recursive: true });
