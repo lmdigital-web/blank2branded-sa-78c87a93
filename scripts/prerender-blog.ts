@@ -1,7 +1,10 @@
 // scripts/prerender-blog.ts
 // Runs AFTER `vite build`. Writes dist/blog/<slug>/index.html for each published
-// post with its own OG/Twitter/canonical/title tags baked into the static HTML so
-// Facebook/LinkedIn/X (which don't run JS) read the correct preview instantly.
+// post with its own OG/Twitter/canonical/title tags AND a server-rendered
+// <article> body baked into the static HTML. Crawlers and importers that don't
+// run JS (Facebook, LinkedIn, X, Medium's story importer, Pinterest, etc.) can
+// then read the full post immediately. The React app still hydrates on top for
+// real users, so nothing about the live experience changes.
 
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
@@ -15,12 +18,16 @@ type Post = {
   slug: string;
   title: string;
   excerpt: string | null;
+  content: string | null;
   cover_image_url: string | null;
   meta_title: string | null;
   meta_description: string | null;
   published_at: string | null;
   updated_at: string | null;
+  author_id: string | null;
 };
+
+type Author = { id: string; name: string | null };
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -33,9 +40,17 @@ const absolutize = (u: string | null | undefined) => {
   return `${BASE_URL}${s.startsWith("/") ? "" : "/"}${s}`;
 };
 
+/** Rewrite relative URLs inside the post's HTML content to absolute URLs so
+ *  Medium's importer can resolve images/links. */
+function absolutizeContent(html: string): string {
+  return html
+    .replace(/(<img\b[^>]*\bsrc=")(\/[^"]*)(")/gi, (_, a, path, b) => `${a}${BASE_URL}${path}${b}`)
+    .replace(/(<a\b[^>]*\bhref=")(\/[^"]*)(")/gi, (_, a, path, b) => `${a}${BASE_URL}${path}${b}`);
+}
+
 async function fetchPosts(): Promise<Post[]> {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/posts?select=slug,title,excerpt,cover_image_url,meta_title,meta_description,published_at,updated_at&status=eq.published&order=published_at.desc`,
+    `${SUPABASE_URL}/rest/v1/posts?select=slug,title,excerpt,content,cover_image_url,meta_title,meta_description,published_at,updated_at,author_id&status=eq.published&order=published_at.desc`,
     { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` } },
   );
   if (!res.ok) {
@@ -43,6 +58,45 @@ async function fetchPosts(): Promise<Post[]> {
     return [];
   }
   return res.json();
+}
+
+async function fetchAuthors(ids: string[]): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (!ids.length) return map;
+  const qs = `id=in.(${ids.map(encodeURIComponent).join(",")})`;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/authors?select=id,name&${qs}`, {
+    headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
+  });
+  if (!res.ok) return map;
+  const rows: Author[] = await res.json();
+  for (const r of rows) if (r.id && r.name) map.set(r.id, r.name);
+  return map;
+}
+
+function renderArticle(post: Post, authorName: string | null): string {
+  const title = post.title;
+  const url = `${BASE_URL}/blog/${post.slug}`;
+  const image = absolutize(post.cover_image_url);
+  const dateISO = post.published_at || "";
+  const dateHuman = post.published_at
+    ? new Date(post.published_at).toLocaleDateString("en-ZA", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "";
+  const excerpt = post.excerpt || "";
+  const content = post.content ? absolutizeContent(post.content) : "";
+
+  return `
+    <article>
+      <h1>${esc(title)}</h1>
+      ${dateISO ? `<p><time datetime="${esc(dateISO)}">${esc(dateHuman)}</time>${authorName ? ` · By <span rel="author">${esc(authorName)}</span>` : ""}</p>` : ""}
+      ${image ? `<p><img src="${esc(image)}" alt="${esc(title)}" /></p>` : ""}
+      ${excerpt ? `<p><em>${esc(excerpt)}</em></p>` : ""}
+      ${content}
+      <p><a href="${esc(url)}">Read the original post on Blank2Branded</a></p>
+    </article>`;
 }
 
 function rewriteHead(template: string, post: Post): string {
@@ -56,22 +110,18 @@ function rewriteHead(template: string, post: Post): string {
 
   let html = template;
 
-  // <title>
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
 
-  // meta name=description
   html = html.replace(
     /<meta\s+name="description"[^>]*\/?>(\s*)/i,
     `<meta name="description" content="${esc(desc)}" />\n    `,
   );
 
-  // canonical
   html = html.replace(
     /<link\s+rel="canonical"[^>]*\/?>/i,
     `<link rel="canonical" href="${esc(url)}" />`,
   );
 
-  // OG tags — replace existing and ensure article-specific ones present
   const ogBlock = [
     `<meta property="og:type" content="article" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
@@ -95,13 +145,26 @@ function rewriteHead(template: string, post: Post): string {
     .filter(Boolean)
     .join("\n    ");
 
-  // Drop any existing og:* / twitter:* meta tags, then inject our block before </head>
   html = html
     .replace(/\s*<meta\s+property="og:[^"]+"[^>]*\/?>/gi, "")
     .replace(/\s*<meta\s+name="twitter:[^"]+"[^>]*\/?>/gi, "")
     .replace(/<\/head>/i, `    ${ogBlock}\n  </head>`);
 
   return html;
+}
+
+/** Inject the prerendered article into the SSR root so no-JS crawlers/importers
+ *  (Medium, Facebook debugger, etc.) see the real content. React hydrates on
+ *  top for real users and replaces this placeholder. */
+function injectArticle(html: string, articleHtml: string): string {
+  // Try common React root ids first, else fall back to injecting before </body>.
+  const rootPattern = /<div\s+id="(root|app)"[^>]*>\s*<\/div>/i;
+  if (rootPattern.test(html)) {
+    return html.replace(rootPattern, (m) =>
+      m.replace(/>\s*<\/div>/i, `>${articleHtml}</div>`),
+    );
+  }
+  return html.replace(/<\/body>/i, `${articleHtml}\n  </body>`);
 }
 
 async function main() {
@@ -113,19 +176,25 @@ async function main() {
   }
   const template = readFileSync(templatePath, "utf8");
   const posts = await fetchPosts();
+  const authorIds = Array.from(
+    new Set(posts.map((p) => p.author_id).filter((v): v is string => !!v)),
+  );
+  const authors = await fetchAuthors(authorIds);
+
   let written = 0;
   for (const post of posts) {
     if (!post.slug) continue;
-    const html = rewriteHead(template, post);
+    const authorName = post.author_id ? authors.get(post.author_id) || null : null;
+    let html = rewriteHead(template, post);
+    html = injectArticle(html, renderArticle(post, authorName));
     const out = resolve(distDir, "blog", post.slug, "index.html");
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, html);
     written++;
   }
-  console.log(`prerender-blog: wrote ${written} prerendered blog pages`);
+  console.log(`prerender-blog: wrote ${written} prerendered blog pages (with article bodies)`);
 }
 
 main().catch((e) => {
   console.error("prerender-blog failed:", e);
-  // Do not break the build — SPA still works without prerender.
 });
