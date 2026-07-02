@@ -209,6 +209,9 @@ async function main() {
     if (!post.slug) continue;
     const authorName = post.author_id ? authors.get(post.author_id) || null : null;
     let html = rewriteHead(template, post);
+    // Inject Article JSON-LD into <head> so Medium's importer sees it up front.
+    const jsonLd = renderArticleJsonLd(post, authorName);
+    html = html.replace(/<\/head>/i, `    ${jsonLd}\n  </head>`);
     html = injectArticle(html, renderArticle(post, authorName));
     const out = resolve(distDir, "blog", post.slug, "index.html");
     mkdirSync(dirname(out), { recursive: true });
