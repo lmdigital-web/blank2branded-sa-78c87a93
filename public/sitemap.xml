@@ -162,8 +162,14 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blank2branded.co.za/blog/webhook-test-1782828406</loc>
-    <lastmod>2026-06-30</lastmod>
+    <loc>https://blank2branded.co.za/blog/how-to-care-for-dtf-printed-apparel</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/plain-t-shirts-wholesale-in-south-africa-bulk-buyers-playbook</loc>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
