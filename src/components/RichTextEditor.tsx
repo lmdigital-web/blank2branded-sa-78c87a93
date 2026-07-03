@@ -148,7 +148,9 @@ export function RichTextEditor({ value, onChange, title }: Props) {
         <Btn
           onClick={() => {
             const url = window.prompt("Image URL (or use Upload button)");
-            if (url) editor.chain().focus().setImage({ src: url }).run();
+            if (!url) return;
+            const alt = window.prompt("Alt text (describe the image for SEO & accessibility)", title || "") || "";
+            editor.chain().focus().setImage({ src: url, alt }).run();
           }}
           title="Insert image by URL"
         >
