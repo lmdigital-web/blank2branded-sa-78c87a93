@@ -80,7 +80,8 @@ export function RichTextEditor({ value, onChange, title }: Props) {
     setUploading(true);
     try {
       const url = await uploadBlogImage(file);
-      editor?.chain().focus().setImage({ src: url }).run();
+      const alt = (title || file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")).slice(0, 120);
+      editor?.chain().focus().setImage({ src: url, alt }).run();
       toast.success("Image uploaded");
     } catch (e: any) {
       toast.error(e.message || "Upload failed");
