@@ -218,7 +218,16 @@ export function RichTextEditor({ value, onChange, title }: Props) {
         title={title}
         contentHtml={editor.getHTML()}
         onGenerated={(url, alt) => {
-          editor.chain().focus().setImage({ src: url, alt: alt || title || "" }).run();
+          const safeAlt = (alt || title || "").replace(/"/g, "&quot;");
+          const safeSrc = url.replace(/"/g, "&quot;");
+          const html = `<img src="${safeSrc}" alt="${safeAlt}" loading="lazy" />`;
+          // Insert on the next tick so the dialog has finished closing and
+          // focus has returned to the editor before the transaction runs.
+          setTimeout(() => {
+            editor.chain().focus("end").insertContent(html).run();
+            // Force-sync parent state in case onUpdate is missed.
+            onChange(editor.getHTML());
+          }, 60);
         }}
       />
     </div>
