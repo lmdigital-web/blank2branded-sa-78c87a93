@@ -183,6 +183,15 @@ export function RichTextEditor({ value, onChange, title }: Props) {
           <ShoppingBag className="h-3.5 w-3.5" />
           Product
         </button>
+        <button
+          type="button"
+          title="Generate image with AI"
+          onClick={() => setAiOpen(true)}
+          className="flex items-center gap-1 rounded bg-gradient-to-r from-primary/15 to-primary/5 px-2 py-1.5 text-xs font-medium text-primary transition hover:from-primary/25 hover:to-primary/10"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          AI Image
+        </button>
       </div>
       <EditorContent editor={editor} />
       <ShopifyProductPicker
@@ -198,6 +207,15 @@ export function RichTextEditor({ value, onChange, title }: Props) {
             })
             .run();
           toast.success(`Inserted "${p.title}"`);
+        }}
+      />
+      <AiImageDialog
+        open={aiOpen}
+        onOpenChange={setAiOpen}
+        title={title}
+        contentHtml={editor.getHTML()}
+        onGenerated={(url) => {
+          editor.chain().focus().setImage({ src: url }).run();
         }}
       />
     </div>
