@@ -37,7 +37,10 @@ async function fetchBlogPosts(): Promise<SitemapEntry[]> {
     }
     const rows: { slug: string; updated_at: string }[] = await res.json();
     return rows.map((r) => ({
-      path: `/blog/${r.slug}`,
+      // Trailing slash matches the prerendered path (dist/blog/<slug>/index.html).
+      // Without it, hosting 308-redirects to add the slash, which Google reports
+      // as a "Redirect error" when the sitemap URL differs from the final URL.
+      path: `/blog/${r.slug}/`,
       lastmod: r.updated_at?.split("T")[0],
       changefreq: "monthly" as const,
       priority: "0.7",

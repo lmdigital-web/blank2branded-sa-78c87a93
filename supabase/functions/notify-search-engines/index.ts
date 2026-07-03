@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
       const { data: post } = await admin
         .from("posts").select("slug,status").eq("id", body.post_id).maybeSingle();
       if (post?.slug && (post.status === "published" || action === "URL_DELETED")) {
-        urls = [...urls, `${SITE_BASE}/blog/${post.slug}`];
+        urls = [...urls, `${SITE_BASE}/blog/${post.slug}/`];
       }
     }
 
