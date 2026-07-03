@@ -308,6 +308,51 @@ function rewriteHead(template: string, r: RouteMeta): string {
   return html;
 }
 
+// ---- Route meta overrides (from route_meta table in Supabase) ---------------
+
+type OverrideRow = {
+  slug: string;
+  title: string | null;
+  description: string | null;
+  canonical: string | null;
+  og_image: string | null;
+};
+
+async function fetchRouteOverrides(): Promise<Record<string, OverrideRow>> {
+  const url = process.env.VITE_SUPABASE_URL;
+  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) {
+    console.warn("prerender-routes: Supabase env not set; skipping route_meta overrides");
+    return {};
+  }
+  try {
+    const res = await fetch(`${url}/rest/v1/route_meta?select=slug,title,description,canonical,og_image`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    });
+    if (!res.ok) {
+      console.warn("prerender-routes: route_meta fetch failed", res.status);
+      return {};
+    }
+    const rows = (await res.json()) as OverrideRow[];
+    const map: Record<string, OverrideRow> = {};
+    for (const r of rows) map[r.slug] = r;
+    return map;
+  } catch (err) {
+    console.warn("prerender-routes: route_meta fetch error", err);
+    return {};
+  }
+}
+
+function applyOverride(r: RouteMeta, o?: OverrideRow): RouteMeta {
+  if (!o) return r;
+  return {
+    ...r,
+    title: o.title || r.title,
+    description: o.description || r.description,
+    image: o.og_image || r.image,
+  };
+}
+
 // ---- Main --------------------------------------------------------------------
 
 async function main() {
@@ -321,23 +366,26 @@ async function main() {
   }
   const template = readFileSync(templatePath, "utf8");
 
-  // Rewrite the root index.html so "/" also gets a clean self-canonical
-  // (currently already correct, but re-run through the same pipeline for
-  // consistency, and to attach og:type=website).
-  const rootRoute: RouteMeta = {
-    path: "/",
-    title:
-      "DTF Printing South Africa | Blank T-Shirts & Transfers | Blank2Branded",
-    description:
-      "Buy DTF transfers and blank t-shirts in South Africa. Gang sheets from A6 to 10m, blank tees, golf shirts & hoodies. Courier nationwide from Mbombela.",
-    keywords:
-      "DTF printing South Africa, DTF transfers South Africa, DTF prints near me, blank t-shirts South Africa, blank apparel suppliers South Africa, gang sheet printing, custom t-shirt printing South Africa, DTF Mbombela, DTF Mpumalanga, DTF Johannesburg, DTF Pretoria, DTF Cape Town, DTF Durban",
-  };
+  const overrides = await fetchRouteOverrides();
+
+  const rootRoute: RouteMeta = applyOverride(
+    {
+      path: "/",
+      title:
+        "DTF Printing South Africa | Blank T-Shirts & Transfers | Blank2Branded",
+      description:
+        "Buy DTF transfers and blank t-shirts in South Africa. Gang sheets from A6 to 10m, blank tees, golf shirts & hoodies. Courier nationwide from Mbombela.",
+      keywords:
+        "DTF printing South Africa, DTF transfers South Africa, DTF prints near me, blank t-shirts South Africa, blank apparel suppliers South Africa, gang sheet printing, custom t-shirt printing South Africa, DTF Mbombela, DTF Mpumalanga, DTF Johannesburg, DTF Pretoria, DTF Cape Town, DTF Durban",
+    },
+    overrides["/"],
+  );
   writeFileSync(templatePath, rewriteHead(template, rootRoute));
 
   let written = 1;
 
-  for (const r of staticRoutes) {
+  for (const base of staticRoutes) {
+    const r = applyOverride(base, overrides[base.path]);
     const html = rewriteHead(template, r);
     const out = resolve(distDir, r.path.replace(/^\//, ""), "index.html");
     mkdirSync(dirname(out), { recursive: true });
@@ -357,7 +405,7 @@ async function main() {
   }
 
   console.log(
-    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + root)`,
+    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + root); ${Object.keys(overrides).length} route_meta overrides applied`,
   );
 }
 
