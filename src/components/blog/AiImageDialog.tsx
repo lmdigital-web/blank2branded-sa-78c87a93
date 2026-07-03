@@ -58,7 +58,8 @@ export function AiImageDialog({ open, onOpenChange, title, contentHtml, onGenera
       });
       if (error) throw new Error(error.message);
       if (!data?.url) throw new Error((data as any)?.error || "No image returned");
-      onGenerated(data.url);
+      const alt = (title?.trim() || prompt.trim()).slice(0, 120);
+      onGenerated(data.url, alt);
       toast.success("Image generated & inserted");
       onOpenChange(false);
     } catch (e: any) {
