@@ -21,8 +21,8 @@ type Props = {
   title?: string;
   /** Post content (HTML), used to auto-suggest a prompt */
   contentHtml?: string;
-  /** Called with the uploaded image public URL when generation succeeds */
-  onGenerated: (url: string) => void;
+  /** Called with the uploaded image public URL and an alt text derived from the prompt/title */
+  onGenerated: (url: string, alt: string) => void;
 };
 
 function suggestFrom(title?: string, contentHtml?: string): string {
