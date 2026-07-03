@@ -43,9 +43,10 @@ export function RichTextEditor({ value, onChange, title }: Props) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } }),
-      Image,
+      StarterKit.configure({
+        link: { openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } },
+      }),
+      Image.configure({ inline: false, allowBase64: false, HTMLAttributes: { loading: "lazy" } }),
       Placeholder.configure({ placeholder: "Write your blog post here..." }),
       ShopifyProductNode,
     ],
