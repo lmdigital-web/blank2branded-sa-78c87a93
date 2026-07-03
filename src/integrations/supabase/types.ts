@@ -656,6 +656,72 @@ export type Database = {
         }
         Relationships: []
       }
+      route_meta: {
+        Row: {
+          canonical: string | null
+          created_at: string
+          description: string | null
+          og_image: string | null
+          slug: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          canonical?: string | null
+          created_at?: string
+          description?: string | null
+          og_image?: string | null
+          slug: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          canonical?: string | null
+          created_at?: string
+          description?: string | null
+          og_image?: string | null
+          slug?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_keywords: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          keyword: string
+          notes: string | null
+          priority: number
+          status: string
+          target_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          keyword: string
+          notes?: string | null
+          priority?: number
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          keyword?: string
+          notes?: string | null
+          priority?: number
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       seo_submissions: {
         Row: {
           google_ping_ok: boolean
