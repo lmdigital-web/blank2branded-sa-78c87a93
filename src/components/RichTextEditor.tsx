@@ -80,7 +80,8 @@ export function RichTextEditor({ value, onChange, title }: Props) {
     setUploading(true);
     try {
       const url = await uploadBlogImage(file);
-      editor?.chain().focus().setImage({ src: url }).run();
+      const alt = (title || file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")).slice(0, 120);
+      editor?.chain().focus().setImage({ src: url, alt }).run();
       toast.success("Image uploaded");
     } catch (e: any) {
       toast.error(e.message || "Upload failed");
@@ -147,7 +148,9 @@ export function RichTextEditor({ value, onChange, title }: Props) {
         <Btn
           onClick={() => {
             const url = window.prompt("Image URL (or use Upload button)");
-            if (url) editor.chain().focus().setImage({ src: url }).run();
+            if (!url) return;
+            const alt = window.prompt("Alt text (describe the image for SEO & accessibility)", title || "") || "";
+            editor.chain().focus().setImage({ src: url, alt }).run();
           }}
           title="Insert image by URL"
         >
@@ -214,8 +217,8 @@ export function RichTextEditor({ value, onChange, title }: Props) {
         onOpenChange={setAiOpen}
         title={title}
         contentHtml={editor.getHTML()}
-        onGenerated={(url) => {
-          editor.chain().focus().setImage({ src: url }).run();
+        onGenerated={(url, alt) => {
+          editor.chain().focus().setImage({ src: url, alt: alt || title || "" }).run();
         }}
       />
     </div>

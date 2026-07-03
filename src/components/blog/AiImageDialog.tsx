@@ -21,8 +21,8 @@ type Props = {
   title?: string;
   /** Post content (HTML), used to auto-suggest a prompt */
   contentHtml?: string;
-  /** Called with the uploaded image public URL when generation succeeds */
-  onGenerated: (url: string) => void;
+  /** Called with the uploaded image public URL and an alt text derived from the prompt/title */
+  onGenerated: (url: string, alt: string) => void;
 };
 
 function suggestFrom(title?: string, contentHtml?: string): string {
@@ -58,7 +58,8 @@ export function AiImageDialog({ open, onOpenChange, title, contentHtml, onGenera
       });
       if (error) throw new Error(error.message);
       if (!data?.url) throw new Error((data as any)?.error || "No image returned");
-      onGenerated(data.url);
+      const alt = (title?.trim() || prompt.trim()).slice(0, 120);
+      onGenerated(data.url, alt);
       toast.success("Image generated & inserted");
       onOpenChange(false);
     } catch (e: any) {
