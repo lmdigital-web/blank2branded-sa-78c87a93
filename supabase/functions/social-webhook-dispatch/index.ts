@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
 
     const payload = {
       title: post.title,
-      url: `${SITE_URL}/blog/${post.slug}`,
+      url: `${SITE_URL}/blog/${post.slug}/`,
       excerpt: post.excerpt || "",
       featured_image: absolutize(post.cover_image_url),
     };

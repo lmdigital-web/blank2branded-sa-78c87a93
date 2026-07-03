@@ -75,7 +75,7 @@ async function fetchAuthors(ids: string[]): Promise<Map<string, string>> {
 
 function renderArticle(post: Post, authorName: string | null): string {
   const title = post.title;
-  const url = `${BASE_URL}/blog/${post.slug}`;
+  const url = `${BASE_URL}/blog/${post.slug}/`;
   const image = absolutize(post.cover_image_url);
   const dateISO = post.published_at || "";
   const dateHuman = post.published_at
@@ -100,7 +100,7 @@ function renderArticle(post: Post, authorName: string | null): string {
 }
 
 function renderArticleJsonLd(post: Post, authorName: string | null): string {
-  const url = `${BASE_URL}/blog/${post.slug}`;
+  const url = `${BASE_URL}/blog/${post.slug}/`;
   const image = absolutize(post.cover_image_url);
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -128,7 +128,7 @@ function rewriteHead(template: string, post: Post): string {
     post.meta_description ||
     post.excerpt ||
     `Read ${post.title} on the Blank2Branded blog — DTF prints & blank apparel insights from South Africa.`;
-  const url = `${BASE_URL}/blog/${post.slug}`;
+  const url = `${BASE_URL}/blog/${post.slug}/`;
   const image = absolutize(post.cover_image_url) || `${BASE_URL}/og-default.jpg`;
 
   let html = template;
