@@ -217,8 +217,8 @@ export function RichTextEditor({ value, onChange, title }: Props) {
         onOpenChange={setAiOpen}
         title={title}
         contentHtml={editor.getHTML()}
-        onGenerated={(url) => {
-          editor.chain().focus().setImage({ src: url }).run();
+        onGenerated={(url, alt) => {
+          editor.chain().focus().setImage({ src: url, alt: alt || title || "" }).run();
         }}
       />
     </div>
