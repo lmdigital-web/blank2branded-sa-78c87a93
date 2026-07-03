@@ -179,12 +179,8 @@ export function AdminPage() {
 
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
+    { id: "seo" as const, label: "SEO", icon: Search },
     { id: "authors" as const, label: "Authors", icon: Users },
-    { id: "decay" as const, label: "Rankings at Risk", icon: AlertTriangle },
-    { id: "opportunities" as const, label: "Opportunities", icon: Sparkles },
-    { id: "speed" as const, label: "Speed", icon: Gauge },
-    { id: "search" as const, label: "Google Search", icon: Search },
-    { id: "indexing" as const, label: "Indexing", icon: Send },
     { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
     { id: "social" as const, label: "Social Integrations", icon: Share2 },
   ];
