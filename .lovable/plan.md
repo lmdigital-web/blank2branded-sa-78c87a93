@@ -1,87 +1,99 @@
-# Advanced Page 1 Ranking Features
+# SEO Admin Hub — Consolidation & Expansion Plan
 
-Four interlocking modules added to the existing admin dashboard. All work alongside current GSC, Indexing, Speed, and Shopify Sync tabs.
+## Goal
+Group all SEO tooling under a single **SEO** entry in the admin sidebar with 6 sub-tabs. Reuse what already exists, build only what's missing, and match the existing admin design system (cards, tables, tabs).
 
----
+## What's already built (reuse — do not rebuild)
 
-## 1. Automatic JSON-LD Schema Engine
+| Existing panel | Fits into new sub-tab |
+|---|---|
+| `SearchConsolePanel` | Analytics Snapshot |
+| `IndexingPanel` | Health Audit (indexing status) |
+| `OpportunitiesPanel` | Content Ideas & Keywords |
+| `DecayPanel` | Analytics Snapshot |
+| `SpeedPanel` | Health Audit |
+| `BrokenLinksPanel` | Health Audit |
+| `AuthorsPanel` | stays separate (E-E-A-T) |
+| `SocialIntegrationsPanel` | stays separate |
+| `lib/seo-score.ts` (Yoast scoring) | Health Audit + Meta Editor |
+| `RichTextEditor` + `AiImageDialog` | AI Content Generator |
+| `generate-blog-image` edge function | AI Content Generator |
 
-**Goal:** every public page ships valid, dynamic schema in the `<head>` without manual authoring.
+## New SEO section — sub-tabs
 
-- Add `src/lib/schema-builder.ts` with builders for `Article`, `Organization`, `Product`, `BreadcrumbList`, `WebSite`.
-- Inject via `react-helmet-async` (already in project) on:
-  - `routes/blog.$slug.tsx` → `Article` + `BreadcrumbList` (uses post title, cover image, published_at, modified_at, author profile, focus keyword).
-  - `routes/products.$handle.tsx` → `Product` + `BreadcrumbList` (pulls live Shopify price, currency ZAR, availability from variant `availableForSale`, images, SKU, brand).
-  - `routes/shop.tsx`, `display.tsx`, etc. → `BreadcrumbList`.
-  - Sitewide `Organization` + `WebSite` stays in `index.html` (already there).
-- Admin: new **Schema** sub-tab under SEO showing a small validator that fetches a URL and reports which schema types were detected (uses existing `fetch`-based scan pattern).
+Sidebar collapses **Google Search, Indexing, Opportunities, Speed, Rankings at Risk** into a single **SEO** parent with these sub-tabs:
 
-## 2. GSC Content Decay Monitor
+### 1. Health Audit *(new wrapper + reuses existing)*
+- Aggregates every post + every static/product route
+- Per-page checks: meta title present & unique, meta description length, H1 count, images missing alt, internal broken links, schema markup present, canonical present
+- Column: SEO score 0–100 (extends `computeSeoScore`)
+- Sorted worst-first, "Fix" button jumps to the meta editor
+- Embeds `IndexingPanel`, `SpeedPanel`, `BrokenLinksPanel` in accordions below the table
 
-**Goal:** spot pages losing traction before they fall off page 1.
+### 2. Meta Tag Editor *(new)*
+- Single table listing every post + every static route (`/`, `/shop`, `/blog`, `/dtf`, `/blanks`, `/about`, `/contact`, product pages)
+- Inline-edit: title, meta description, canonical, OG image URL
+- Live counters — red if title >60 / desc >160
+- Posts save to `posts` table (already exists)
+- Static routes save to a new `route_meta` table (slug, title, description, canonical, og_image)
+- Prerender script (`scripts/prerender-routes.ts`) reads `route_meta` at build time to inject per-route tags
 
-- New edge function `gsc-decay` that queries Search Console for two windows (last 30d vs prior 30d), top 50 URLs by current clicks, computes click + impression delta %.
-- New admin widget `src/components/admin/DecayPanel.tsx` titled **"Rankings at Risk (Content Decay)"** showing rows: URL, clicks Δ%, impressions Δ%, avg position change, **Optimize & Update** button that routes to the matching post editor (resolved by slug from URL path; Shopify products link to Shopify admin).
-- Pinned to the main Blog feed view and also available as its own tab card.
+### 3. Keywords & Ideas *(new)*
+- New table `seo_keywords` (keyword, target_url, status: idea/drafting/published, notes, priority)
+- CRUD form + table
+- "Create draft post" button pre-fills the AI generator with the keyword
+- Existing `OpportunitiesPanel` embedded above as GSC-sourced suggestions
 
-## 3. Instant Google Indexing API Integration
+### 4. AI Content Generator *(new)*
+- Form: topic, focus keyword, tone, target word count, target internal links (autocomplete from existing pages/posts)
+- Uses Lovable AI Gateway with `google/gemini-3-flash-preview` (NOT Anthropic — Lovable AI Gateway is the platform default and costs less; user was originally asking for Claude but we already have LOVABLE_API_KEY provisioned)
+- Returns: H1 title, meta description, article body (HTML with H2/H3), suggested slug
+- Editable preview → "Save as draft" writes to `posts` with status=draft
+- New edge function `generate-blog-draft`
 
-**Goal:** every publish/update fires an immediate indexing request.
+### 5. Internal Linking Helper *(new)*
+- Sidebar addition inside the post editor (`admin.post-editor.tsx`)
+- On the SEO Hub, standalone view: pick a post → list other posts/pages ranked by keyword overlap (Jaccard on keywords + title tokens)
+- Click a suggestion → copies anchor HTML to clipboard
 
-- The existing `notify-search-engines` function already pings sitemaps + IndexNow. Extend with **Google Indexing API** (`URL_UPDATED` / `URL_DELETED`) using a service account JWT.
-- New secret: `GOOGLE_INDEXING_SERVICE_ACCOUNT_JSON` (full service account key JSON). User must:
-  1. Create service account in Google Cloud, download JSON key.
-  2. Add it as Owner on the Search Console property.
-  3. Enable Indexing API.
-  Agent will then store the JSON via add_secret.
-- Auto-fire triggers:
-  - Blog publish / scheduled-promote / update → call function.
-  - Shopify product webhook (future) or manual "Resync" button in Shopify Sync tab.
-- UI: badge **"Index Request Sent"** (green) / **"Pending"** (amber) / **"Failed"** (red) next to each post in admin lists, read from `seo_submissions.status` filtered by `provider='google_indexing'`.
+### 6. Analytics Snapshot *(reuses existing)*
+- Renders `SearchConsolePanel` (clicks, impressions, avg position — already live)
+- Renders `DecayPanel` below
 
-## 4. E-E-A-T Quality Gate
+## Technical section
 
-**Goal:** enforce author authority + originality before publish.
+### DB migrations
+```
+route_meta (slug PK, title, description, canonical, og_image, updated_at)
+seo_keywords (id, keyword, target_url, status, notes, priority, created_by, timestamps)
+```
+Both: GRANT to authenticated + service_role, RLS restricted to admins via `has_role`.
 
-- New table `public.authors` (name, slug, bio, credentials, avatar_url, email, website, social JSON, expertise tags).
-- Extend `public.posts`:
-  - `author_id uuid references public.authors`
-  - `experience_notes text` (Information Gain / First-Hand Experience)
-- Admin **Authors** sub-tab under Blog → CRUD form.
-- Post editor changes:
-  - **Author** dropdown (required; loads from `authors` table).
-  - **Information Gain / First-Hand Experience Notes** textarea (required min 80 chars to mark `published` or `scheduled`; saved as draft without it).
-  - SEO score gains 2 new checks (+5 pts each): has author with credentials, has experience notes ≥ 80 chars.
-- Public blog page renders author byline + JSON-LD `author` field from the linked profile (feeds module 1).
+### File changes
+- `src/routes/admin.tsx` — collapse SEO subsections into one `section = "seo"` with internal sub-tab state; remove old top-level entries (search/indexing/opportunities/speed/decay)
+- `src/components/admin/seo/HealthAuditPanel.tsx` (new)
+- `src/components/admin/seo/MetaEditorPanel.tsx` (new)
+- `src/components/admin/seo/KeywordsPanel.tsx` (new)
+- `src/components/admin/seo/AiGeneratorPanel.tsx` (new)
+- `src/components/admin/seo/InternalLinksPanel.tsx` (new)
+- `src/components/admin/seo/AnalyticsPanel.tsx` (new — thin wrapper)
+- `src/lib/seo-audit.ts` (new — page-crawl checks)
+- `supabase/functions/generate-blog-draft/index.ts` (new)
+- `scripts/prerender-routes.ts` — read `route_meta` overrides
+- 1 migration for the two new tables
 
----
+### Deferred / clarifications
+- **Claude vs Lovable AI**: I'll use Lovable AI Gateway (Gemini 3 Flash) unless you specifically want to pay for Anthropic — it's free within your workspace allowance.
+- **Bulk edit**: v1 will do inline edit per row; a bulk "apply template" modal can come after you've used it a week.
+- **GSC card stub**: not needed — SearchConsolePanel is already wired to live data.
 
-## Technical details
+## Delivery order
+1. Migration (2 tables)
+2. Consolidate sidebar + shell for `section = "seo"` with sub-tabs (existing panels moved, no behaviour change)
+3. Meta Editor + prerender integration
+4. Health Audit
+5. Keywords
+6. AI Generator (+ edge function)
+7. Internal Links helper
 
-**New / changed files**
-- `src/lib/schema-builder.ts` (new)
-- `src/routes/blog.$slug.tsx`, `products.$handle.tsx` — add Helmet schema
-- `src/components/admin/DecayPanel.tsx` (new)
-- `src/components/admin/AuthorsPanel.tsx` (new)
-- `src/components/admin/SchemaValidator.tsx` (new)
-- `src/routes/admin.tsx` — register Decay widget + Authors tab + indexing badges
-- `src/routes/admin.post-editor.tsx` — author dropdown, experience notes, gated publish
-- `src/lib/seo-score.ts` — +2 E-E-A-T checks
-- `supabase/functions/gsc-decay/index.ts` (new)
-- `supabase/functions/notify-search-engines/index.ts` — add Google Indexing API call
-
-**Migrations**
-- `authors` table + grants + RLS (admin write, public read)
-- `posts.author_id`, `posts.experience_notes`
-
-**Secrets to request**
-- `GOOGLE_INDEXING_SERVICE_ACCOUNT_JSON` (after user creates the service account)
-
-**Order of execution**
-1. Migrations (authors + post columns)
-2. Schema builder + Helmet wiring
-3. Authors panel + post editor gate + SEO score updates
-4. Decay edge function + panel
-5. Notify-search-engines extension (waits on user secret; module ships, badge shows "Setup required" until secret added)
-
-Tell me to proceed and I'll start with the migration.
+Shall I proceed with this? Say **yes** to build all 7 steps in order, or tell me which sub-tabs to drop/reorder.
