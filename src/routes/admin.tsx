@@ -424,39 +424,13 @@ export function AdminPage() {
               </>
             )}
 
-            {section === "search" && (
-              <div className="mt-8">
-                <SearchConsolePanel />
-              </div>
-            )}
-
-            {section === "indexing" && (
-              <div className="mt-8">
-                <IndexingPanel />
-              </div>
+            {section === "seo" && (
+              <SeoHub />
             )}
 
             {section === "shopify" && (
               <div className="mt-8">
                 <ShopifySyncPanel />
-              </div>
-            )}
-
-            {section === "opportunities" && (
-              <div className="mt-8">
-                <OpportunitiesPanel />
-              </div>
-            )}
-
-            {section === "speed" && (
-              <div className="mt-8">
-                <SpeedPanel />
-              </div>
-            )}
-
-            {section === "decay" && (
-              <div className="mt-8">
-                <DecayPanel />
               </div>
             )}
 
