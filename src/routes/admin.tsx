@@ -45,7 +45,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "decay" | "authors" | "search" | "indexing" | "shopify" | "opportunities" | "speed" | "social">("blog");
+  const [section, setSection] = useState<"blog" | "seo" | "authors" | "shopify" | "social">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
