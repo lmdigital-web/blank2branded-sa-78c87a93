@@ -1,6 +1,5 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useRef, useState } from "react";
@@ -44,9 +43,10 @@ export function RichTextEditor({ value, onChange, title }: Props) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } }),
-      Image,
+      StarterKit.configure({
+        link: { openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } },
+      }),
+      Image.configure({ inline: false, allowBase64: false, HTMLAttributes: { loading: "lazy" } }),
       Placeholder.configure({ placeholder: "Write your blog post here..." }),
       ShopifyProductNode,
     ],
@@ -218,7 +218,16 @@ export function RichTextEditor({ value, onChange, title }: Props) {
         title={title}
         contentHtml={editor.getHTML()}
         onGenerated={(url, alt) => {
-          editor.chain().focus().setImage({ src: url, alt: alt || title || "" }).run();
+          const safeAlt = (alt || title || "").replace(/"/g, "&quot;");
+          const safeSrc = url.replace(/"/g, "&quot;");
+          const html = `<img src="${safeSrc}" alt="${safeAlt}" loading="lazy" />`;
+          // Insert on the next tick so the dialog has finished closing and
+          // focus has returned to the editor before the transaction runs.
+          setTimeout(() => {
+            editor.chain().focus("end").insertContent(html).run();
+            // Force-sync parent state in case onUpdate is missed.
+            onChange(editor.getHTML());
+          }, 60);
         }}
       />
     </div>

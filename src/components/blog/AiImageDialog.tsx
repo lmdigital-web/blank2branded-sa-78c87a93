@@ -59,9 +59,10 @@ export function AiImageDialog({ open, onOpenChange, title, contentHtml, onGenera
       if (error) throw new Error(error.message);
       if (!data?.url) throw new Error((data as any)?.error || "No image returned");
       const alt = (title?.trim() || prompt.trim()).slice(0, 120);
+      // Close dialog FIRST so focus returns to the editor before we insert.
+      onOpenChange(false);
       onGenerated(data.url, alt);
       toast.success("Image generated & inserted");
-      onOpenChange(false);
     } catch (e: any) {
       toast.error(e.message || "Generation failed");
     } finally {
