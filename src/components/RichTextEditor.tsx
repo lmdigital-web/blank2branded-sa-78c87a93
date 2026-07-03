@@ -21,21 +21,26 @@ import {
   Redo,
   Code,
   ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 import { uploadBlogImage } from "@/lib/upload-blog-image";
 import { toast } from "sonner";
 import { ShopifyProductNode } from "@/components/editor/ShopifyProductNode";
 import { ShopifyProductPicker } from "@/components/admin/ShopifyProductPicker";
+import { AiImageDialog } from "@/components/blog/AiImageDialog";
 
 type Props = {
   value: string;
   onChange: (html: string) => void;
+  /** Post title (used for AI image prompt suggestions) */
+  title?: string;
 };
 
-export function RichTextEditor({ value, onChange }: Props) {
+export function RichTextEditor({ value, onChange, title }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
 
   const editor = useEditor({
     extensions: [
