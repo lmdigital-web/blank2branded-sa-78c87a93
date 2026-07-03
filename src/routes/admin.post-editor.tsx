@@ -349,7 +349,7 @@ export function PostEditorPage() {
               <div className="rounded-lg border border-border bg-card p-5">
                 <Label>Content *</Label>
                 <div className="mt-2">
-                  <RichTextEditor value={form.content} onChange={(html) => update("content", html)} />
+                  <RichTextEditor value={form.content} onChange={(html) => update("content", html)} title={form.title} />
                 </div>
               </div>
             </div>

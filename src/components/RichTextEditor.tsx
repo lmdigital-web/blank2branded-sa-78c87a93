@@ -21,21 +21,26 @@ import {
   Redo,
   Code,
   ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 import { uploadBlogImage } from "@/lib/upload-blog-image";
 import { toast } from "sonner";
 import { ShopifyProductNode } from "@/components/editor/ShopifyProductNode";
 import { ShopifyProductPicker } from "@/components/admin/ShopifyProductPicker";
+import { AiImageDialog } from "@/components/blog/AiImageDialog";
 
 type Props = {
   value: string;
   onChange: (html: string) => void;
+  /** Post title (used for AI image prompt suggestions) */
+  title?: string;
 };
 
-export function RichTextEditor({ value, onChange }: Props) {
+export function RichTextEditor({ value, onChange, title }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -178,6 +183,15 @@ export function RichTextEditor({ value, onChange }: Props) {
           <ShoppingBag className="h-3.5 w-3.5" />
           Product
         </button>
+        <button
+          type="button"
+          title="Generate image with AI"
+          onClick={() => setAiOpen(true)}
+          className="flex items-center gap-1 rounded bg-gradient-to-r from-primary/15 to-primary/5 px-2 py-1.5 text-xs font-medium text-primary transition hover:from-primary/25 hover:to-primary/10"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          AI Image
+        </button>
       </div>
       <EditorContent editor={editor} />
       <ShopifyProductPicker
@@ -193,6 +207,15 @@ export function RichTextEditor({ value, onChange }: Props) {
             })
             .run();
           toast.success(`Inserted "${p.title}"`);
+        }}
+      />
+      <AiImageDialog
+        open={aiOpen}
+        onOpenChange={setAiOpen}
+        title={title}
+        contentHtml={editor.getHTML()}
+        onGenerated={(url) => {
+          editor.chain().focus().setImage({ src: url }).run();
         }}
       />
     </div>
