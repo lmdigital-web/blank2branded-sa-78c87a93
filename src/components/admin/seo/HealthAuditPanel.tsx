@@ -40,7 +40,7 @@ const STATIC_ROUTES = [
   { slug: "/catalogues", label: "Catalogues" },
 ];
 
-export function HealthAuditPanel() {
+export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) => void } = {}) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [routeMeta, setRouteMeta] = useState<Record<string, { title: string | null; description: string | null }>>({});
   const [loading, setLoading] = useState(true);
