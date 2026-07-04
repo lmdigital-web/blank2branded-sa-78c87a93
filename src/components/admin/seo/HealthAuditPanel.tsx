@@ -146,7 +146,7 @@ export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) =
             title={r.label}
             score={r.score}
             issues={r.issues}
-            fixHref="?seo-fix=meta"
+            onFix={onFixMeta ? () => onFixMeta(r.label) : undefined}
           />
         ))}
       </Section>
