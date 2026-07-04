@@ -236,11 +236,15 @@ export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string
           <RotateCcw className="mr-2 h-4 w-4" />
           Reload
         </Button>
+        <Button onClick={() => void autoFillMissing()} disabled={autofilling}>
+          <Sparkles className="mr-2 h-4 w-4" />
+          {autofilling ? "Filling…" : "Auto-fill missing meta"}
+        </Button>
       </div>
 
       <div className="rounded-lg border border-border bg-card p-1">
         <p className="p-3 text-xs text-muted-foreground">
-          Edit meta titles (30–60 chars), descriptions (120–160 chars), canonical URLs, and OG images. Static routes save to <code className="rounded bg-muted px-1">route_meta</code> and take effect on the next site build. Blog posts save immediately.
+          Edit meta titles (30–60 chars), descriptions (120–160 chars), canonical URLs, and OG images. Static routes save to <code className="rounded bg-muted px-1">route_meta</code> and take effect on the next site build. Blog posts save immediately. Click <strong>Auto-fill missing meta</strong> to populate SEO-optimised titles &amp; descriptions for any static page still missing them.
         </p>
       </div>
 
