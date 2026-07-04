@@ -47,14 +47,70 @@ const STATIC_ROUTES = [
   { slug: "/terms", label: "Terms" },
 ];
 
+const DEFAULTS: Record<string, { title: string; description: string }> = {
+  "/": {
+    title: "Blank2Branded — DTF Transfers & Blank Apparel South Africa",
+    description: "South Africa's go-to for premium DTF transfers, blank apparel, sublimation and display printing. Fast turnaround, nationwide delivery, unbeatable quality.",
+  },
+  "/shop": {
+    title: "Shop DTF Transfers, Blanks & Print Supplies | Blank2Branded",
+    description: "Browse our full range of DTF transfers, blank t-shirts, hoodies, caps and print-ready apparel. Wholesale pricing, fast delivery across South Africa.",
+  },
+  "/dtf": {
+    title: "DTF Transfers South Africa — Custom Prints from R25 | Blank2Branded",
+    description: "Order custom Direct-to-Film (DTF) transfers online. Vibrant colours, soft feel, washes 50+ times. Upload artwork, get a quote and delivery in 2-3 days.",
+  },
+  "/blanks": {
+    title: "Blank Apparel Wholesale — T-Shirts, Hoodies, Caps | Blank2Branded",
+    description: "Premium blank t-shirts, hoodies, caps and workwear ready for print. Wholesale pricing on top SA brands. Order online with nationwide delivery.",
+  },
+  "/blog": {
+    title: "Blog — DTF Printing Tips, Guides & News | Blank2Branded",
+    description: "DTF printing tips, blank apparel buying guides, application tutorials and news from South Africa's leading print-and-press supplier.",
+  },
+  "/about": {
+    title: "About Blank2Branded — SA's Trusted DTF & Blanks Supplier",
+    description: "Family-run South African print business supplying DTF transfers, blank apparel and sublimation gear to brands, resellers and print shops nationwide.",
+  },
+  "/contact": {
+    title: "Contact Blank2Branded — DTF & Blank Apparel Quotes SA",
+    description: "Get in touch for DTF transfer quotes, wholesale blanks pricing or press advice. WhatsApp, email or phone — we reply within one business day.",
+  },
+  "/display": {
+    title: "Display Printing — Banners, Pull-Ups & Signage | Blank2Branded",
+    description: "Large-format display prints: pull-up banners, roller banners, PVC signs and event signage. Print-ready in 48 hours, delivered across South Africa.",
+  },
+  "/sublimation": {
+    title: "Sublimation Printing & Blanks South Africa | Blank2Branded",
+    description: "Sublimation blanks, transfer paper and ready-to-press prints for mugs, apparel and hardgoods. Wholesale pricing and nationwide delivery from Blank2Branded.",
+  },
+  "/catalogues": {
+    title: "Product Catalogues — DTF & Blank Apparel PDFs | Blank2Branded",
+    description: "Download the latest Blank2Branded catalogues for DTF transfers, blank apparel, sublimation and display printing. Full range, sizes and wholesale pricing.",
+  },
+  "/privacy": {
+    title: "Privacy Policy | Blank2Branded",
+    description: "How Blank2Branded collects, uses and protects your personal information across our website, orders and customer communications in South Africa.",
+  },
+  "/terms": {
+    title: "Terms & Conditions | Blank2Branded",
+    description: "Terms of sale, delivery, returns and website use for Blank2Branded — South Africa's trusted DTF transfers and blank apparel supplier.",
+  },
+};
+
 const BASE = "https://blank2branded.co.za";
 
-export function MetaEditorPanel() {
+export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string } = {}) {
   const [rows, setRows] = useState<Row[]>([]);
   const [dirty, setDirty] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [saving, setSaving] = useState<string | null>(null);
+  const [autofilling, setAutofilling] = useState(false);
+
+  useEffect(() => {
+    if (initialSearch) setSearch(initialSearch);
+  }, [initialSearch]);
 
   useEffect(() => {
     void load();
