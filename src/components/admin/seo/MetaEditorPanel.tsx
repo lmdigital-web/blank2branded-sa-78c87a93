@@ -220,6 +220,37 @@ export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string
     }
   }
 
+  async function autoFillMissing() {
+    setAutofilling(true);
+    try {
+      const targets = rows.filter(
+        (r) => r.kind === "route" && DEFAULTS[r.slug] && (!r.meta_title || !r.meta_description),
+      );
+      if (targets.length === 0) {
+        toast.info("All static routes already have meta titles and descriptions.");
+        return;
+      }
+      const upserts = targets.map((r) => {
+        const d = DEFAULTS[r.slug];
+        return {
+          slug: r.slug,
+          title: r.meta_title || d.title,
+          description: r.meta_description || d.description,
+          canonical: r.canonical || `${BASE}${r.slug === "/" ? "" : r.slug}`,
+          og_image: r.cover_image_url || null,
+        };
+      });
+      const { error } = await supabase.from("route_meta").upsert(upserts, { onConflict: "slug" });
+      if (error) throw error;
+      toast.success(`Filled meta for ${targets.length} page${targets.length === 1 ? "" : "s"}. Publish the site to push them live.`);
+      await load();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setAutofilling(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
