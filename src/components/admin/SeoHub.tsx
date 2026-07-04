@@ -26,6 +26,12 @@ const tabs: { id: Tab; label: string; icon: typeof Gauge; desc: string }[] = [
 
 export function SeoHub() {
   const [tab, setTab] = useState<Tab>("health");
+  const [metaSearch, setMetaSearch] = useState("");
+
+  const goFixMeta = (search: string) => {
+    setMetaSearch(search);
+    setTab("meta");
+  };
 
   return (
     <div className="mt-6 space-y-6">
@@ -52,8 +58,8 @@ export function SeoHub() {
       </div>
 
       <div>
-        {tab === "health" && <HealthAuditPanel />}
-        {tab === "meta" && <MetaEditorPanel />}
+        {tab === "health" && <HealthAuditPanel onFixMeta={goFixMeta} />}
+        {tab === "meta" && <MetaEditorPanel initialSearch={metaSearch} />}
         {tab === "keywords" && <KeywordsPanel />}
         {tab === "ai" && <AiGeneratorPanel />}
         {tab === "internal" && <InternalLinksPanel />}

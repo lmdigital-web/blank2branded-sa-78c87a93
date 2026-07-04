@@ -40,7 +40,7 @@ const STATIC_ROUTES = [
   { slug: "/catalogues", label: "Catalogues" },
 ];
 
-export function HealthAuditPanel() {
+export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) => void } = {}) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [routeMeta, setRouteMeta] = useState<Record<string, { title: string | null; description: string | null }>>({});
   const [loading, setLoading] = useState(true);
@@ -146,7 +146,7 @@ export function HealthAuditPanel() {
             title={r.label}
             score={r.score}
             issues={r.issues}
-            fixHref="?seo-fix=meta"
+            onFix={onFixMeta ? () => onFixMeta(r.label) : undefined}
           />
         ))}
       </Section>
@@ -192,7 +192,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function AuditRow({ path, title, score, issues, fixHref }: { path: string; title: string; score: number; issues: string[]; fixHref: string }) {
+function AuditRow({ path, title, score, issues, fixHref, onFix }: { path: string; title: string; score: number; issues: string[]; fixHref?: string; onFix?: () => void }) {
   const badge = seoBadge(score);
   return (
     <div className="flex flex-wrap items-start justify-between gap-3 p-4">
@@ -223,9 +223,13 @@ function AuditRow({ path, title, score, issues, fixHref }: { path: string; title
         )}
       </div>
       {issues.length > 0 && (
-        <Link to={fixHref}>
-          <Button size="sm" variant="outline">Fix</Button>
-        </Link>
+        onFix ? (
+          <Button size="sm" variant="outline" onClick={onFix}>Fix</Button>
+        ) : fixHref ? (
+          <Link to={fixHref}>
+            <Button size="sm" variant="outline">Fix</Button>
+          </Link>
+        ) : null
       )}
     </div>
   );
