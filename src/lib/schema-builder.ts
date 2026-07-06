@@ -67,7 +67,7 @@ export function authorNode(author?: AuthorProfile | null) {
 }
 
 export function articleSchema(input: ArticleInput) {
-  const url = `${SITE_URL}/blog/${input.slug}`;
+  const url = `${SITE_URL}/blog/${input.slug}/`;
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -88,7 +88,7 @@ export function articleSchema(input: ArticleInput) {
 }
 
 export function productSchema(input: ProductInput) {
-  const url = `${SITE_URL}/products/${input.handle}`;
+  const url = `${SITE_URL}/products/${input.handle}/`;
   const offers =
     input.price != null
       ? {

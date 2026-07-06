@@ -123,8 +123,8 @@ export function ProductPage() {
       "breadcrumb-jsonld",
       breadcrumbSchema([
         { name: "Home", url: `${SITE_URL}/` },
-        { name: "Shop", url: `${SITE_URL}/shop` },
-        { name: product.title, url: `${SITE_URL}/products/${product.handle}` },
+        { name: "Shop", url: `${SITE_URL}/shop/` },
+        { name: product.title, url: `${SITE_URL}/products/${product.handle}/` },
       ]),
     );
     return () => {

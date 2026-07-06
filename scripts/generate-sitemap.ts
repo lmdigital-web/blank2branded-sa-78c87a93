@@ -13,14 +13,16 @@ interface SitemapEntry {
   priority?: string;
 }
 
+const canonicalPath = (path: string) => (path === "/" || path.endsWith("/") ? path : `${path}/`);
+
 const staticEntries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
-  { path: "/about", changefreq: "monthly", priority: "0.7" },
-  { path: "/blanks", changefreq: "weekly", priority: "0.8" },
-  { path: "/contact", changefreq: "monthly", priority: "0.6" },
-  { path: "/dtf", changefreq: "weekly", priority: "0.9" },
-  { path: "/shop", changefreq: "daily", priority: "0.9" },
-  { path: "/blog", changefreq: "weekly", priority: "0.8" },
+  { path: "/about/", changefreq: "monthly", priority: "0.7" },
+  { path: "/blanks/", changefreq: "weekly", priority: "0.8" },
+  { path: "/contact/", changefreq: "monthly", priority: "0.6" },
+  { path: "/dtf/", changefreq: "weekly", priority: "0.9" },
+  { path: "/shop/", changefreq: "daily", priority: "0.9" },
+  { path: "/blog/", changefreq: "weekly", priority: "0.8" },
 ];
 
 async function fetchBlogPosts(): Promise<SitemapEntry[]> {
@@ -87,7 +89,7 @@ async function fetchShopifyProducts(): Promise<SitemapEntry[]> {
     const edges = data?.data?.products?.edges ?? [];
 
     return edges.map((edge: { node: { handle: string; updatedAt?: string } }) => ({
-      path: `/products/${edge.node.handle}`,
+      path: `/products/${edge.node.handle}/`,
       lastmod: edge.node.updatedAt ? edge.node.updatedAt.split("T")[0] : undefined,
       changefreq: "weekly" as const,
       priority: "0.8",
@@ -102,7 +104,7 @@ function generateSitemap(entries: SitemapEntry[]) {
   const urls = entries.map((e) =>
     [
       `  <url>`,
-      `    <loc>${BASE_URL}${e.path}</loc>`,
+      `    <loc>${BASE_URL}${canonicalPath(e.path)}</loc>`,
       e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,

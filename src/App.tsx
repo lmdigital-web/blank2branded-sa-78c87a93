@@ -152,7 +152,8 @@ function ensureMeta(attr: "name" | "property", key: string): HTMLMetaElement {
 }
 
 function applySeo(title: string, description: string, keywords: string, path: string) {
-  const url = `${SITE_URL}${path === "/" ? "/" : path}`;
+  const cleanPath = path === "/" ? "/" : path.replace(/\/$/, "");
+  const url = `${SITE_URL}${cleanPath === "/" ? "/" : `${cleanPath}/`}`;
   document.title = title;
   ensureMeta("name", "description").content = description;
   ensureMeta("name", "keywords").content = keywords;
