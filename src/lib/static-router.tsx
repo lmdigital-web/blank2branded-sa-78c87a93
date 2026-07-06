@@ -16,12 +16,37 @@ function getCurrentPath() {
   return window.location.pathname;
 }
 
+const TRAILING_SLASH_ROUTES = new Set([
+  "/about",
+  "/blanks",
+  "/blog",
+  "/catalogues",
+  "/contact",
+  "/display",
+  "/dtf",
+  "/privacy",
+  "/shop",
+  "/sublimation",
+  "/terms",
+]);
+
+function withFinalPublicSlash(href: string) {
+  const match = href.match(/^([^?#]*)([?#].*)?$/);
+  if (!match) return href;
+  const [, path, suffix = ""] = match;
+  if (path === "/" || path.endsWith("/")) return href;
+  if (TRAILING_SLASH_ROUTES.has(path) || /^\/(blog|products)\/[^/]+$/.test(path)) {
+    return `${path}/${suffix}`;
+  }
+  return href;
+}
+
 export function buildPath(to: string, params?: Record<string, string | number>) {
-  if (!params) return to;
-  return Object.entries(params).reduce(
+  const path = !params ? to : Object.entries(params).reduce(
     (path, [key, value]) => path.replace(`$${key}`, encodeURIComponent(String(value))),
     to,
   );
+  return withFinalPublicSlash(path);
 }
 
 export function navigate(to: string) {
@@ -44,7 +69,7 @@ export function useCurrentPath() {
 
 export function useProductHandle() {
   const path = useCurrentPath();
-  const match = path.match(/^\/products\/([^/]+)$/);
+  const match = path.match(/^\/products\/([^/]+)\/?$/);
   return match ? decodeURIComponent(match[1]) : "";
 }
 
