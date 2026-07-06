@@ -29,6 +29,11 @@ const absolutize = (u: string | null | undefined) => {
   return `${BASE_URL}${s.startsWith("/") ? "" : "/"}${s}`;
 };
 
+const canonicalUrlForPath = (path: string) => {
+  const finalPath = path === "/" || path.endsWith("/") ? path : `${path}/`;
+  return `${BASE_URL}${finalPath}`;
+};
+
 type RouteMeta = {
   path: string; // "/shop", "/products/foo"
   title: string;
@@ -197,7 +202,7 @@ async function fetchShopifyProducts(): Promise<ShopifyProduct[]> {
 
 function productRoute(p: ShopifyProduct): RouteMeta {
   const path = `/products/${p.handle}`;
-  const url = `${BASE_URL}${path}`;
+  const url = canonicalUrlForPath(path);
   const baseTitle = p.seo?.title || p.title;
   const title = `${baseTitle} | Blank2Branded South Africa`;
   const description = (
@@ -242,7 +247,7 @@ function productRoute(p: ShopifyProduct): RouteMeta {
 // ---- Template rewrite --------------------------------------------------------
 
 function rewriteHead(template: string, r: RouteMeta): string {
-  const url = `${BASE_URL}${r.path}`;
+  const url = canonicalUrlForPath(r.path);
   const image = absolutize(r.image) || `${BASE_URL}/og-default.jpg`;
   const ogType = r.ogType || "website";
 
