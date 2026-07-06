@@ -88,7 +88,7 @@ export function BlogPostPage() {
     if (!post) return;
     const title = post.meta_title || `${post.title} | Blank2Branded Blog`;
     const desc = post.meta_description || post.excerpt || `Read ${post.title} on the Blank2Branded blog.`;
-    const url = `${SITE_URL}/blog/${post.slug}`;
+    const url = `${SITE_URL}/blog/${post.slug}/`;
     document.title = title;
     setMeta("description", desc);
     if (post.keywords) setMeta("keywords", post.keywords);
@@ -119,7 +119,7 @@ export function BlogPostPage() {
       "breadcrumb-jsonld",
       breadcrumbSchema([
         { name: "Home", url: `${SITE_URL}/` },
-        { name: "Blog", url: `${SITE_URL}/blog` },
+        { name: "Blog", url: `${SITE_URL}/blog/` },
         { name: post.title, url },
       ]),
     );

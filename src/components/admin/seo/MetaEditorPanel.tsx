@@ -100,6 +100,11 @@ const DEFAULTS: Record<string, { title: string; description: string }> = {
 
 const BASE = "https://blank2branded.co.za";
 
+const canonicalForPath = (path: string) => {
+  const cleanPath = path === "/" ? "/" : path.replace(/\/$/, "");
+  return `${BASE}${cleanPath === "/" ? "/" : `${cleanPath}/`}`;
+};
+
 export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string } = {}) {
   const [rows, setRows] = useState<Row[]>([]);
   const [dirty, setDirty] = useState<Record<string, boolean>>({});
@@ -142,7 +147,7 @@ export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string
         meta_title: existing?.title ?? "",
         meta_description: existing?.description ?? "",
         cover_image_url: existing?.og_image ?? "",
-        canonical: existing?.canonical ?? `${BASE}${r.slug === "/" ? "" : r.slug}`,
+        canonical: existing?.canonical ?? canonicalForPath(r.slug),
       };
     });
 
@@ -150,12 +155,12 @@ export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string
       kind: "post" as const,
       id: `post:${p.id}`,
       slug: p.slug,
-      path: `/blog/${p.slug}`,
+      path: `/blog/${p.slug}/`,
       displayTitle: p.title,
       meta_title: p.meta_title ?? "",
       meta_description: p.meta_description ?? "",
       cover_image_url: p.cover_image_url ?? "",
-      canonical: `${BASE}/blog/${p.slug}`,
+      canonical: canonicalForPath(`/blog/${p.slug}`),
     }));
 
     setRows([...routeRows, ...postRows]);
@@ -201,7 +206,7 @@ export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string
               slug: row.slug,
               title: row.meta_title || null,
               description: row.meta_description || null,
-              canonical: row.canonical || null,
+              canonical: row.canonical || canonicalForPath(row.slug),
               og_image: row.cover_image_url || null,
             },
             { onConflict: "slug" },
@@ -236,7 +241,7 @@ export function MetaEditorPanel({ initialSearch = "" }: { initialSearch?: string
           slug: r.slug,
           title: r.meta_title || d.title,
           description: r.meta_description || d.description,
-          canonical: r.canonical || `${BASE}${r.slug === "/" ? "" : r.slug}`,
+          canonical: r.canonical || canonicalForPath(r.slug),
           og_image: r.cover_image_url || null,
         };
       });
