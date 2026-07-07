@@ -147,8 +147,15 @@ export function PostEditorPage() {
   async function onSave(action: "draft" | "publish" | "schedule" | "stay") {
     // "stay" = save-in-place preserving current status, don't navigate away
     const stay = action === "stay";
+    const hasScheduleFields = !!(form.scheduled_date && form.scheduled_time);
     if (stay) {
-      action = form.status === "published" ? "publish" : form.status === "scheduled" ? "schedule" : "draft";
+      // If the user filled schedule date/time, persist as a scheduled post
+      // even if the current status is still "draft".
+      if (hasScheduleFields && form.status !== "published") {
+        action = "schedule";
+      } else {
+        action = form.status === "published" ? "publish" : form.status === "scheduled" ? "schedule" : "draft";
+      }
     }
     if (!form.title.trim()) return toast.error("Title is required");
     if (!form.slug.trim()) return toast.error("Slug is required");
