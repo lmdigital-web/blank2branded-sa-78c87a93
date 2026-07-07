@@ -430,6 +430,10 @@ export function AdminPage() {
               <SeoHub />
             )}
 
+            {section === "backlinks" && (
+              <BacklinksPanel />
+            )}
+
             {section === "shopify" && (
               <div className="mt-8">
                 <ShopifySyncPanel />
