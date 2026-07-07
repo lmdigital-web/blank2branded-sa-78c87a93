@@ -54,27 +54,32 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: auth } } },
     );
-    const { data: claims, error: cErr } = await supabase.auth.getClaims(
-      auth.replace("Bearer ", ""),
-    );
+    const token = auth.replace("Bearer ", "");
+    const { data: claims, error: cErr } = await supabase.auth.getClaims(token);
     if (cErr || !claims?.claims) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { data: roleRow } = await supabase
+    // Use service role to bypass RLS when checking admin role
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: roleRow, error: rErr } = await admin
       .from("user_roles")
       .select("role")
       .eq("user_id", claims.claims.sub)
       .eq("role", "admin")
       .maybeSingle();
-    if (!roleRow) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
+    if (rErr || !roleRow) {
+      return new Response(JSON.stringify({ error: "Forbidden", details: rErr?.message }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     const body = await req.json().catch(() => ({}));
     const target: string = body.target ?? "blank2branded.co.za";
