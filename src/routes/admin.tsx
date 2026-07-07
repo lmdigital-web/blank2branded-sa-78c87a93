@@ -11,6 +11,7 @@ import { ShopifySyncPanel } from "@/components/admin/ShopifySyncPanel";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
 import { SocialIntegrationsPanel } from "@/components/admin/SocialIntegrationsPanel";
 import { SeoHub } from "@/components/admin/SeoHub";
+import { BacklinksPanel } from "@/components/admin/BacklinksPanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -45,7 +46,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "seo" | "authors" | "shopify" | "social">("blog");
+  const [section, setSection] = useState<"blog" | "seo" | "backlinks" | "authors" | "shopify" | "social">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
@@ -180,6 +181,7 @@ export function AdminPage() {
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
     { id: "seo" as const, label: "SEO", icon: Search },
+    { id: "backlinks" as const, label: "Backlinks", icon: Link2 },
     { id: "authors" as const, label: "Authors", icon: Users },
     { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
     { id: "social" as const, label: "Social Integrations", icon: Share2 },
@@ -426,6 +428,10 @@ export function AdminPage() {
 
             {section === "seo" && (
               <SeoHub />
+            )}
+
+            {section === "backlinks" && (
+              <BacklinksPanel />
             )}
 
             {section === "shopify" && (
