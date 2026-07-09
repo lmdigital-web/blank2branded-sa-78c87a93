@@ -313,6 +313,86 @@ function rewriteHead(template: string, r: RouteMeta): string {
   return html;
 }
 
+// ---- Body injection (crawler-visible SSR content) ----------------------------
+
+/** Inject prerendered <main> content into the React root so no-JS crawlers see
+ *  real body text. React hydrates over this for real users. */
+function injectBody(html: string, bodyHtml: string): string {
+  const rootPattern = /<div\s+id="(root|app)"[^>]*>\s*<\/div>/i;
+  if (rootPattern.test(html)) {
+    return html.replace(rootPattern, (m) =>
+      m.replace(/>\s*<\/div>/i, `>${bodyHtml}</div>`),
+    );
+  }
+  return html.replace(/<\/body>/i, `${bodyHtml}\n  </body>`);
+}
+
+const SITE_NAV_LINKS: Array<{ path: string; label: string }> = [
+  { path: "/", label: "Home" },
+  { path: "/shop", label: "Shop" },
+  { path: "/blanks", label: "Blank Apparel" },
+  { path: "/dtf", label: "DTF Transfers" },
+  { path: "/sublimation", label: "Sublimation" },
+  { path: "/display", label: "Display & Signage" },
+  { path: "/catalogues", label: "Catalogues" },
+  { path: "/blog", label: "Blog" },
+  { path: "/about", label: "About" },
+  { path: "/contact", label: "Contact" },
+];
+
+function renderNav(currentPath: string): string {
+  const items = SITE_NAV_LINKS.filter((l) => l.path !== currentPath)
+    .map((l) => `<a href="${esc(l.path)}/">${esc(l.label)}</a>`)
+    .join(" · ");
+  return `<nav aria-label="Site">${items}</nav>`;
+}
+
+function renderStaticBody(r: RouteMeta): string {
+  const h1 = r.title.split("|")[0].trim();
+  return `
+    <main>
+      <article>
+        <h1>${esc(h1)}</h1>
+        <p>${esc(r.description)}</p>
+        ${r.keywords ? `<p><strong>Topics:</strong> ${esc(r.keywords)}</p>` : ""}
+        <p>
+          Blank2Branded is a South African supplier of DTF transfers, blank apparel,
+          sublimation, display &amp; signage and branded corporate gifting. Based in
+          Mbombela with nationwide courier to Johannesburg, Pretoria, Cape Town,
+          Durban and the rest of South Africa.
+        </p>
+        <p>
+          <a href="/contact/">Contact us</a> for a quote, or browse the
+          <a href="/shop/">online shop</a>.
+        </p>
+      </article>
+      ${renderNav(r.path)}
+    </main>`;
+}
+
+function renderProductBody(p: ShopifyProduct, r: RouteMeta): string {
+  const image = p.featuredImage?.url || "";
+  const alt = p.featuredImage?.altText || p.title;
+  const price = p.priceRange?.minVariantPrice;
+  const priceStr = price ? `${price.currencyCode} ${price.amount}` : "";
+  const desc = (p.description || r.description || "").replace(/\s+/g, " ").trim();
+  return `
+    <main>
+      <article>
+        <h1>${esc(p.title)}</h1>
+        ${image ? `<p><img src="${esc(image)}" alt="${esc(alt)}" /></p>` : ""}
+        ${priceStr ? `<p><strong>From ${esc(priceStr)}</strong></p>` : ""}
+        <p>${esc(desc.slice(0, 800))}</p>
+        <p>
+          Order online with nationwide courier across South Africa, or
+          <a href="/contact/">contact Blank2Branded</a> for wholesale pricing.
+        </p>
+        <p><a href="/shop/">← Back to the shop</a></p>
+      </article>
+      ${renderNav("/shop")}
+    </main>`;
+}
+
 // ---- Route meta overrides (from route_meta table in Supabase) ---------------
 
 type OverrideRow = {
@@ -385,13 +465,13 @@ async function main() {
     },
     overrides["/"],
   );
-  writeFileSync(templatePath, rewriteHead(template, rootRoute));
+  writeFileSync(templatePath, injectBody(rewriteHead(template, rootRoute), renderStaticBody(rootRoute)));
 
   let written = 1;
 
   for (const base of staticRoutes) {
     const r = applyOverride(base, overrides[base.path]);
-    const html = rewriteHead(template, r);
+    const html = injectBody(rewriteHead(template, r), renderStaticBody(r));
     const out = resolve(distDir, r.path.replace(/^\//, ""), "index.html");
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, html);
@@ -402,7 +482,7 @@ async function main() {
   for (const p of products) {
     if (!p.handle) continue;
     const r = productRoute(p);
-    const html = rewriteHead(template, r);
+    const html = injectBody(rewriteHead(template, r), renderProductBody(p, r));
     const out = resolve(distDir, "products", p.handle, "index.html");
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, html);
