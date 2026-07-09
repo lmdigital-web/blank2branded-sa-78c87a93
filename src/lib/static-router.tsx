@@ -35,7 +35,12 @@ function withFinalPublicSlash(href: string) {
   if (!match) return href;
   const [, path, suffix = ""] = match;
   if (path === "/" || path.endsWith("/")) return href;
-  if (TRAILING_SLASH_ROUTES.has(path) || /^\/(blog|products)\/[^/]+$/.test(path)) {
+  if (
+    TRAILING_SLASH_ROUTES.has(path) ||
+    /^\/(blog|products)\/[^/]+$/.test(path) ||
+    /^\/(vs|alternatives|best)\/[^/]+$/.test(path) ||
+    /^\/local\/[^/]+\/[^/]+$/.test(path)
+  ) {
     return `${path}/${suffix}`;
   }
   return href;
