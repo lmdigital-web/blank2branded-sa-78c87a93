@@ -1,99 +1,123 @@
-# SEO Admin Hub — Consolidation & Expansion Plan
 
-## Goal
-Group all SEO tooling under a single **SEO** entry in the admin sidebar with 6 sub-tabs. Reuse what already exists, build only what's missing, and match the existing admin design system (cards, tables, tabs).
+# BOFU Ranker — MeetEdward-style Page 1 Engine
 
-## What's already built (reuse — do not rebuild)
+A new admin section that automates bottom-of-funnel (BOFU) content targeting high-intent, low-competition keywords for fast Page 1 rankings in South Africa.
 
-| Existing panel | Fits into new sub-tab |
-|---|---|
-| `SearchConsolePanel` | Analytics Snapshot |
-| `IndexingPanel` | Health Audit (indexing status) |
-| `OpportunitiesPanel` | Content Ideas & Keywords |
-| `DecayPanel` | Analytics Snapshot |
-| `SpeedPanel` | Health Audit |
-| `BrokenLinksPanel` | Health Audit |
-| `AuthorsPanel` | stays separate (E-E-A-T) |
-| `SocialIntegrationsPanel` | stays separate |
-| `lib/seo-score.ts` (Yoast scoring) | Health Audit + Meta Editor |
-| `RichTextEditor` + `AiImageDialog` | AI Content Generator |
-| `generate-blog-image` edge function | AI Content Generator |
+## The MeetEdward playbook (what we're copying)
 
-## New SEO section — sub-tabs
+1. **BOFU keyword targeting** — "best X", "X vs Y", "X alternatives", "X near me", "X price", "X for [use case]". Buyers ready to purchase, not researchers.
+2. **Programmatic comparison pages** — one template, many pages: `blank2branded vs [competitor]`, `[product] vs [product]`, "best [category] in South Africa".
+3. **Purpose-built URL structures** — `/vs/{competitor}`, `/best/{category}`, `/alternatives/{brand}` — clean, keyword-rich slugs that match search intent verbatim.
+4. **Short-form video embeds** — YouTube Shorts / TikTok / Reels embedded high on the page to grab video-carousel and blended-SERP real estate.
+5. **Volume + speed** — dozens of narrow pages instead of a few broad ones. Each ships with schema, FAQ, and internal links auto-wired.
 
-Sidebar collapses **Google Search, Indexing, Opportunities, Speed, Rankings at Risk** into a single **SEO** parent with these sub-tabs:
+## New admin section: **BOFU Ranker** (sidebar entry under SEO)
 
-### 1. Health Audit *(new wrapper + reuses existing)*
-- Aggregates every post + every static/product route
-- Per-page checks: meta title present & unique, meta description length, H1 count, images missing alt, internal broken links, schema markup present, canonical present
-- Column: SEO score 0–100 (extends `computeSeoScore`)
-- Sorted worst-first, "Fix" button jumps to the meta editor
-- Embeds `IndexingPanel`, `SpeedPanel`, `BrokenLinksPanel` in accordions below the table
+Five tabs:
 
-### 2. Meta Tag Editor *(new)*
-- Single table listing every post + every static route (`/`, `/shop`, `/blog`, `/dtf`, `/blanks`, `/about`, `/contact`, product pages)
-- Inline-edit: title, meta description, canonical, OG image URL
-- Live counters — red if title >60 / desc >160
-- Posts save to `posts` table (already exists)
-- Static routes save to a new `route_meta` table (slug, title, description, canonical, og_image)
-- Prerender script (`scripts/prerender-routes.ts`) reads `route_meta` at build time to inject per-route tags
+### 1. Keyword Discovery
+- Input: seed keyword or category (e.g. "custom t-shirts", "DTF prints")
+- Uses Semrush + Lovable AI to return BOFU intent-classified queries:
+  - Comparison (`X vs Y`)
+  - Alternative (`alternatives to X`)
+  - Best-of (`best X in Johannesburg`)
+  - Local (`X near me`, `X Cape Town`)
+  - Price / cheap
+- Each row shows: volume, KD (difficulty), intent tag, "Generate page" button
+- Filter: KD < 30 + volume > 10 (the low-competition sweet spot)
 
-### 3. Keywords & Ideas *(new)*
-- New table `seo_keywords` (keyword, target_url, status: idea/drafting/published, notes, priority)
-- CRUD form + table
-- "Create draft post" button pre-fills the AI generator with the keyword
-- Existing `OpportunitiesPanel` embedded above as GSC-sourced suggestions
+### 2. Page Templates
+Four built-in templates, each with its own URL prefix and JSON-LD:
 
-### 4. AI Content Generator *(new)*
-- Form: topic, focus keyword, tone, target word count, target internal links (autocomplete from existing pages/posts)
-- Uses Lovable AI Gateway with `google/gemini-3-flash-preview` (NOT Anthropic — Lovable AI Gateway is the platform default and costs less; user was originally asking for Claude but we already have LOVABLE_API_KEY provisioned)
-- Returns: H1 title, meta description, article body (HTML with H2/H3), suggested slug
-- Editable preview → "Save as draft" writes to `posts` with status=draft
-- New edge function `generate-blog-draft`
+| Template | URL pattern | Schema |
+|---|---|---|
+| Versus | `/vs/{slug}` | `ComparisonTable` + `FAQPage` |
+| Alternatives | `/alternatives/{slug}` | `ItemList` + `FAQPage` |
+| Best-of | `/best/{slug}` | `ItemList` + `Review` |
+| Local | `/local/{city}/{slug}` | `LocalBusiness` + `FAQPage` |
 
-### 5. Internal Linking Helper *(new)*
-- Sidebar addition inside the post editor (`admin.post-editor.tsx`)
-- On the SEO Hub, standalone view: pick a post → list other posts/pages ranked by keyword overlap (Jaccard on keywords + title tokens)
-- Click a suggestion → copies anchor HTML to clipboard
+Each template renders: H1 matching the query, video embed slot, comparison/list table, pros/cons, price block, FAQ, CTA to shop/quote.
 
-### 6. Analytics Snapshot *(reuses existing)*
-- Renders `SearchConsolePanel` (clicks, impressions, avg position — already live)
-- Renders `DecayPanel` below
+### 3. Page Builder (AI)
+- Pick a keyword + template → Lovable AI generates:
+  - Title, meta, H1, intro
+  - Comparison table rows (features, pricing, verdict)
+  - 6-8 FAQ Q&As targeting People-Also-Ask
+  - Internal link suggestions from existing shop/blog pages
+- Video field: paste YouTube/TikTok/Reels URL, auto-detects embed type
+- Preview + edit before publishing
+- Publishes as a new route (baked into prerender at build time)
+
+### 4. Video Hijack Library
+- Table of embedded videos across all BOFU pages
+- "Add video" flow: paste URL → auto-fetch title/thumbnail → assign to page(s)
+- Tracks: which pages have video (video-carousel eligibility), which need one
+- Supports YouTube Shorts, TikTok, Instagram Reels via oEmbed
+
+### 5. Rankings Monitor
+- Reuses existing GSC integration
+- Shows BOFU pages only, sorted by:
+  - Page 2 → Page 1 opportunity (positions 11-20)
+  - Impressions gained in last 7/28 days
+- "Refresh content" button → re-runs AI generator with latest SERP data
 
 ## Technical section
 
 ### DB migrations
 ```
-route_meta (slug PK, title, description, canonical, og_image, updated_at)
-seo_keywords (id, keyword, target_url, status, notes, priority, created_by, timestamps)
+bofu_pages (id, slug, template, keyword, title, meta_description,
+            h1, intro, body_html, video_url, video_platform,
+            faq_json, comparison_json, city, status, published_at,
+            author_id, timestamps)
+bofu_keywords (id, keyword, intent, volume, difficulty, source,
+               status: new/queued/published/dismissed, page_id, timestamps)
 ```
-Both: GRANT to authenticated + service_role, RLS restricted to admins via `has_role`.
+Both: GRANT authenticated + service_role, RLS admin-only via `has_role`.
 
-### File changes
-- `src/routes/admin.tsx` — collapse SEO subsections into one `section = "seo"` with internal sub-tab state; remove old top-level entries (search/indexing/opportunities/speed/decay)
-- `src/components/admin/seo/HealthAuditPanel.tsx` (new)
-- `src/components/admin/seo/MetaEditorPanel.tsx` (new)
-- `src/components/admin/seo/KeywordsPanel.tsx` (new)
-- `src/components/admin/seo/AiGeneratorPanel.tsx` (new)
-- `src/components/admin/seo/InternalLinksPanel.tsx` (new)
-- `src/components/admin/seo/AnalyticsPanel.tsx` (new — thin wrapper)
-- `src/lib/seo-audit.ts` (new — page-crawl checks)
-- `supabase/functions/generate-blog-draft/index.ts` (new)
-- `scripts/prerender-routes.ts` — read `route_meta` overrides
-- 1 migration for the two new tables
+Public read policy on `bofu_pages` where `status='published'` so the static router can render them.
 
-### Deferred / clarifications
-- **Claude vs Lovable AI**: I'll use Lovable AI Gateway (Gemini 3 Flash) unless you specifically want to pay for Anthropic — it's free within your workspace allowance.
-- **Bulk edit**: v1 will do inline edit per row; a bulk "apply template" modal can come after you've used it a week.
-- **GSC card stub**: not needed — SearchConsolePanel is already wired to live data.
+### Routes
+- New dynamic routes in `src/lib/static-router.tsx`:
+  - `/vs/:slug`, `/alternatives/:slug`, `/best/:slug`, `/local/:city/:slug`
+- All render `src/routes/bofu.tsx` — one component picks template by URL prefix
+- Prerender: `scripts/prerender-routes.ts` reads all `bofu_pages` with `status='published'` and bakes each into static HTML with full `<article>` body + JSON-LD + video embed (crawler-visible, same pattern as blog prerender)
+
+### Edge functions
+- `bofu-discover-keywords` — Semrush call + AI intent classification
+- `bofu-generate-page` — Lovable AI (`google/gemini-3.5-flash`) writes comparison table + FAQ + copy from a template prompt
+- `bofu-oembed` — fetches video oEmbed metadata (YouTube/TikTok/Instagram)
+
+### Files
+- `src/components/admin/bofu/BofuHub.tsx` (tabs shell)
+- `src/components/admin/bofu/DiscoveryPanel.tsx`
+- `src/components/admin/bofu/TemplatesPanel.tsx`
+- `src/components/admin/bofu/PageBuilderPanel.tsx`
+- `src/components/admin/bofu/VideoLibraryPanel.tsx`
+- `src/components/admin/bofu/RankingsPanel.tsx`
+- `src/routes/bofu.tsx` (public renderer)
+- `src/lib/bofu-templates.ts` (template configs + JSON-LD builders)
+- Sidebar entry added to `src/routes/admin.tsx`
+
+### Reuses (no rebuild)
+- Semrush tools (already connected)
+- Lovable AI Gateway with existing `LOVABLE_API_KEY`
+- GSC integration for rankings tab
+- `computeSeoScore` for per-page grading
+- Existing prerender pipeline
 
 ## Delivery order
-1. Migration (2 tables)
-2. Consolidate sidebar + shell for `section = "seo"` with sub-tabs (existing panels moved, no behaviour change)
-3. Meta Editor + prerender integration
-4. Health Audit
-5. Keywords
-6. AI Generator (+ edge function)
-7. Internal Links helper
+1. Migrations (2 tables) + public read policy
+2. Static router + `bofu.tsx` renderer + prerender integration
+3. Page Builder + AI edge function (the core value)
+4. Keyword Discovery + Semrush edge function
+5. Video Library + oEmbed
+6. Rankings Monitor (GSC filter view)
 
-Shall I proceed with this? Say **yes** to build all 7 steps in order, or tell me which sub-tabs to drop/reorder.
+## Open questions before I build
+
+1. **Competitors to seed the "vs" pages** — should I pull from Semrush organic competitors automatically, or do you want to hand-pick (e.g. Vicbay, Print Locker, Redberry, Blank Clothing)?
+2. **Local city list** for `/local/{city}/*` pages — start with Johannesburg, Pretoria, Cape Town, Durban, Port Elizabeth? Or a bigger list?
+3. **Auto-publish vs review** — should AI-generated pages publish straight to live (fast, MeetEdward-style volume) or land as drafts you approve first?
+4. **Video sourcing** — will you record TikTok/Reels yourself and paste URLs, or should we also pull relevant existing YouTube Shorts by keyword?
+
+Say **yes** to build in the order above, or answer the 4 questions and I'll adjust.
