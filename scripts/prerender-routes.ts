@@ -438,6 +438,81 @@ function applyOverride(r: RouteMeta, o?: OverrideRow): RouteMeta {
   };
 }
 
+// ---- BOFU pages -------------------------------------------------------------
+
+type BofuPage = {
+  slug: string;
+  template: "versus" | "alternatives" | "best" | "local";
+  title: string;
+  meta_description: string | null;
+  h1: string | null;
+  intro: string | null;
+  body_html: string | null;
+  video_embed_html: string | null;
+  video_url: string | null;
+  faq_json: { q: string; a: string }[] | null;
+  city: string | null;
+};
+
+async function fetchBofuPages(): Promise<BofuPage[]> {
+  const url = process.env.VITE_SUPABASE_URL;
+  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) return [];
+  try {
+    const res = await fetch(`${url}/rest/v1/bofu_pages?select=slug,template,title,meta_description,h1,intro,body_html,video_embed_html,video_url,faq_json,city&status=eq.published`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    });
+    if (!res.ok) { console.warn("prerender-routes: bofu fetch failed", res.status); return []; }
+    return (await res.json()) as BofuPage[];
+  } catch (err) { console.warn("prerender-routes: bofu fetch error", err); return []; }
+}
+
+function renderBofuBody(b: BofuPage): string {
+  const faq = Array.isArray(b.faq_json) ? b.faq_json : [];
+  return `
+    <main>
+      <article>
+        <h1>${esc(b.h1 || b.title)}</h1>
+        ${b.intro ? `<p>${esc(b.intro)}</p>` : ""}
+        ${b.video_embed_html || ""}
+        ${b.body_html || ""}
+        ${faq.length > 0 ? `<section><h2>Frequently asked questions</h2>${faq.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("")}</section>` : ""}
+        <p><a href="/shop/">Shop now</a> · <a href="/contact/">Get a quote</a></p>
+      </article>
+    </main>`;
+}
+
+function buildBofuJsonLd(b: BofuPage, path: string): Record<string, unknown>[] {
+  const url = `${BASE_URL}${path}/`;
+  const out: Record<string, unknown>[] = [{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: b.title,
+    description: b.meta_description || "",
+    url,
+  }];
+  const faq = Array.isArray(b.faq_json) ? b.faq_json : [];
+  if (faq.length > 0) {
+    out.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    });
+  }
+  if (b.video_url) {
+    out.push({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: b.title,
+      description: b.meta_description || b.title,
+      contentUrl: b.video_url,
+      embedUrl: b.video_url,
+      uploadDate: new Date().toISOString(),
+    });
+  }
+  return out;
+}
+
 // ---- Main --------------------------------------------------------------------
 
 async function main() {
@@ -489,8 +564,28 @@ async function main() {
     written++;
   }
 
+  // BOFU pages (versus / alternatives / best / local)
+  const bofuPages = await fetchBofuPages();
+  for (const b of bofuPages) {
+    const path = b.template === "local" && b.city
+      ? `/local/${b.city.toLowerCase().replace(/\s+/g, "-")}/${b.slug}`
+      : `/${b.template === "versus" ? "vs" : b.template}/${b.slug}`;
+    const r: RouteMeta = {
+      path,
+      title: b.title,
+      description: b.meta_description || "",
+      ogType: "article",
+      jsonLd: buildBofuJsonLd(b, path),
+    };
+    const html = injectBody(rewriteHead(template, r), renderBofuBody(b));
+    const out = resolve(distDir, path.replace(/^\//, ""), "index.html");
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, html);
+    written++;
+  }
+
   console.log(
-    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + root); ${Object.keys(overrides).length} route_meta overrides applied`,
+    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + ${bofuPages.length} BOFU + root); ${Object.keys(overrides).length} route_meta overrides applied`,
   );
 }
 

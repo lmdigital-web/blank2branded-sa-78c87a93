@@ -23,6 +23,7 @@ const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default
 const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
 const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
 const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
+const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
 
 const queryClient = new QueryClient();
 
@@ -208,6 +209,8 @@ function AppContent() {
   else if (cleanPath === "/catalogues") page = <CataloguesPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
+  else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
+  else if (/^\/local\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
 
   return (
     <>
