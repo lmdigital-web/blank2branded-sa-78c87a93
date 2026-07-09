@@ -465,13 +465,13 @@ async function main() {
     },
     overrides["/"],
   );
-  writeFileSync(templatePath, rewriteHead(template, rootRoute));
+  writeFileSync(templatePath, injectBody(rewriteHead(template, rootRoute), renderStaticBody(rootRoute)));
 
   let written = 1;
 
   for (const base of staticRoutes) {
     const r = applyOverride(base, overrides[base.path]);
-    const html = rewriteHead(template, r);
+    const html = injectBody(rewriteHead(template, r), renderStaticBody(r));
     const out = resolve(distDir, r.path.replace(/^\//, ""), "index.html");
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, html);
@@ -482,7 +482,7 @@ async function main() {
   for (const p of products) {
     if (!p.handle) continue;
     const r = productRoute(p);
-    const html = rewriteHead(template, r);
+    const html = injectBody(rewriteHead(template, r), renderProductBody(p, r));
     const out = resolve(distDir, "products", p.handle, "index.html");
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, html);
