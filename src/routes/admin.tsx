@@ -5,12 +5,13 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, ShoppingBag, Users, Share2, CheckCircle2, AlertCircle, MinusCircle, Search } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, ShoppingBag, Users, Share2, CheckCircle2, AlertCircle, MinusCircle, Search, Rocket } from "lucide-react";
 import { toast } from "sonner";
 import { ShopifySyncPanel } from "@/components/admin/ShopifySyncPanel";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
 import { SocialIntegrationsPanel } from "@/components/admin/SocialIntegrationsPanel";
 import { SeoHub } from "@/components/admin/SeoHub";
+import { BofuHub } from "@/components/admin/bofu/BofuHub";
 import { BacklinksPanel } from "@/components/admin/BacklinksPanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
