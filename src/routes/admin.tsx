@@ -432,6 +432,10 @@ export function AdminPage() {
               <SeoHub />
             )}
 
+            {section === "bofu" && (
+              <BofuHub />
+            )}
+
             {section === "backlinks" && (
               <BacklinksPanel />
             )}
