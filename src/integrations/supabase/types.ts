@@ -215,6 +215,122 @@ export type Database = {
           },
         ]
       }
+      bofu_keywords: {
+        Row: {
+          created_at: string
+          difficulty: number | null
+          id: string
+          intent: string | null
+          keyword: string
+          page_id: string | null
+          source: string | null
+          status: string
+          updated_at: string
+          volume: number | null
+        }
+        Insert: {
+          created_at?: string
+          difficulty?: number | null
+          id?: string
+          intent?: string | null
+          keyword: string
+          page_id?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Update: {
+          created_at?: string
+          difficulty?: number | null
+          id?: string
+          intent?: string | null
+          keyword?: string
+          page_id?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bofu_keywords_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "bofu_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bofu_pages: {
+        Row: {
+          author_id: string | null
+          body_html: string | null
+          city: string | null
+          comparison_json: Json | null
+          created_at: string
+          faq_json: Json | null
+          h1: string | null
+          id: string
+          intro: string | null
+          keyword: string
+          meta_description: string | null
+          published_at: string | null
+          slug: string
+          status: string
+          template: string
+          title: string
+          updated_at: string
+          video_embed_html: string | null
+          video_platform: string | null
+          video_url: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          body_html?: string | null
+          city?: string | null
+          comparison_json?: Json | null
+          created_at?: string
+          faq_json?: Json | null
+          h1?: string | null
+          id?: string
+          intro?: string | null
+          keyword: string
+          meta_description?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string
+          template: string
+          title: string
+          updated_at?: string
+          video_embed_html?: string | null
+          video_platform?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          body_html?: string | null
+          city?: string | null
+          comparison_json?: Json | null
+          created_at?: string
+          faq_json?: Json | null
+          h1?: string | null
+          id?: string
+          intro?: string | null
+          keyword?: string
+          meta_description?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string
+          template?: string
+          title?: string
+          updated_at?: string
+          video_embed_html?: string | null
+          video_platform?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
