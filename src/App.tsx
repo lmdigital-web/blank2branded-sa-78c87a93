@@ -23,6 +23,7 @@ const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default
 const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
 const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
 const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
+const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
 
 const queryClient = new QueryClient();
 
