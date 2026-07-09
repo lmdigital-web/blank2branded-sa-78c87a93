@@ -122,6 +122,63 @@ function renderArticleJsonLd(post: Post, authorName: string | null): string {
   return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
 }
 
+function renderBlogIndex(posts: Post[]): string {
+  const postsHtml = posts
+    .map((post) => {
+      const url = `${BASE_URL}/blog/${post.slug}/`;
+      const image = absolutize(post.cover_image_url);
+      const desc = post.meta_description || post.excerpt || `Read ${post.title} on the Blank2Branded blog.`;
+      const dateISO = post.published_at || "";
+      const dateHuman = post.published_at
+        ? new Date(post.published_at).toLocaleDateString("en-ZA", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : "";
+
+      return `
+        <article>
+          ${image ? `<a href="${esc(url)}"><img src="${esc(image)}" alt="${esc(post.title)}" loading="lazy" /></a>` : ""}
+          <h2><a href="${esc(url)}">${esc(post.title)}</a></h2>
+          ${dateISO ? `<p><time datetime="${esc(dateISO)}">${esc(dateHuman)}</time></p>` : ""}
+          <p>${esc(desc)}</p>
+          <p><a href="${esc(url)}">Read more</a></p>
+        </article>`;
+    })
+    .join("\n");
+
+  return `
+    <main>
+      <section>
+        <h1>Blank2Branded Blog</h1>
+        <p>DTF printing tips, blank apparel guides, and custom apparel branding advice for South African businesses, resellers and print shops.</p>
+      </section>
+      <section aria-label="Latest blog posts">
+        ${postsHtml || "<p>No posts published yet.</p>"}
+      </section>
+    </main>`;
+}
+
+function renderBlogIndexJsonLd(posts: Post[]): string {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Blank2Branded Blog",
+    description:
+      "DTF printing tips, blank apparel guides, and custom apparel branding advice for South African businesses.",
+    url: `${BASE_URL}/blog/`,
+    blogPost: posts.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: `${BASE_URL}/blog/${post.slug}/`,
+      ...(post.published_at ? { datePublished: post.published_at } : {}),
+      ...(post.cover_image_url ? { image: [absolutize(post.cover_image_url)] } : {}),
+    })),
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
+}
+
 function rewriteHead(template: string, post: Post): string {
   const title = post.meta_title || `${post.title} | Blank2Branded Blog`;
   const desc =
@@ -190,6 +247,45 @@ function injectArticle(html: string, articleHtml: string): string {
   return html.replace(/<\/body>/i, `${articleHtml}\n  </body>`);
 }
 
+function rewriteBlogIndexHead(template: string): string {
+  const title = "Blog | DTF Printing & Blank Apparel Tips South Africa | Blank2Branded";
+  const desc =
+    "Guides, tips and news on DTF printing, blank apparel and custom t-shirt printing in South Africa. From the Blank2Branded team in Mbombela.";
+  const url = `${BASE_URL}/blog/`;
+  const image = `${BASE_URL}/og-default.jpg`;
+
+  let html = template;
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
+  html = html.replace(
+    /<meta\s+name="description"[^>]*\/?>(\s*)/i,
+    `<meta name="description" content="${esc(desc)}" />\n    `,
+  );
+  html = html.replace(
+    /<link\s+rel="canonical"[^>]*\/?>/i,
+    `<link rel="canonical" href="${esc(url)}" />`,
+  );
+
+  const ogBlock = [
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:title" content="${esc(title)}" />`,
+    `<meta property="og:description" content="${esc(desc)}" />`,
+    `<meta property="og:url" content="${esc(url)}" />`,
+    `<meta property="og:image" content="${esc(image)}" />`,
+    `<meta property="og:image:secure_url" content="${esc(image)}" />`,
+    `<meta property="og:site_name" content="Blank2Branded" />`,
+    `<meta property="og:locale" content="en_ZA" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${esc(title)}" />`,
+    `<meta name="twitter:description" content="${esc(desc)}" />`,
+    `<meta name="twitter:image" content="${esc(image)}" />`,
+  ].join("\n    ");
+
+  return html
+    .replace(/\s*<meta\s+property="og:[^"]+"[^>]*\/?>/gi, "")
+    .replace(/\s*<meta\s+name="twitter:[^"]+"[^>]*\/?>/gi, "")
+    .replace(/<\/head>/i, `    ${ogBlock}\n  </head>`);
+}
+
 async function main() {
   const distDir = resolve("dist");
   const templatePath = resolve(distDir, "index.html");
@@ -203,6 +299,19 @@ async function main() {
     new Set(posts.map((p) => p.author_id).filter((v): v is string => !!v)),
   );
   const authors = await fetchAuthors(authorIds);
+
+  const blogIndexPath = resolve(distDir, "blog", "index.html");
+  const blogIndexTemplate = existsSync(blogIndexPath)
+    ? readFileSync(blogIndexPath, "utf8")
+    : template;
+  let blogIndexHtml = rewriteBlogIndexHead(blogIndexTemplate);
+  blogIndexHtml = blogIndexHtml.replace(
+    /<\/head>/i,
+    `    ${renderBlogIndexJsonLd(posts)}\n  </head>`,
+  );
+  blogIndexHtml = injectArticle(blogIndexHtml, renderBlogIndex(posts));
+  mkdirSync(dirname(blogIndexPath), { recursive: true });
+  writeFileSync(blogIndexPath, blogIndexHtml);
 
   let written = 0;
   for (const post of posts) {
@@ -218,7 +327,9 @@ async function main() {
     writeFileSync(out, html);
     written++;
   }
-  console.log(`prerender-blog: wrote ${written} prerendered blog pages (with article bodies)`);
+  console.log(
+    `prerender-blog: wrote ${written} prerendered blog pages plus the blog index (with crawler-visible bodies)`,
+  );
 }
 
 main().catch((e) => {
