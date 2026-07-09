@@ -489,8 +489,28 @@ async function main() {
     written++;
   }
 
+  // BOFU pages (versus / alternatives / best / local)
+  const bofuPages = await fetchBofuPages();
+  for (const b of bofuPages) {
+    const path = b.template === "local" && b.city
+      ? `/local/${b.city.toLowerCase().replace(/\s+/g, "-")}/${b.slug}`
+      : `/${b.template === "versus" ? "vs" : b.template}/${b.slug}`;
+    const r: RouteMeta = {
+      path,
+      title: b.title,
+      description: b.meta_description || "",
+      ogType: "article",
+      jsonLd: buildBofuJsonLd(b, path),
+    };
+    const html = injectBody(rewriteHead(template, r), renderBofuBody(b));
+    const out = resolve(distDir, path.replace(/^\//, ""), "index.html");
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, html);
+    written++;
+  }
+
   console.log(
-    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + root); ${Object.keys(overrides).length} route_meta overrides applied`,
+    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + ${bofuPages.length} BOFU + root); ${Object.keys(overrides).length} route_meta overrides applied`,
   );
 }
 
