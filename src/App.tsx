@@ -209,6 +209,8 @@ function AppContent() {
   else if (cleanPath === "/catalogues") page = <CataloguesPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
+  else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
+  else if (/^\/local\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
 
   return (
     <>
