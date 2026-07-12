@@ -64,7 +64,7 @@ async function fetchAuthors(ids: string[]): Promise<Map<string, string>> {
   const map = new Map<string, string>();
   if (!ids.length) return map;
   const qs = `id=in.(${ids.map(encodeURIComponent).join(",")})`;
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/authors?select=id,name&${qs}`, {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/authors_public?select=id,name&${qs}`, {
     headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
   });
   if (!res.ok) return map;
