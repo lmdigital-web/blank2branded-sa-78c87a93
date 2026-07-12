@@ -68,8 +68,8 @@ export function BlogPostPage() {
         } else {
           setPost(data as Post);
           if ((data as Post).author_id) {
-            const { data: a } = await supabase
-              .from("authors")
+            const { data: a } = await (supabase as any)
+              .from("authors_public")
               .select("name,slug,bio,credentials,avatar_url,website,social")
               .eq("id", (data as Post).author_id!)
               .maybeSingle();
