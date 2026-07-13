@@ -110,14 +110,14 @@ export function BofuPagePublic() {
           {page.video_embed_html && (
             <div
               className="mt-8"
-              dangerouslySetInnerHTML={{ __html: page.video_embed_html }}
+              dangerouslySetInnerHTML={{ __html: sanitize(page.video_embed_html) }}
             />
           )}
 
           {page.body_html && (
             <div
               className="prose prose-neutral mt-10 max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: page.body_html }}
+              dangerouslySetInnerHTML={{ __html: sanitize(page.body_html) }}
             />
           )}
 
