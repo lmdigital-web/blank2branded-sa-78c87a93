@@ -1,17 +1,40 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useState } from "react";
-import { MessageCircle, Mail, Clock, MapPin, Upload, Send } from "lucide-react";
+import { MessageCircle, Mail, Clock, MapPin, Upload, Send, Loader2 } from "lucide-react";
 import contactHeroBg from "@/assets/contact-hero-bg.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function ContactPage() {
   const subject = new URLSearchParams(window.location.search).get("subject") ?? undefined;
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: wire up email backend
-    setSubmitted(true);
+    if (sending) return;
+    const fd = new FormData(e.currentTarget);
+    const payload = {
+      name: String(fd.get("name") ?? "").trim(),
+      business: String(fd.get("business") ?? "").trim(),
+      email: String(fd.get("email") ?? "").trim(),
+      phone: String(fd.get("phone") ?? "").trim(),
+      orderType: String(fd.get("orderType") ?? "").trim(),
+      subject: String(fd.get("subject") ?? "").trim() || undefined,
+      message: String(fd.get("message") ?? "").trim(),
+    };
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-contact-email", { body: payload });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      toast.error("Couldn't send your enquiry. Please WhatsApp us on +27 69 838 4045.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const inputCls =
