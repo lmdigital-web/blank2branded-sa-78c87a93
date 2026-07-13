@@ -163,9 +163,10 @@ export function ContactPage() {
 
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] md:w-auto"
+                  disabled={sending}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-gradient-dtf px-7 py-4 text-sm font-semibold text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
                 >
-                  Send Enquiry <Send className="h-4 w-4" />
+                  {sending ? (<>Sending… <Loader2 className="h-4 w-4 animate-spin" /></>) : (<>Send Enquiry <Send className="h-4 w-4" /></>)}
                 </button>
               </form>
             )}
