@@ -13,9 +13,8 @@ const BodySchema = z.object({
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const TO = 'hello@blank2branded.co.za';
-// Resend requires a verified sender domain. Using their onboarding sender is safe;
-// replies go to the customer via reply_to.
-const FROM = 'Blank2Branded Contact <onboarding@resend.dev>';
+// Sender domain blank2branded.co.za is verified in Resend.
+const FROM = 'Blank2Branded <hello@blank2branded.co.za>';
 
 function escape(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
