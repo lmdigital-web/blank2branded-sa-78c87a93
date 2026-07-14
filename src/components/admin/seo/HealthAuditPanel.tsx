@@ -16,7 +16,12 @@ type Post = {
   meta_title: string | null;
   meta_description: string | null;
   keywords: string | null;
+  author_id: string | null;
+  experience_notes: string | null;
 };
+
+type AuthorLite = { id: string; name: string | null; credentials: string | null };
+
 
 type RouteAudit = {
   path: string;
