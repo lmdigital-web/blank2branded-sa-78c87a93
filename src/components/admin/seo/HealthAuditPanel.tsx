@@ -16,7 +16,12 @@ type Post = {
   meta_title: string | null;
   meta_description: string | null;
   keywords: string | null;
+  author_id: string | null;
+  experience_notes: string | null;
 };
+
+type AuthorLite = { id: string; name: string | null; credentials: string | null };
+
 
 type RouteAudit = {
   path: string;
@@ -42,23 +47,28 @@ const STATIC_ROUTES = [
 
 export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) => void } = {}) {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [authors, setAuthors] = useState<Record<string, AuthorLite>>({});
   const [routeMeta, setRouteMeta] = useState<Record<string, { title: string | null; description: string | null }>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     void (async () => {
       setLoading(true);
-      const [postsRes, routesRes] = await Promise.all([
+      const [postsRes, routesRes, authorsRes] = await Promise.all([
         supabase
           .from("posts")
-          .select("id,slug,title,status,excerpt,content,cover_image_url,meta_title,meta_description,keywords")
+          .select("id,slug,title,status,excerpt,content,cover_image_url,meta_title,meta_description,keywords,author_id,experience_notes")
           .eq("status", "published"),
         supabase.from("route_meta").select("slug,title,description"),
+        supabase.from("authors").select("id,name,credentials"),
       ]);
       setPosts((postsRes.data ?? []) as Post[]);
       const map: Record<string, { title: string | null; description: string | null }> = {};
       for (const r of routesRes.data ?? []) map[r.slug] = { title: r.title, description: r.description };
       setRouteMeta(map);
+      const amap: Record<string, AuthorLite> = {};
+      for (const a of (authorsRes.data ?? []) as AuthorLite[]) amap[a.id] = a;
+      setAuthors(amap);
       setLoading(false);
     })();
   }, []);
@@ -67,6 +77,7 @@ export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) =
     () =>
       posts
         .map((p) => {
+          const author = p.author_id ? authors[p.author_id] : undefined;
           const seo = computeSeoScore({
             title: p.title || "",
             slug: p.slug || "",
@@ -76,6 +87,9 @@ export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) =
             meta_title: p.meta_title || "",
             meta_description: p.meta_description || "",
             keywords: p.keywords || "",
+            author_name: author?.name || "",
+            author_credentials: author?.credentials || "",
+            experience_notes: p.experience_notes || "",
           });
           return {
             id: p.id,
@@ -86,8 +100,9 @@ export function HealthAuditPanel({ onFixMeta }: { onFixMeta?: (search: string) =
           };
         })
         .sort((a, b) => a.score - b.score),
-    [posts],
+    [posts, authors],
   );
+
 
   const routeAudits: RouteAudit[] = useMemo(() => {
     const seenTitles = new Map<string, number>();
