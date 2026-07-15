@@ -194,8 +194,13 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
         </div>
 
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <h3 className="text-sm font-semibold">Draft preview</h3>
-          {!draft && <p className="p-6 text-center text-sm text-muted-foreground">Generate a draft to see it here.</p>}
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold">{editingId ? "Editing existing page" : "Draft preview"}</h3>
+            {editingId && (
+              <Button size="sm" variant="ghost" onClick={() => { setDraft(null); setEditingId(null); }}>Cancel</Button>
+            )}
+          </div>
+          {!draft && <p className="p-6 text-center text-sm text-muted-foreground">Generate a draft or click Edit on an existing page.</p>}
           {draft && (
             <div className="space-y-3">
               <div><label className="text-xs font-medium">Title</label><Input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /></div>
@@ -209,7 +214,7 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
               </div>
               <div className="flex gap-2">
                 <Button onClick={() => save("draft")} disabled={saving} variant="outline" className="flex-1"><Save className="mr-1 h-4 w-4" />Save draft</Button>
-                <Button onClick={() => save("published")} disabled={saving} className="flex-1">Publish</Button>
+                <Button onClick={() => save("published")} disabled={saving} className="flex-1"><Send className="mr-1 h-4 w-4" />{editingId ? "Save & publish" : "Publish"}</Button>
               </div>
             </div>
           )}
