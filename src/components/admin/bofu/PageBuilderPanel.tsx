@@ -37,6 +37,7 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
     videoUrl: "",
   });
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pages, setPages] = useState<BofuRow[]>([]);
