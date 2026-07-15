@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Sparkles, Save, ExternalLink, Trash2 } from "lucide-react";
+import { Sparkles, Save, ExternalLink, Trash2, Pencil, Eye, Send } from "lucide-react";
 import { TEMPLATE_META, DEFAULT_CITIES, detectVideoPlatform, bofuUrl, type BofuTemplate } from "@/lib/bofu-templates";
 import { slugify } from "@/lib/slugify";
 
