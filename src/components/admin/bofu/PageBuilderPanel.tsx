@@ -249,8 +249,6 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
                         <Button size="sm" variant="ghost" title="Delete" onClick={() => del(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                       </div>
                     </td>
-                      </div>
-                    </td>
                   </tr>
                 );
               })}
