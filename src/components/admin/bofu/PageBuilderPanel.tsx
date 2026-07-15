@@ -96,8 +96,39 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
       if (error) throw error;
       toast.success(status === "published" ? "Page published" : "Draft saved");
       setDraft(null);
+      setEditingId(null);
       void loadPages();
     } catch (e) { toast.error((e as Error).message); } finally { setSaving(false); }
+  }
+
+  async function loadForEdit(id: string) {
+    const { data, error } = await supabase.from("bofu_pages").select("*").eq("id", id).maybeSingle();
+    if (error || !data) { toast.error(error?.message || "Not found"); return; }
+    const row = data as any;
+    setForm({
+      template: row.template,
+      keyword: row.keyword ?? "",
+      competitor: form.competitor,
+      city: row.city ?? "Johannesburg",
+      videoUrl: row.video_url ?? "",
+    });
+    setDraft({
+      title: row.title ?? "",
+      meta_description: row.meta_description ?? "",
+      h1: row.h1 ?? "",
+      intro: row.intro ?? "",
+      body_html: row.body_html ?? "",
+      faq_json: Array.isArray(row.faq_json) ? row.faq_json : [],
+    });
+    setEditingId(id);
+    toast.success("Loaded for editing");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function quickPublish(id: string) {
+    const { error } = await supabase.from("bofu_pages").update({ status: "published", published_at: new Date().toISOString() }).eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Published"); void loadPages(); }
   }
 
   async function del(id: string) {
@@ -106,6 +137,7 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
     if (error) toast.error(error.message);
     else { toast.success("Deleted"); void loadPages(); }
   }
+
 
   return (
     <div className="space-y-6">
