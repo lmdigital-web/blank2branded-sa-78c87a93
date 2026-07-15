@@ -240,8 +240,15 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
                     <td className="px-4 py-2"><span className={`rounded px-2 py-0.5 text-xs ${p.status === "published" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>{p.status}</span></td>
                     <td className="px-4 py-2 text-right">
                       <div className="flex justify-end gap-1">
-                        {p.status === "published" && <a href={url} target="_blank" rel="noreferrer"><Button size="sm" variant="ghost"><ExternalLink className="h-4 w-4" /></Button></a>}
-                        <Button size="sm" variant="ghost" onClick={() => del(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        <Button size="sm" variant="ghost" title="Edit" onClick={() => loadForEdit(p.id)}><Pencil className="h-4 w-4" /></Button>
+                        <a href={url} target="_blank" rel="noreferrer"><Button size="sm" variant="ghost" title="Preview"><Eye className="h-4 w-4" /></Button></a>
+                        {p.status !== "published" && (
+                          <Button size="sm" variant="ghost" title="Publish" onClick={() => quickPublish(p.id)}><Send className="h-4 w-4 text-green-600" /></Button>
+                        )}
+                        {p.status === "published" && <a href={url} target="_blank" rel="noreferrer"><Button size="sm" variant="ghost" title="Open live"><ExternalLink className="h-4 w-4" /></Button></a>}
+                        <Button size="sm" variant="ghost" title="Delete" onClick={() => del(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      </div>
+                    </td>
                       </div>
                     </td>
                   </tr>
