@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Sparkles, Save, ExternalLink, Trash2 } from "lucide-react";
+import { Sparkles, Save, ExternalLink, Trash2, Pencil, Eye, Send } from "lucide-react";
 import { TEMPLATE_META, DEFAULT_CITIES, detectVideoPlatform, bofuUrl, type BofuTemplate } from "@/lib/bofu-templates";
 import { slugify } from "@/lib/slugify";
 
@@ -37,6 +37,7 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
     videoUrl: "",
   });
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pages, setPages] = useState<BofuRow[]>([]);
@@ -95,8 +96,39 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
       if (error) throw error;
       toast.success(status === "published" ? "Page published" : "Draft saved");
       setDraft(null);
+      setEditingId(null);
       void loadPages();
     } catch (e) { toast.error((e as Error).message); } finally { setSaving(false); }
+  }
+
+  async function loadForEdit(id: string) {
+    const { data, error } = await supabase.from("bofu_pages").select("*").eq("id", id).maybeSingle();
+    if (error || !data) { toast.error(error?.message || "Not found"); return; }
+    const row = data as any;
+    setForm({
+      template: row.template,
+      keyword: row.keyword ?? "",
+      competitor: form.competitor,
+      city: row.city ?? "Johannesburg",
+      videoUrl: row.video_url ?? "",
+    });
+    setDraft({
+      title: row.title ?? "",
+      meta_description: row.meta_description ?? "",
+      h1: row.h1 ?? "",
+      intro: row.intro ?? "",
+      body_html: row.body_html ?? "",
+      faq_json: Array.isArray(row.faq_json) ? row.faq_json : [],
+    });
+    setEditingId(id);
+    toast.success("Loaded for editing");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function quickPublish(id: string) {
+    const { error } = await supabase.from("bofu_pages").update({ status: "published", published_at: new Date().toISOString() }).eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Published"); void loadPages(); }
   }
 
   async function del(id: string) {
@@ -105,6 +137,7 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
     if (error) toast.error(error.message);
     else { toast.success("Deleted"); void loadPages(); }
   }
+
 
   return (
     <div className="space-y-6">
@@ -161,8 +194,13 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
         </div>
 
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <h3 className="text-sm font-semibold">Draft preview</h3>
-          {!draft && <p className="p-6 text-center text-sm text-muted-foreground">Generate a draft to see it here.</p>}
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold">{editingId ? "Editing existing page" : "Draft preview"}</h3>
+            {editingId && (
+              <Button size="sm" variant="ghost" onClick={() => { setDraft(null); setEditingId(null); }}>Cancel</Button>
+            )}
+          </div>
+          {!draft && <p className="p-6 text-center text-sm text-muted-foreground">Generate a draft or click Edit on an existing page.</p>}
           {draft && (
             <div className="space-y-3">
               <div><label className="text-xs font-medium">Title</label><Input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /></div>
@@ -176,7 +214,7 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
               </div>
               <div className="flex gap-2">
                 <Button onClick={() => save("draft")} disabled={saving} variant="outline" className="flex-1"><Save className="mr-1 h-4 w-4" />Save draft</Button>
-                <Button onClick={() => save("published")} disabled={saving} className="flex-1">Publish</Button>
+                <Button onClick={() => save("published")} disabled={saving} className="flex-1"><Send className="mr-1 h-4 w-4" />{editingId ? "Save & publish" : "Publish"}</Button>
               </div>
             </div>
           )}
@@ -202,8 +240,13 @@ export function PageBuilderPanel({ initialKeyword = "" }: { initialKeyword?: str
                     <td className="px-4 py-2"><span className={`rounded px-2 py-0.5 text-xs ${p.status === "published" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>{p.status}</span></td>
                     <td className="px-4 py-2 text-right">
                       <div className="flex justify-end gap-1">
-                        {p.status === "published" && <a href={url} target="_blank" rel="noreferrer"><Button size="sm" variant="ghost"><ExternalLink className="h-4 w-4" /></Button></a>}
-                        <Button size="sm" variant="ghost" onClick={() => del(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        <Button size="sm" variant="ghost" title="Edit" onClick={() => loadForEdit(p.id)}><Pencil className="h-4 w-4" /></Button>
+                        <a href={url} target="_blank" rel="noreferrer"><Button size="sm" variant="ghost" title="Preview"><Eye className="h-4 w-4" /></Button></a>
+                        {p.status !== "published" && (
+                          <Button size="sm" variant="ghost" title="Publish" onClick={() => quickPublish(p.id)}><Send className="h-4 w-4 text-green-600" /></Button>
+                        )}
+                        {p.status === "published" && <a href={url} target="_blank" rel="noreferrer"><Button size="sm" variant="ghost" title="Open live"><ExternalLink className="h-4 w-4" /></Button></a>}
+                        <Button size="sm" variant="ghost" title="Delete" onClick={() => del(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                       </div>
                     </td>
                   </tr>
