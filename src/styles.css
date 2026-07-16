@@ -152,3 +152,15 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-testimonial-scroll { animation: none; }
 }
+
+/* Hide Lovable badge */
+#lovable-badge,
+[id^="lovable-badge"],
+a[href*="lovable.dev"][href*="badge"],
+a[href*="lovable.app"][target="_blank"][class*="badge"],
+iframe[src*="lovable.dev/badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
