@@ -24,6 +24,7 @@ const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({
 const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
 const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
 const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
+const SportsKitsPage = lazy(() => import("@/routes/sports-kits").then((m) => ({ default: m.SportsKitsPage })));
 
 const queryClient = new QueryClient();
 
@@ -130,6 +131,14 @@ const pageMeta: Record<
     keywords:
       "branded gifts catalogue South Africa, corporate gifts catalogue, branded bags catalogue, conference bags South Africa, promotional products catalogue, Blank2Branded catalogues",
   },
+  "/sports-kits": {
+    focusKeyword: "sublimated sports kits",
+    title: "Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded",
+    description:
+      "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
+    keywords:
+      "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
+  },
 };
 
 function ensureLink(rel: string): HTMLLinkElement {
@@ -207,6 +216,7 @@ function AppContent() {
   else if (cleanPath === "/display") page = <DisplayPage />;
   else if (cleanPath === "/sublimation") page = <SublimationPage />;
   else if (cleanPath === "/catalogues") page = <CataloguesPage />;
+  else if (cleanPath === "/sports-kits") page = <SportsKitsPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
   else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
