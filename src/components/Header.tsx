@@ -71,12 +71,19 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           <Link to="/display" className={linkCls} activeProps={{ className: "text-primary" }}>
             Display
           </Link>
-          <Link to="/sublimation" className={linkCls} activeProps={{ className: "text-primary" }}>
-            Sublimation
-          </Link>
-          <Link to="/sports-kits" className={linkCls} activeProps={{ className: "text-primary" }}>
-            Sports Kits
-          </Link>
+          <div className="group relative">
+            <Link to="/sublimation" className={linkCls} activeProps={{ className: "text-primary" }}>
+              Sublimation
+            </Link>
+            <div className="invisible absolute left-0 top-full z-50 min-w-[180px] rounded-md border border-border bg-background py-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
+              <Link to="/sublimation" className="block px-4 py-2 text-sm text-charcoal hover:bg-muted hover:text-primary">
+                Overview
+              </Link>
+              <Link to="/sports-kits" className="block px-4 py-2 text-sm text-charcoal hover:bg-muted hover:text-primary">
+                Sports Kits
+              </Link>
+            </div>
+          </div>
           <Link to="/catalogues" className={linkCls} activeProps={{ className: "text-primary" }}>
             Catalogues
           </Link>
@@ -119,7 +126,7 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>Blanks</Link>
             <Link to="/display" className={linkCls} onClick={() => setOpen(false)}>Display</Link>
             <Link to="/sublimation" className={linkCls} onClick={() => setOpen(false)}>Sublimation</Link>
-            <Link to="/sports-kits" className={linkCls} onClick={() => setOpen(false)}>Sports Kits</Link>
+            <Link to="/sports-kits" className={`${linkCls} pl-4`} onClick={() => setOpen(false)}>↳ Sports Kits</Link>
             <Link to="/catalogues" className={linkCls} onClick={() => setOpen(false)}>Catalogues</Link>
             <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>Blog</Link>
             
