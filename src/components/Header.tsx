@@ -74,6 +74,9 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           <Link to="/sublimation" className={linkCls} activeProps={{ className: "text-primary" }}>
             Sublimation
           </Link>
+          <Link to="/sports-kits" className={linkCls} activeProps={{ className: "text-primary" }}>
+            Sports Kits
+          </Link>
           <Link to="/catalogues" className={linkCls} activeProps={{ className: "text-primary" }}>
             Catalogues
           </Link>
