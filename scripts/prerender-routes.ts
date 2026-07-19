@@ -137,6 +137,14 @@ const staticRoutes: RouteMeta[] = [
       "Terms and conditions for buying DTF transfers and blank apparel from Blank2Branded — orders, delivery, returns and refunds for South African customers.",
     keywords: "terms and conditions, returns policy, refund policy, Blank2Branded terms",
   },
+  {
+    path: "/sports-kits",
+    title: "Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded",
+    description:
+      "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
+    keywords:
+      "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
+  },
 ];
 
 // ---- Shopify products --------------------------------------------------------

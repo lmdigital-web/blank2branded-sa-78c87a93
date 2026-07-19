@@ -26,6 +26,7 @@ const TRAILING_SLASH_ROUTES = new Set([
   "/dtf",
   "/privacy",
   "/shop",
+  "/sports-kits",
   "/sublimation",
   "/terms",
 ]);
