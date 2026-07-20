@@ -111,6 +111,10 @@ export const useCartStore = create<CartStore>()(
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();
         const existing = items.find((i) => i.variantId === item.variantId);
+        try {
+          const value = parseFloat(item.price.amount) * item.quantity;
+          trackEvent("add_to_cart", { value, currency: item.price.currencyCode });
+        } catch {}
         set({ isLoading: true });
         try {
           if (!cartId) {
