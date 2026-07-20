@@ -20,11 +20,10 @@ async function semrush(path: string, params: Record<string, string>) {
   });
   const text = await r.text();
   if (!r.ok) throw new Error(`Semrush ${r.status}: ${text}`);
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { raw: text };
-  }
+  let parsed: any;
+  try { parsed = JSON.parse(text); } catch { return { raw: text }; }
+  if (parsed?.error) throw new Error(String(parsed.error));
+  return parsed;
 }
 
 function rowsToObjects(payload: any): Array<Record<string, any>> {
