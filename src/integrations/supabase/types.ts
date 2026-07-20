@@ -14,6 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_campaigns: {
+        Row: {
+          ad_copy: string | null
+          budget_cents: number | null
+          created_at: string
+          creative_url: string | null
+          end_date: string | null
+          external_id: string | null
+          id: string
+          name: string
+          network: string
+          notes: string | null
+          objective: string | null
+          spend_cents: number | null
+          start_date: string | null
+          status: string
+          target_url: string | null
+          updated_at: string
+          utm_campaign: string | null
+        }
+        Insert: {
+          ad_copy?: string | null
+          budget_cents?: number | null
+          created_at?: string
+          creative_url?: string | null
+          end_date?: string | null
+          external_id?: string | null
+          id?: string
+          name: string
+          network: string
+          notes?: string | null
+          objective?: string | null
+          spend_cents?: number | null
+          start_date?: string | null
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+        }
+        Update: {
+          ad_copy?: string | null
+          budget_cents?: number | null
+          created_at?: string
+          creative_url?: string | null
+          end_date?: string | null
+          external_id?: string | null
+          id?: string
+          name?: string
+          network?: string
+          notes?: string | null
+          objective?: string | null
+          spend_cents?: number | null
+          start_date?: string | null
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+        }
+        Relationships: []
+      }
+      ad_events: {
+        Row: {
+          created_at: string
+          currency: string | null
+          event_type: string
+          id: string
+          network: string | null
+          order_id: string | null
+          referrer: string | null
+          url: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          value_cents: number | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          event_type: string
+          id?: string
+          network?: string | null
+          order_id?: string | null
+          referrer?: string | null
+          url?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          value_cents?: number | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          event_type?: string
+          id?: string
+          network?: string | null
+          order_id?: string | null
+          referrer?: string | null
+          url?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          value_cents?: number | null
+        }
+        Relationships: []
+      }
+      ad_pixels: {
+        Row: {
+          enabled: boolean
+          extra: Json
+          id: string
+          network: string
+          pixel_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          extra?: Json
+          id?: string
+          network: string
+          pixel_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          extra?: Json
+          id?: string
+          network?: string
+          pixel_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ad_utm_links: {
+        Row: {
+          campaign_id: string | null
+          clicks: number
+          created_at: string
+          full_url: string
+          id: string
+          name: string
+          target_url: string
+          utm_campaign: string
+          utm_content: string | null
+          utm_medium: string
+          utm_source: string
+          utm_term: string | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          clicks?: number
+          created_at?: string
+          full_url: string
+          id?: string
+          name: string
+          target_url: string
+          utm_campaign: string
+          utm_content?: string | null
+          utm_medium: string
+          utm_source: string
+          utm_term?: string | null
+        }
+        Update: {
+          campaign_id?: string | null
+          clicks?: number
+          created_at?: string
+          full_url?: string
+          id?: string
+          name?: string
+          target_url?: string
+          utm_campaign?: string
+          utm_content?: string | null
+          utm_medium?: string
+          utm_source?: string
+          utm_term?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_utm_links_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_settings: {
         Row: {
           auto_post_facebook_enabled: boolean

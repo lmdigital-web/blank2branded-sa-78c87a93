@@ -1,107 +1,84 @@
-# Ranking Plan: "sublimated sports kits" (South Africa)
+# Ads Manager — Admin Module
 
-## What Semrush tells us
+A complete in-admin toolkit to launch, track, and optimize paid campaigns across Meta (Facebook/Instagram), TikTok, Google, Pinterest, and Microsoft (Bing) Ads. Focus is on what Lovable can actually deliver: pixel/tag installation, campaign records, UTM link builder, and unified conversion tracking. Ad creation on the networks themselves still happens in their ad managers (their APIs require OAuth apps and business verification), but this hub gives you every asset you need to run winning campaigns.
 
-Data pulled from the ZA database:
+## New admin sidebar item: "Ads"
 
-- **"sublimated sports kits"** — no measurable monthly volume, KD not scored. It's a **long-tail, low-competition** term. Good news: easy to rank. Bad news: on its own it won't drive much traffic.
-- Related terms with actual (small) volume and KD 0/100 (very easy):
-  - sublimated jerseys — 20/mo
-  - custom sports kits — 20/mo
-  - sublimation printing south africa — 20/mo
-  - sublimated rugby jerseys — 20/mo
-  - sublimated netball dresses — 20/mo
-- **blank2branded.co.za** currently ranks pos 69 for "sublimated golf shirts" (390/mo) and pos 72 for "dye sublimation shirts" (140/mo) — both from the existing `/sublimation` page. Authority Score is low, so we're building from the ground up.
+Sub-tabs:
+1. **Dashboard** — snapshot of active campaigns, spend logged, conversions, revenue from ads (via UTM attribution against `orders` + `blog_conversions`).
+2. **Pixels & Tags** — install/manage tracking snippets per network.
+3. **Campaigns** — CRUD for campaigns: network, name, objective, budget, dates, status, notes, creative links.
+4. **UTM Builder** — generate tagged URLs for any page (auto-fills utm_source/medium/campaign/content/term), copy-to-clipboard, saved links list.
+5. **Conversions** — event log (page view, add-to-cart, checkout, purchase) with per-network breakdown and ROAS.
+6. **Audiences & Creatives** — checklist/library: upload creative refs (image URLs), audience notes, ready-to-paste ad copy.
 
-**Takeaway:** don't chase the single phrase — build a **topic cluster** where "sublimated sports kits" is the hub. The cluster catches the wider "sublimated jerseys / rugby / soccer / netball / hockey kits" searches (each low volume but they add up), and internal links push authority to the hub page.
+## Pixels supported (with server-side + client-side)
 
-## The strategy — hub & spoke
+Each pixel takes an ID + optional access token (for server-side/Conversions API):
+
+- **Meta Pixel** (`FB_PIXEL_ID`, `FB_CAPI_TOKEN`) — client fbq + server Conversions API
+- **TikTok Pixel** (`TIKTOK_PIXEL_ID`, `TIKTOK_EVENTS_TOKEN`) — client ttq + server Events API
+- **Google Ads / GA4** (`GOOGLE_ADS_ID`, `GOOGLE_CONVERSION_LABEL`, `GA4_MEASUREMENT_ID`) — gtag.js
+- **Pinterest Tag** (`PINTEREST_TAG_ID`) — pintrk
+- **Microsoft/Bing UET** (`BING_UET_ID`) — uetq
+
+Pixel IDs stored in `app_settings` (public — pixel IDs are public by design). Server access tokens stored via `add_secret`.
+
+## Data model (new tables)
 
 ```text
-                    /sports-kits  (HUB — "sublimated sports kits")
-                          │
-      ┌──────────────┬────┴────┬──────────────┬──────────────┐
-      ▼              ▼         ▼              ▼              ▼
- /blog/rugby   /blog/soccer  /blog/netball  /blog/hockey  /blog/cricket
-  -kits         -kits         -dresses      -kits         -kits
-      │              │         │              │              │
-      └──────────────┴─── all link back to hub + cross-link ─┘
+ad_campaigns          id, network, name, objective, status, budget_cents,
+                      start_date, end_date, utm_campaign, notes, creative_url,
+                      target_url, ad_copy, external_id, created_at, updated_at
 
-  BOFU pages (already have the engine):
-   /vs/blank2branded-vs-<competitor>    (kit suppliers)
-   /best/sublimated-sports-kits-south-africa
-   /local/johannesburg/sublimated-sports-kits
-   /local/cape-town/sublimated-sports-kits
+ad_pixels             id, network (unique), pixel_id, extra (jsonb), enabled,
+                      updated_at
+                      -- server tokens live in secrets, not this table
+
+ad_events             id, network, event_type (page_view|view_content|
+                      add_to_cart|initiate_checkout|purchase|lead),
+                      value_cents, currency, order_id, utm_source, utm_medium,
+                      utm_campaign, utm_content, utm_term, url, user_agent,
+                      created_at
+
+ad_utm_links          id, name, target_url, utm_source, utm_medium,
+                      utm_campaign, utm_content, utm_term, full_url,
+                      campaign_id (fk), clicks, created_at
 ```
 
-## Delivery — 6 steps
+All admin-only via `has_role(auth.uid(), 'admin')`. `ad_events` insert allowed for `anon` so client tracker can log events; select admin-only. Full `GRANT` blocks included per project rules.
 
-### 1. Build the hub page: `/sports-kits`
-A dedicated landing page (not a blog post). Structure:
-- **H1:** Sublimated Sports Kits South Africa
-- Hero + "Request a Quote" CTA + WhatsApp
-- Sport tiles: Rugby, Soccer, Netball, Hockey, Cricket, Basketball, Cycling, Athletics (each links to its spoke page)
-- "How sublimation works" section (short, with photo)
-- Turnaround / MOQ / pricing tier table
-- Gallery of past kits
-- FAQ (6–8 Qs targeting People-Also-Ask)
-- Testimonials + trust badges
-- Full JSON-LD: `Product` + `LocalBusiness` + `FAQPage`
+## Runtime integration
 
-### 2. Write 5 spoke blog posts (use the existing AI generator)
-One per sport, each 800–1200 words, each linking back to `/sports-kits`:
-- Sublimated Rugby Jerseys South Africa — Sizing, Pricing & Turnaround
-- Custom Soccer Kits — Team Colours, Numbering, Delivery
-- Netball Dresses — Fabric, Fit & Bulk Order Guide
-- Field Hockey Kits — What to Order for Your Club
-- Cricket Playing Shirts — Sublimation vs Screen Print
+- **`src/lib/ads/pixels.ts`** — loads enabled pixels from `app_settings` once, injects each network's snippet, exposes `trackEvent(name, params)` that fans out to every enabled network with the right event name mapping (e.g. purchase → fbq `Purchase`, ttq `CompletePayment`, gtag `conversion`, pintrk `checkout`, uetq `purchase`).
+- **`src/hooks/useAdTracking.ts`** — hooks into route changes for `PageView`, and existing cart/checkout events fire `add_to_cart` / `initiate_checkout`. Shopify checkout completion is tracked via a `purchase` beacon on the return URL (Shopify's own thank-you page is off-domain, so we also document the manual pixel install inside Shopify checkout settings).
+- **UTM auto-capture** — on landing, capture `utm_*` params to `sessionStorage` so purchase events attribute correctly.
+- **Edge function `ads-server-event`** — receives purchase events, forwards to Meta CAPI + TikTok Events API server-side for iOS/ad-blocker resilience. Uses stored access tokens.
 
-### 3. Generate 4 BOFU pages (using the BOFU Ranker you already built)
-- `/vs/blank2branded-vs-<top competitor>` — pick one sublimation kit supplier
-- `/best/sublimated-sports-kits-south-africa`
-- `/local/johannesburg/sublimated-sports-kits`
-- `/local/cape-town/sublimated-sports-kits`
+## Admin UI files
 
-### 4. Wire internal links
-- Homepage → hub (add "Sports Kits" to main nav)
-- `/sublimation` page → hub (contextual link)
-- `/shop` → hub (banner for team orders)
-- Each spoke ↔ hub ↔ other spokes (footer or "related" block)
+```text
+src/routes/admin.tsx                              add "Ads" nav item
+src/components/admin/ads/AdsHub.tsx               tabbed shell
+src/components/admin/ads/DashboardPanel.tsx
+src/components/admin/ads/PixelsPanel.tsx
+src/components/admin/ads/CampaignsPanel.tsx
+src/components/admin/ads/UtmBuilderPanel.tsx
+src/components/admin/ads/ConversionsPanel.tsx
+src/components/admin/ads/CreativesPanel.tsx
+```
 
-### 5. Meta, schema, sitemap
-- Title: **Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded** (<60 chars)
-- Meta: focused on "custom sublimated kits, delivered nationwide, low MOQ"
-- Add hub + spokes to `scripts/generate-sitemap.ts` and re-submit sitemap to GSC + Bing
-- Prerender the hub (`scripts/prerender-routes.ts`) so crawlers see full HTML
+## What Lovable cannot do (called out in-app)
 
-### 6. Off-page (do outside the app)
-- Google Business Profile: add "Sublimated Sports Kits" as a service + photos
-- List on 3–5 SA business directories (Yellow Pages ZA, Brabys, Hotfrog)
-- Get 2–3 sports clubs you've supplied to link back from their sites ("kit supplied by Blank2Branded")
+- Push campaigns to the networks (needs each network's OAuth app + verification). The Campaigns tab is a source-of-truth log and has "Open in [Network] Ads Manager" deep links.
+- Fetch spend/impressions from networks without those OAuth apps. The Dashboard shows **your** conversion-side data (revenue attributed by UTM) and lets you manually log spend per campaign to compute ROAS.
 
-## What I'll build now (if you approve)
+## Rollout
 
-Steps 1–5 are all in-app work I can ship in this project:
+1. Migration: new tables + `app_settings` rows for pixel IDs, with GRANTs + RLS.
+2. Pixel loader + tracker wired globally in `App.tsx`.
+3. Admin Ads hub with all six sub-panels.
+4. Edge function `ads-server-event` for server-side Meta/TikTok events.
+5. Docs strip in Pixels panel showing exactly where to paste the Shopify checkout pixels (one-time manual step per network).
 
-- New route `src/routes/sports-kits.tsx` (hub page) + add to router + sitemap + prerender
-- Add "Sports Kits" link to `src/components/Header.tsx`
-- Generate 5 blog drafts via the SEO AI generator (you review/publish from admin)
-- Generate 4 BOFU pages via the BOFU Ranker (you review/publish from admin)
-- Internal-link block on `/sublimation` and homepage pointing to `/sports-kits`
-
-Step 6 is manual (GBP + directories + club backlinks) — I'll give you a copy-paste checklist.
-
-## Realistic timeline
-
-- Week 1: hub live + spokes drafted
-- Week 2–3: BOFU pages live, sitemap re-submitted, GBP updated
-- Week 4–8: Google indexes + starts ranking (KD is 0 so first-page appearance for exact match is realistic once indexed)
-- Week 8–12: hub climbs for broader terms as spokes accumulate authority
-
-## Confirm before I build
-
-1. Which **top competitor** should the `/vs/` page target? (e.g. Balls Sports Wear, KGB Sportswear, Sondela — or another you compete with)
-2. Two cities for the `/local/` pages — Johannesburg + Cape Town, or different?
-3. Do you want the hub in the **main nav** (replacing/adding to Blanks/DTF/Sublimation) or only in the footer + `/sublimation` cross-links?
-
-Say **go** with answers to 1–3 and I'll ship steps 1–5.
+After this ships, you'll paste pixel IDs into the Pixels tab, generate UTM links for each ad, and the Conversions/Dashboard tabs will populate as traffic and orders come in.
