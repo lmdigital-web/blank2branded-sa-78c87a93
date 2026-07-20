@@ -339,6 +339,21 @@ export function SportsKitsPage() {
         </div>
       </section>
 
+      {/* PHOTO CREDITS */}
+      <section className="border-t border-border bg-muted/20 py-6">
+        <div className="mx-auto max-w-7xl px-6">
+          <p className="text-xs text-muted-foreground">
+            <strong className="font-semibold text-charcoal">Photo credits:</strong>{" "}
+            Sports photography shown for illustrative purposes under Creative Commons licences. Sources include{" "}
+            <a href="https://commons.wikimedia.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Wikimedia Commons</a>,{" "}
+            <a href="https://www.flickr.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Flickr</a> and{" "}
+            <a href="https://www.rawpixel.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Rawpixel</a> (CC0 / CC BY / CC BY-SA).
+            Hockey photo: Test field hockey South Africa v Germany 2023 (public domain).
+          </p>
+        </div>
+      </section>
+
+
       <Footer />
     </div>
   );
