@@ -4,28 +4,29 @@ import { Link } from "@/lib/static-router";
 import { ArrowRight, MessageCircle, CheckCircle2, Truck, Palette, Clock, Ruler, Shirt } from "lucide-react";
 import sportsKitsHeroBg from "@/assets/sports-kits-hero-bg.jpg";
 
-import mensRugby from "@/assets/sublimation/mens-rugby.jpg";
-import soccerShorts from "@/assets/sublimation/soccer-shorts.jpg";
-import ladiesCrewVestSkirtSet from "@/assets/sublimation/ladies-crew-vest-skirt-set.jpg";
-import mensCrewTeeShortsSet from "@/assets/sublimation/mens-crew-tshirt-shorts-set.jpg";
-import kidsRugby from "@/assets/sublimation/kids-rugby.jpg";
-import cyclingTop from "@/assets/sublimation/cycling-top.jpg";
-import ladiesSkirt from "@/assets/sublimation/ladies-skirt.jpg";
-import mensCrewVest from "@/assets/sublimation/mens-crew-vest.jpg";
+import rugbyJersey from "@/assets/sports-kits/rugby-jersey.jpg";
+import soccerKit from "@/assets/sports-kits/soccer-kit.jpg";
+import netballDress from "@/assets/sports-kits/netball-dress.jpg";
+import hockeyKit from "@/assets/sports-kits/hockey-kit.jpg";
+import cricketShirt from "@/assets/sports-kits/cricket-shirt.jpg";
+import basketballKit from "@/assets/sports-kits/basketball-kit.jpg";
+import cyclingJersey from "@/assets/sports-kits/cycling-jersey.jpg";
+import athleticsVest from "@/assets/sports-kits/athletics-vest.jpg";
+import juniorRugby from "@/assets/sports-kits/junior-rugby.jpg";
 
 const WA_NUMBER = "27698384045";
 const waQuote = (topic: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Hi Blank2Branded, I'd like a quote for a sublimated ${topic} kit. Please send pricing and turnaround.`)}`;
 
 const SPORTS: { sport: string; image: string; blurb: string }[] = [
-  { sport: "Rugby", image: mensRugby, blurb: "Full-colour jerseys, shorts and socks — school, club and touring teams." },
-  { sport: "Soccer", image: soccerShorts, blurb: "Match kits and training bibs with team names, numbers and sponsors baked in." },
-  { sport: "Netball", image: ladiesCrewVestSkirtSet, blurb: "Ladies and junior netball dresses, vest-and-skirt sets in team colours." },
-  { sport: "Hockey", image: mensCrewTeeShortsSet, blurb: "Field hockey shirts and shorts — men's, ladies' and junior sizing." },
-  { sport: "Cricket", image: mensCrewVest, blurb: "Playing shirts, vests and training tops in sublimated club colours." },
-  { sport: "Basketball", image: mensRugby, blurb: "Reversible vests and shorts in full-colour custom design." },
-  { sport: "Cycling", image: cyclingTop, blurb: "Aero cycling jerseys and bibs for clubs, charity rides and sponsors." },
-  { sport: "Athletics", image: ladiesSkirt, blurb: "Running vests, singlets and school athletics kits — light and breathable." },
+  { sport: "Rugby", image: rugbyJersey, blurb: "Full-colour jerseys, shorts and socks — school, club and touring teams." },
+  { sport: "Soccer", image: soccerKit, blurb: "Match kits and training bibs with team names, numbers and sponsors baked in." },
+  { sport: "Netball", image: netballDress, blurb: "Ladies and junior netball dresses, vest-and-skirt sets in team colours." },
+  { sport: "Hockey", image: hockeyKit, blurb: "Field hockey shirts and shorts — men's, ladies' and junior sizing." },
+  { sport: "Cricket", image: cricketShirt, blurb: "Playing shirts, vests and training tops in sublimated club colours." },
+  { sport: "Basketball", image: basketballKit, blurb: "Reversible vests and shorts in full-colour custom design." },
+  { sport: "Cycling", image: cyclingJersey, blurb: "Aero cycling jerseys and bibs for clubs, charity rides and sponsors." },
+  { sport: "Athletics", image: athleticsVest, blurb: "Running vests, singlets and school athletics kits — light and breathable." },
 ];
 
 const KIT_TIERS = [
@@ -217,7 +218,7 @@ export function SportsKitsPage() {
               className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="aspect-[4/3] overflow-hidden bg-muted">
-                <img src={kidsRugby} alt="Junior sublimated kit" loading="lazy" width={1024} height={768} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img src={juniorRugby} alt="Junior sublimated kit" loading="lazy" width={1024} height={768} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
               <div className="flex flex-1 flex-col p-5">
                 <h3 className="text-lg font-black text-charcoal">Junior & School Kits</h3>
