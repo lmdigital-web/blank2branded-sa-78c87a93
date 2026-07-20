@@ -178,6 +178,7 @@ function applySeo(title: string, description: string, keywords: string, path: st
 
 function AppContent() {
   useCartSync();
+  useAdTracking();
   const path = useCurrentPath();
   const cleanPath = path.replace(/\/$/, "") || "/";
   const productMatch = cleanPath.match(/^\/products\/([^/]+)$/);
