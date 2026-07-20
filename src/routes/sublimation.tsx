@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArrowRight, MessageCircle } from "lucide-react";
+import sublimationHeroBg from "@/assets/sublimation-hero-bg.jpg";
 
 import mensGolf from "@/assets/sublimation/mens-golf-shirt.jpg";
 import mensCrewTee from "@/assets/sublimation/mens-crew-tshirt.jpg";
@@ -263,6 +264,16 @@ export function SublimationPage() {
 
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src={sublimationHeroBg}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full scale-105 object-cover blur-[2px]"
+          />
+          <div className="absolute inset-0 bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
+        </div>
         <div className="pointer-events-none absolute inset-0 opacity-25">
           <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
           <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
