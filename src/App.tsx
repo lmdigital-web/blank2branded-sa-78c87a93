@@ -4,6 +4,7 @@ import { Link, useCurrentPath } from "@/lib/static-router";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { Toaster } from "@/components/ui/sonner";
 import { useCartSync } from "@/hooks/useCartSync";
+import { useAdTracking } from "@/hooks/useAdTracking";
 import { Home } from "@/routes/index";
 const AboutPage = lazy(() => import("@/routes/about").then((m) => ({ default: m.AboutPage })));
 const BlanksPage = lazy(() => import("@/routes/blanks").then((m) => ({ default: m.BlanksPage })));
