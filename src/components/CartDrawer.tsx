@@ -36,7 +36,11 @@ export function CartDrawer() {
   const checkout = () => {
     if (moqShort) return;
     const url = getCheckoutUrl();
-    if (url) { window.open(url, "_blank"); setOpen(false); }
+    if (url) {
+      trackEvent("initiate_checkout", { value: totalPrice, currency });
+      window.open(url, "_blank");
+      setOpen(false);
+    }
   };
 
 
