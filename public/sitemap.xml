@@ -36,6 +36,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://blank2branded.co.za/sublimation/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/sports-kits/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/display/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/catalogues/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://blank2branded.co.za/products/lightweight-t-shirt-140gsm-premium-blank-cotton-tee-for-printing-branding-south-africa/</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -61,7 +81,7 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/platinum-t-shirt/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -91,7 +111,7 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/mens-polo/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -103,7 +123,7 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/long-sleeve-t-shirt/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -115,13 +135,13 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/oxford-jacket/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/fleece-hoodie-zip/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -145,7 +165,7 @@
   </url>
   <url>
     <loc>https://blank2branded.co.za/products/womens-dry-fit-polo/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -160,6 +180,36 @@
     <lastmod>2026-07-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/sublimated-cricket-shirts-south-africa/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/sublimated-hockey-kits-south-africa-custom-apparel/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/sublimated-netball-dresses-south-africa/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/sublimated-soccer-kits-south-africa/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://blank2branded.co.za/blog/sublimated-rugby-jerseys-south-africa-guide/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://blank2branded.co.za/blog/logo-design-for-apparel-south-african-guide/</loc>
