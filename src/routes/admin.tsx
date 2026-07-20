@@ -13,6 +13,7 @@ import { SocialIntegrationsPanel } from "@/components/admin/SocialIntegrationsPa
 import { SeoHub } from "@/components/admin/SeoHub";
 import { BofuHub } from "@/components/admin/bofu/BofuHub";
 import { BacklinksPanel } from "@/components/admin/BacklinksPanel";
+import { AdsHub } from "@/components/admin/ads/AdsHub";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
