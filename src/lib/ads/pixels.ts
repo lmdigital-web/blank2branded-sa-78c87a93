@@ -218,7 +218,7 @@ function injectGoogle(adsId: string, ga4Id: string | null) {
 
 function injectPinterest(id: string) {
   if (window.pintrk) return;
-  !(function (e: any) {
+  (function (e: string) {
     if (!window.pintrk) {
       window.pintrk = function () { (window.pintrk as any).queue.push(Array.prototype.slice.call(arguments)); } as any;
       const n: any = window.pintrk; n.queue = []; n.version = "3.0";
