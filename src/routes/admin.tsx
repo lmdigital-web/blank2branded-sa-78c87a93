@@ -5,7 +5,7 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, ShoppingBag, Users, Share2, CheckCircle2, AlertCircle, MinusCircle, Search, Rocket } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, ShoppingBag, Users, Share2, CheckCircle2, AlertCircle, MinusCircle, Search, Rocket, Megaphone } from "lucide-react";
 import { toast } from "sonner";
 import { ShopifySyncPanel } from "@/components/admin/ShopifySyncPanel";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
@@ -13,6 +13,7 @@ import { SocialIntegrationsPanel } from "@/components/admin/SocialIntegrationsPa
 import { SeoHub } from "@/components/admin/SeoHub";
 import { BofuHub } from "@/components/admin/bofu/BofuHub";
 import { BacklinksPanel } from "@/components/admin/BacklinksPanel";
+import { AdsHub } from "@/components/admin/ads/AdsHub";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -47,7 +48,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "seo" | "bofu" | "backlinks" | "authors" | "shopify" | "social">("blog");
+  const [section, setSection] = useState<"blog" | "seo" | "bofu" | "backlinks" | "authors" | "shopify" | "social" | "ads">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
@@ -187,6 +188,7 @@ export function AdminPage() {
     { id: "authors" as const, label: "Authors", icon: Users },
     { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
     { id: "social" as const, label: "Social Integrations", icon: Share2 },
+    { id: "ads" as const, label: "Ads Manager", icon: Megaphone },
   ];
 
   return (
@@ -457,6 +459,8 @@ export function AdminPage() {
                 <SocialIntegrationsPanel />
               </div>
             )}
+
+            {section === "ads" && <AdsHub />}
           </div>
         </div>
       </main>
