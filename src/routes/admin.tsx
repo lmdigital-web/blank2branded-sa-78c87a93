@@ -459,6 +459,8 @@ export function AdminPage() {
                 <SocialIntegrationsPanel />
               </div>
             )}
+
+            {section === "ads" && <AdsHub />}
           </div>
         </div>
       </main>
