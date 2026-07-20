@@ -4,14 +4,15 @@ import { Link } from "@/lib/static-router";
 import { ArrowRight, MessageCircle, CheckCircle2, Truck, Palette, Clock, Ruler, Shirt } from "lucide-react";
 import sportsKitsHeroBg from "@/assets/sports-kits-hero-bg.jpg";
 
-import mensRugby from "@/assets/sublimation/mens-rugby.jpg";
-import soccerShorts from "@/assets/sublimation/soccer-shorts.jpg";
-import ladiesCrewVestSkirtSet from "@/assets/sublimation/ladies-crew-vest-skirt-set.jpg";
-import mensCrewTeeShortsSet from "@/assets/sublimation/mens-crew-tshirt-shorts-set.jpg";
-import kidsRugby from "@/assets/sublimation/kids-rugby.jpg";
-import cyclingTop from "@/assets/sublimation/cycling-top.jpg";
-import ladiesSkirt from "@/assets/sublimation/ladies-skirt.jpg";
-import mensCrewVest from "@/assets/sublimation/mens-crew-vest.jpg";
+import rugbyJersey from "@/assets/sports-kits/rugby-jersey.jpg";
+import soccerKit from "@/assets/sports-kits/soccer-kit.jpg";
+import netballDress from "@/assets/sports-kits/netball-dress.jpg";
+import hockeyKit from "@/assets/sports-kits/hockey-kit.jpg";
+import cricketShirt from "@/assets/sports-kits/cricket-shirt.jpg";
+import basketballKit from "@/assets/sports-kits/basketball-kit.jpg";
+import cyclingJersey from "@/assets/sports-kits/cycling-jersey.jpg";
+import athleticsVest from "@/assets/sports-kits/athletics-vest.jpg";
+import juniorRugby from "@/assets/sports-kits/junior-rugby.jpg";
 
 const WA_NUMBER = "27698384045";
 const waQuote = (topic: string) =>
