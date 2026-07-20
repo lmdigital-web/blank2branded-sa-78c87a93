@@ -19,14 +19,14 @@ const waQuote = (topic: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Hi Blank2Branded, I'd like a quote for a sublimated ${topic} kit. Please send pricing and turnaround.`)}`;
 
 const SPORTS: { sport: string; image: string; blurb: string }[] = [
-  { sport: "Rugby", image: mensRugby, blurb: "Full-colour jerseys, shorts and socks — school, club and touring teams." },
-  { sport: "Soccer", image: soccerShorts, blurb: "Match kits and training bibs with team names, numbers and sponsors baked in." },
-  { sport: "Netball", image: ladiesCrewVestSkirtSet, blurb: "Ladies and junior netball dresses, vest-and-skirt sets in team colours." },
-  { sport: "Hockey", image: mensCrewTeeShortsSet, blurb: "Field hockey shirts and shorts — men's, ladies' and junior sizing." },
-  { sport: "Cricket", image: mensCrewVest, blurb: "Playing shirts, vests and training tops in sublimated club colours." },
-  { sport: "Basketball", image: mensRugby, blurb: "Reversible vests and shorts in full-colour custom design." },
-  { sport: "Cycling", image: cyclingTop, blurb: "Aero cycling jerseys and bibs for clubs, charity rides and sponsors." },
-  { sport: "Athletics", image: ladiesSkirt, blurb: "Running vests, singlets and school athletics kits — light and breathable." },
+  { sport: "Rugby", image: rugbyJersey, blurb: "Full-colour jerseys, shorts and socks — school, club and touring teams." },
+  { sport: "Soccer", image: soccerKit, blurb: "Match kits and training bibs with team names, numbers and sponsors baked in." },
+  { sport: "Netball", image: netballDress, blurb: "Ladies and junior netball dresses, vest-and-skirt sets in team colours." },
+  { sport: "Hockey", image: hockeyKit, blurb: "Field hockey shirts and shorts — men's, ladies' and junior sizing." },
+  { sport: "Cricket", image: cricketShirt, blurb: "Playing shirts, vests and training tops in sublimated club colours." },
+  { sport: "Basketball", image: basketballKit, blurb: "Reversible vests and shorts in full-colour custom design." },
+  { sport: "Cycling", image: cyclingJersey, blurb: "Aero cycling jerseys and bibs for clubs, charity rides and sponsors." },
+  { sport: "Athletics", image: athleticsVest, blurb: "Running vests, singlets and school athletics kits — light and breathable." },
 ];
 
 const KIT_TIERS = [
