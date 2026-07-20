@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
+import { trackEvent } from "@/lib/ads/pixels";
 
 export interface CartItem {
   lineId: string | null;
