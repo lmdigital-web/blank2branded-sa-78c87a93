@@ -57,6 +57,42 @@ async function fetchBlogPosts(): Promise<SitemapEntry[]> {
   }
 }
 
+async function fetchBofuPages(): Promise<SitemapEntry[]> {
+  const SUPABASE_URL = "https://enpdahmqwhdukbnykqyy.supabase.co";
+  const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/bofu_pages?select=slug,template,city,updated_at&status=eq.published`,
+      { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` } },
+    );
+    if (!res.ok) {
+      console.warn("Failed to fetch BOFU pages for sitemap:", res.status);
+      return [];
+    }
+    const rows: { slug: string; template: string; city: string | null; updated_at: string }[] = await res.json();
+    const seen = new Set<string>();
+    const entries: SitemapEntry[] = [];
+    for (const r of rows) {
+      const path =
+        r.template === "local" && r.city
+          ? `/local/${r.city.toLowerCase().replace(/\s+/g, "-")}/${r.slug}/`
+          : `/${r.template === "versus" ? "vs" : r.template}/${r.slug}/`;
+      if (seen.has(path)) continue;
+      seen.add(path);
+      entries.push({
+        path,
+        lastmod: r.updated_at?.split("T")[0],
+        changefreq: "monthly",
+        priority: "0.8",
+      });
+    }
+    return entries;
+  } catch (err) {
+    console.warn("Error fetching BOFU pages for sitemap:", err);
+    return [];
+  }
+}
+
 const PRODUCTS_QUERY = `
   query GetProducts($first: Int!) {
     products(first: $first) {
