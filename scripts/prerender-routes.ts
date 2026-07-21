@@ -326,13 +326,15 @@ function rewriteHead(template: string, r: RouteMeta): string {
 /** Inject prerendered <main> content into the React root so no-JS crawlers see
  *  real body text. React hydrates over this for real users. */
 function injectBody(html: string, bodyHtml: string): string {
-  const rootPattern = /<div\s+id="(root|app)"[^>]*>\s*<\/div>/i;
-  if (rootPattern.test(html)) {
-    return html.replace(rootPattern, (m) =>
-      m.replace(/>\s*<\/div>/i, `>${bodyHtml}</div>`),
-    );
+  const rootWithChildren = /(<div\s+id="(?:root|app)"[^>]*>)[\s\S]*?(<\/div>)(?=\s*(?:<script|<\/body>))/i;
+  if (rootWithChildren.test(html)) {
+    return html.replace(rootWithChildren, (_m, open, close) => `${open}${bodyHtml}${close}`);
   }
-  return html.replace(/<\/body>/i, `${bodyHtml}\n  </body>`);
+  const emptyRoot = /<div\s+id="(?:root|app)"[^>]*>\s*<\/div>/i;
+  if (emptyRoot.test(html)) {
+    return html.replace(emptyRoot, (m) => m.replace(/>\s*<\/div>/i, `>${bodyHtml}</div>`));
+  }
+  return html.replace(/<\/body>/i, `<div id="prerender-fallback" hidden>${bodyHtml}</div>\n  </body>`);
 }
 
 const SITE_NAV_LINKS: Array<{ path: string; label: string }> = [
