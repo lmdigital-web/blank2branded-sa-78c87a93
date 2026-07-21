@@ -242,7 +242,7 @@ export function SportsKitsPage() {
           <ol className="grid gap-6 md:grid-cols-4">
             {[
               { step: "1", title: "Send your brief", copy: "Team colours, sponsor logos, player names and numbers, quantity and sizes." },
-              { step: "2", title: "Free mockup", copy: "Our designers lay out your kit and send a proof for approval — free of charge." },
+              { step: "2", title: "Supply artwork", copy: "Send us your print-ready artwork. Need design help? We offer it as a paid service — contact us for a design fee quote." },
               { step: "3", title: "Sublimation print", copy: "Design is dyed into polyester panels using heat and pressure — bonded permanently to the fabric." },
               { step: "4", title: "Cut, sew & courier", copy: "Panels are cut and sewn into finished garments and couriered nationwide within 10–15 days." },
             ].map((s) => (
