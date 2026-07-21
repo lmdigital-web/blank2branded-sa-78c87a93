@@ -577,8 +577,13 @@ async function main() {
   // BOFU pages (versus / alternatives / best / local)
   const bofuPages = await fetchBofuPages();
   for (const b of bofuPages) {
-    const path = b.template === "local" && b.city
-      ? `/local/${b.city.toLowerCase().replace(/\s+/g, "-")}/${b.slug}`
+    const isNational = (b.city || "").trim().toLowerCase() === "south africa";
+    const path = b.template === "local"
+      ? isNational
+        ? `/${b.slug}`
+        : b.city
+          ? `/local/${b.city.toLowerCase().replace(/\s+/g, "-")}/${b.slug}`
+          : `/local/${b.slug}`
       : `/${b.template === "versus" ? "vs" : b.template}/${b.slug}`;
     const r: RouteMeta = {
       path,
