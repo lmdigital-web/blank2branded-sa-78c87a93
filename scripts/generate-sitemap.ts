@@ -73,9 +73,14 @@ async function fetchBofuPages(): Promise<SitemapEntry[]> {
     const seen = new Set<string>();
     const entries: SitemapEntry[] = [];
     for (const r of rows) {
+      const isNational = (r.city || "").trim().toLowerCase() === "south africa";
       const path =
-        r.template === "local" && r.city
-          ? `/local/${r.city.toLowerCase().replace(/\s+/g, "-")}/${r.slug}/`
+        r.template === "local"
+          ? isNational
+            ? `/${r.slug}/`
+            : r.city
+              ? `/local/${r.city.toLowerCase().replace(/\s+/g, "-")}/${r.slug}/`
+              : `/local/${r.slug}/`
           : `/${r.template === "versus" ? "vs" : r.template}/${r.slug}/`;
       if (seen.has(path)) continue;
       seen.add(path);
