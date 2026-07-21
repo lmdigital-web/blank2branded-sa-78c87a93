@@ -317,8 +317,8 @@ export function SportsKitsPage() {
             Ready to kit out your team?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Send us your team colours and quantity — we'll come back with pricing, a mockup and a delivery date within
-            4 business hours.
+            Send us your team colours, quantity and print-ready artwork — we'll come back with pricing and a delivery date within
+            4 business hours. Design services available on request for an additional fee.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
