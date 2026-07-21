@@ -223,6 +223,7 @@ function AppContent() {
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
   else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
   else if (/^\/local\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
+  else if (/^\/sublimated-[a-z0-9-]+$/.test(cleanPath)) page = <BofuPagePublic />;
 
   return (
     <>

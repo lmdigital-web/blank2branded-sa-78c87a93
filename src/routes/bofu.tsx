@@ -43,6 +43,9 @@ function parsePath(path: string): { template: BofuTemplate; slug: string; city: 
   if (m) return { template: "best", slug: m[1], city: null };
   m = clean.match(/^\/local\/([^/]+)\/([^/]+)$/);
   if (m) return { template: "local", slug: m[2], city: m[1] };
+  // Root-level national local slug (e.g. /sublimated-soccer-kits-south-africa)
+  m = clean.match(/^\/(sublimated-[a-z0-9-]+)$/);
+  if (m) return { template: "local", slug: m[1], city: "South Africa" };
   return null;
 }
 

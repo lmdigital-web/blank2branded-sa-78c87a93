@@ -7,8 +7,13 @@ export const TEMPLATE_META: Record<BofuTemplate, { label: string; prefix: string
   local:        { label: "Local",        prefix: "/local",        describe: "City-targeted landing page (e.g. best DTF prints in Cape Town)." },
 };
 
+export function isNationalCity(city?: string | null): boolean {
+  return !!city && city.trim().toLowerCase() === "south africa";
+}
+
 export function bofuUrl(template: BofuTemplate, slug: string, city?: string | null): string {
   if (template === "local") {
+    if (isNationalCity(city)) return `/${slug}/`;
     const c = (city || "").toLowerCase().replace(/\s+/g, "-");
     return `/local/${c}/${slug}/`;
   }
