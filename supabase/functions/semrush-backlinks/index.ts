@@ -122,9 +122,16 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
+    const msg = String(e instanceof Error ? e.message : e);
+    const quota = /TOTAL LIMIT EXCEEDED|ERROR 134/i.test(msg);
     return new Response(
-      JSON.stringify({ error: String(e instanceof Error ? e.message : e) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({
+        error: quota
+          ? "Semrush API quota exhausted. Upgrade your Semrush plan or wait for the daily reset."
+          : msg,
+        quota_exceeded: quota,
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
