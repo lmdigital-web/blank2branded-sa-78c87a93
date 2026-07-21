@@ -54,7 +54,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Can I supply my own artwork or logo?",
-    a: "Absolutely. Send us your team colours, sponsor logos and any player names or numbers, and our design team will lay out the kit mockup for your approval before production starts.",
+    a: "Yes — print-ready artwork must be supplied by the client (vector or 300dpi files preferred). If you need design or layout work, we offer it as a paid service — contact us for a design fee quote before production starts.",
   },
   {
     q: "What sports do you make kits for?",
