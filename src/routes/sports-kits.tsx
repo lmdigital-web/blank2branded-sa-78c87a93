@@ -54,7 +54,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Can I supply my own artwork or logo?",
-    a: "Absolutely. Send us your team colours, sponsor logos and any player names or numbers, and our design team will lay out the kit mockup for your approval before production starts.",
+    a: "Yes — print-ready artwork must be supplied by the client (vector or 300dpi files preferred). If you need design or layout work, we offer it as a paid service — contact us for a design fee quote before production starts.",
   },
   {
     q: "What sports do you make kits for?",
@@ -242,7 +242,7 @@ export function SportsKitsPage() {
           <ol className="grid gap-6 md:grid-cols-4">
             {[
               { step: "1", title: "Send your brief", copy: "Team colours, sponsor logos, player names and numbers, quantity and sizes." },
-              { step: "2", title: "Free mockup", copy: "Our designers lay out your kit and send a proof for approval — free of charge." },
+              { step: "2", title: "Supply artwork", copy: "Send us your print-ready artwork. Need design help? We offer it as a paid service — contact us for a design fee quote." },
               { step: "3", title: "Sublimation print", copy: "Design is dyed into polyester panels using heat and pressure — bonded permanently to the fabric." },
               { step: "4", title: "Cut, sew & courier", copy: "Panels are cut and sewn into finished garments and couriered nationwide within 10–15 days." },
             ].map((s) => (
@@ -317,8 +317,8 @@ export function SportsKitsPage() {
             Ready to kit out your team?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Send us your team colours and quantity — we'll come back with pricing, a mockup and a delivery date within
-            4 business hours.
+            Send us your team colours, quantity and print-ready artwork — we'll come back with pricing and a delivery date within
+            4 business hours. Design services available on request for an additional fee.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
