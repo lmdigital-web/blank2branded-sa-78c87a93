@@ -163,17 +163,18 @@ function generateSitemap(entries: SitemapEntry[]) {
 }
 
 async function main() {
-  console.log("Fetching Shopify products and blog posts for sitemap...");
-  const [productEntries, postEntries] = await Promise.all([
+  console.log("Fetching Shopify products, blog posts, and BOFU pages for sitemap...");
+  const [productEntries, postEntries, bofuEntries] = await Promise.all([
     fetchShopifyProducts(),
     fetchBlogPosts(),
+    fetchBofuPages(),
   ]);
-  const allEntries = [...staticEntries, ...productEntries, ...postEntries];
+  const allEntries = [...staticEntries, ...productEntries, ...postEntries, ...bofuEntries];
 
   const sitemap = generateSitemap(allEntries);
   writeFileSync(resolve("public/sitemap.xml"), sitemap);
   console.log(
-    `sitemap.xml written with ${allEntries.length} entries (${productEntries.length} products, ${postEntries.length} blog posts)`,
+    `sitemap.xml written with ${allEntries.length} entries (${productEntries.length} products, ${postEntries.length} blog posts, ${bofuEntries.length} BOFU pages)`,
   );
 }
 
