@@ -237,14 +237,20 @@ function rewriteHead(template: string, post: Post): string {
  *  (Medium, Facebook debugger, etc.) see the real content. React hydrates on
  *  top for real users and replaces this placeholder. */
 function injectArticle(html: string, articleHtml: string): string {
-  // Try common React root ids first, else fall back to injecting before </body>.
-  const rootPattern = /<div\s+id="(root|app)"[^>]*>\s*<\/div>/i;
-  if (rootPattern.test(html)) {
-    return html.replace(rootPattern, (m) =>
-      m.replace(/>\s*<\/div>/i, `>${articleHtml}</div>`),
-    );
+  // Replace the entire #root (or #app) container's inner HTML so we don't
+  // stack prerendered content from earlier build steps (e.g. prerender-routes)
+  // and never fall back to injecting outside #root — anything outside #root is
+  // NOT cleared when React mounts and would show up under the footer.
+  const rootWithChildren = /(<div\s+id="(?:root|app)"[^>]*>)[\s\S]*?(<\/div>)(?=\s*(?:<script|<\/body>))/i;
+  if (rootWithChildren.test(html)) {
+    return html.replace(rootWithChildren, (_m, open, close) => `${open}${articleHtml}${close}`);
   }
-  return html.replace(/<\/body>/i, `${articleHtml}\n  </body>`);
+  const emptyRoot = /<div\s+id="(?:root|app)"[^>]*>\s*<\/div>/i;
+  if (emptyRoot.test(html)) {
+    return html.replace(emptyRoot, (m) => m.replace(/>\s*<\/div>/i, `>${articleHtml}</div>`));
+  }
+  // Last resort: still keep it inside body but wrap so React can find #root.
+  return html.replace(/<\/body>/i, `<div id="prerender-fallback" hidden>${articleHtml}</div>\n  </body>`);
 }
 
 function rewriteBlogIndexHead(template: string): string {
