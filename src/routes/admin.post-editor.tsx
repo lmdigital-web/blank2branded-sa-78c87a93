@@ -124,7 +124,17 @@ export function PostEditorPage() {
           status,
           meta_title: data.meta_title || "",
           meta_description: data.meta_description || "",
-          keywords: Array.isArray(data.keywords) ? data.keywords.join(", ") : (data.keywords || ""),
+          keywords: (() => {
+            const raw = data.keywords;
+            if (!raw) return "";
+            if (Array.isArray(raw)) return raw.join(", ");
+            const s = String(raw).trim();
+            // Handle Postgres array-literal like {"a","b"} that was accidentally saved as text
+            if (s.startsWith("{") && s.endsWith("}")) {
+              return s.slice(1, -1).split(",").map((k) => k.trim().replace(/^"|"$/g, "")).filter(Boolean).join(", ");
+            }
+            return s;
+          })(),
           scheduled_date: sd,
           scheduled_time: st,
           author_id: (data as { author_id: string | null }).author_id || "",
