@@ -124,7 +124,7 @@ export function PostEditorPage() {
           status,
           meta_title: data.meta_title || "",
           meta_description: data.meta_description || "",
-          keywords: data.keywords || "",
+          keywords: Array.isArray(data.keywords) ? data.keywords.join(", ") : (data.keywords || ""),
           scheduled_date: sd,
           scheduled_time: st,
           author_id: (data as { author_id: string | null }).author_id || "",
