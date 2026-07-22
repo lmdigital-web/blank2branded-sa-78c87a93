@@ -194,7 +194,7 @@ export function PostEditorPage() {
       status: nextStatus,
       meta_title: form.meta_title.trim() || null,
       meta_description: form.meta_description.trim() || null,
-      keywords: form.keywords.trim() || null,
+      keywords: form.keywords.trim() ? form.keywords.split(",").map((k) => k.trim()).filter(Boolean) : null,
       author_id: form.author_id || null,
       experience_notes: form.experience_notes.trim() || null,
       created_by: user!.id,
