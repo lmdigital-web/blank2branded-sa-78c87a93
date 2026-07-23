@@ -1,84 +1,80 @@
-# Ads Manager — Admin Module
+# Plan: Move from Shopify Checkout → WhatsApp Shop
 
-A complete in-admin toolkit to launch, track, and optimize paid campaigns across Meta (Facebook/Instagram), TikTok, Google, Pinterest, and Microsoft (Bing) Ads. Focus is on what Lovable can actually deliver: pixel/tag installation, campaign records, UTM link builder, and unified conversion tracking. Ad creation on the networks themselves still happens in their ad managers (their APIs require OAuth apps and business verification), but this hub gives you every asset you need to run winning campaigns.
+## Goal
+Keep a browsable product catalogue on the site, but route every order request into WhatsApp (`+27 69 838 4045`) instead of going through Shopify checkout. No credit-card processing on the site — quoting, payment and fulfilment happen over chat.
 
-## New admin sidebar item: "Ads"
+## Options (pick one)
 
-Sub-tabs:
-1. **Dashboard** — snapshot of active campaigns, spend logged, conversions, revenue from ads (via UTM attribution against `orders` + `blog_conversions`).
-2. **Pixels & Tags** — install/manage tracking snippets per network.
-3. **Campaigns** — CRUD for campaigns: network, name, objective, budget, dates, status, notes, creative links.
-4. **UTM Builder** — generate tagged URLs for any page (auto-fills utm_source/medium/campaign/content/term), copy-to-clipboard, saved links list.
-5. **Conversions** — event log (page view, add-to-cart, checkout, purchase) with per-network breakdown and ROAS.
-6. **Audiences & Creatives** — checklist/library: upload creative refs (image URLs), audience notes, ready-to-paste ad copy.
+### Option A — WhatsApp Catalog (native, recommended)
+Use **WhatsApp Business Catalog** inside the WhatsApp Business app.
+- Products, images, prices live inside WhatsApp itself.
+- Customers browse the catalogue in-chat, tap "Message business" and their cart is pre-filled as a message.
+- No site-side inventory needed. Site just links to `https://wa.me/27698384045` and to the catalog URL (`https://wa.me/c/27698384045`).
+- Free. Managed from your phone / Meta Business Suite.
+- Downside: catalog only visible after they open WhatsApp — weaker for SEO/discovery.
 
-## Pixels supported (with server-side + client-side)
+### Option B — Site catalogue + WhatsApp "Enquire / Order" button (recommended for us)
+Keep our current shop UI (grid, product pages, categories) but:
+- Remove Add to Cart / Shopify checkout.
+- Each product page has a **"Order on WhatsApp"** button that opens WhatsApp with a pre-filled message including product name, selected variant, quantity, and a link back to the product page.
+- Optional lightweight "cart" that just collects items client-side (localStorage) and, on "Send order", opens WhatsApp with the full list.
+- Products stored in **Supabase** (our own DB), managed from the existing admin panel — no Shopify dependency.
 
-Each pixel takes an ID + optional access token (for server-side/Conversions API):
+### Option C — Hybrid
+Keep Shopify as the product data source (nice admin, inventory) but disable checkout and use only the WhatsApp button flow above.
+- Fastest to ship because catalogue code already exists.
+- Still tied to Shopify billing.
 
-- **Meta Pixel** (`FB_PIXEL_ID`, `FB_CAPI_TOKEN`) — client fbq + server Conversions API
-- **TikTok Pixel** (`TIKTOK_PIXEL_ID`, `TIKTOK_EVENTS_TOKEN`) — client ttq + server Events API
-- **Google Ads / GA4** (`GOOGLE_ADS_ID`, `GOOGLE_CONVERSION_LABEL`, `GA4_MEASUREMENT_ID`) — gtag.js
-- **Pinterest Tag** (`PINTEREST_TAG_ID`) — pintrk
-- **Microsoft/Bing UET** (`BING_UET_ID`) — uetq
+## Recommendation
+**Option B**, with a short **Option C transitional phase** so we can turn Shopify off cleanly:
+1. Ship Option C first (button change only, keep Shopify reading).
+2. Migrate product data into Supabase.
+3. Cut Shopify off and disconnect.
 
-Pixel IDs stored in `app_settings` (public — pixel IDs are public by design). Server access tokens stored via `add_secret`.
+## Implementation plan
 
-## Data model (new tables)
+### Phase 1 — Swap checkout for WhatsApp (Option C, ~half day)
+- Add `src/lib/whatsapp.ts` helper: `buildOrderMessage(items)` + `openWhatsApp(msg)`.
+- Replace CTAs on:
+  - `src/routes/products.$handle.tsx` — "Order on WhatsApp" instead of Add to Cart.
+  - `src/routes/shop.tsx` product cards — same.
+  - `src/components/CartDrawer.tsx` — "Send order on WhatsApp" instead of Shopify checkout; keep line-item list; drop Shopify cart sync.
+  - `src/components/blog/ShopifyProductCard.tsx` — "Enquire on WhatsApp".
+- Remove Shopify checkout code paths from `src/stores/cartStore.ts` (keep local items array, drop `cartId`, `checkoutUrl`, sync).
+- Delete `src/hooks/useCartSync.ts` usage.
+- Keep product **reads** from Shopify Storefront API for now.
 
-```text
-ad_campaigns          id, network, name, objective, status, budget_cents,
-                      start_date, end_date, utm_campaign, notes, creative_url,
-                      target_url, ad_copy, external_id, created_at, updated_at
+### Phase 2 — Own the product data (~1 day)
+- New Supabase tables: `products`, `product_variants`, `product_images`, `collections`.
+- Admin CRUD screen under `/admin` (reuse existing patterns).
+- One-off import script that pulls current Shopify products into Supabase.
+- Repoint `src/routes/shop.tsx` and `products.$handle.tsx` to Supabase.
 
-ad_pixels             id, network (unique), pixel_id, extra (jsonb), enabled,
-                      updated_at
-                      -- server tokens live in secrets, not this table
+### Phase 3 — Turn off Shopify (~1 hour)
+- Delete `src/lib/shopify.ts`, `shopify-catalog.ts`, `ShopifyProductPicker`, `ShopifyProductNode`, `ShopifySyncPanel`, `shopify-order-webhook` edge function.
+- Remove Shopify from admin nav / blog editor toolbar.
+- Call `shopify--disconnect_store`.
 
-ad_events             id, network, event_type (page_view|view_content|
-                      add_to_cart|initiate_checkout|purchase|lead),
-                      value_cents, currency, order_id, utm_source, utm_medium,
-                      utm_campaign, utm_content, utm_term, url, user_agent,
-                      created_at
+### Phase 4 — Optional WhatsApp Catalog mirror
+- Set up WhatsApp Business Catalog on the phone that owns +27 69 838 4045.
+- Link `wa.me/c/…` from the footer + shop page so mobile users get the native experience too.
 
-ad_utm_links          id, name, target_url, utm_source, utm_medium,
-                      utm_campaign, utm_content, utm_term, full_url,
-                      campaign_id (fk), clicks, created_at
+## Message format example
+```
+Hi Blank2Branded, I'd like to order:
+
+• Platinum T-Shirt — Black / L × 5
+• DTF Print A4 × 10
+
+Link: https://blank2branded.co.za/products/platinum-t-shirt
+
+Please send a quote.
 ```
 
-All admin-only via `has_role(auth.uid(), 'admin')`. `ad_events` insert allowed for `anon` so client tracker can log events; select admin-only. Full `GRANT` blocks included per project rules.
+## Things to decide before I build
+1. Go straight to Option B (own DB) or take the Option C shortcut first?
+2. Keep the multi-item "cart" concept, or just a single-product "Order on WhatsApp" per page?
+3. Also enable native WhatsApp Catalog (Phase 4)?
+4. Do we want the message to include price totals, or just items + quantities (let you quote back)?
 
-## Runtime integration
-
-- **`src/lib/ads/pixels.ts`** — loads enabled pixels from `app_settings` once, injects each network's snippet, exposes `trackEvent(name, params)` that fans out to every enabled network with the right event name mapping (e.g. purchase → fbq `Purchase`, ttq `CompletePayment`, gtag `conversion`, pintrk `checkout`, uetq `purchase`).
-- **`src/hooks/useAdTracking.ts`** — hooks into route changes for `PageView`, and existing cart/checkout events fire `add_to_cart` / `initiate_checkout`. Shopify checkout completion is tracked via a `purchase` beacon on the return URL (Shopify's own thank-you page is off-domain, so we also document the manual pixel install inside Shopify checkout settings).
-- **UTM auto-capture** — on landing, capture `utm_*` params to `sessionStorage` so purchase events attribute correctly.
-- **Edge function `ads-server-event`** — receives purchase events, forwards to Meta CAPI + TikTok Events API server-side for iOS/ad-blocker resilience. Uses stored access tokens.
-
-## Admin UI files
-
-```text
-src/routes/admin.tsx                              add "Ads" nav item
-src/components/admin/ads/AdsHub.tsx               tabbed shell
-src/components/admin/ads/DashboardPanel.tsx
-src/components/admin/ads/PixelsPanel.tsx
-src/components/admin/ads/CampaignsPanel.tsx
-src/components/admin/ads/UtmBuilderPanel.tsx
-src/components/admin/ads/ConversionsPanel.tsx
-src/components/admin/ads/CreativesPanel.tsx
-```
-
-## What Lovable cannot do (called out in-app)
-
-- Push campaigns to the networks (needs each network's OAuth app + verification). The Campaigns tab is a source-of-truth log and has "Open in [Network] Ads Manager" deep links.
-- Fetch spend/impressions from networks without those OAuth apps. The Dashboard shows **your** conversion-side data (revenue attributed by UTM) and lets you manually log spend per campaign to compute ROAS.
-
-## Rollout
-
-1. Migration: new tables + `app_settings` rows for pixel IDs, with GRANTs + RLS.
-2. Pixel loader + tracker wired globally in `App.tsx`.
-3. Admin Ads hub with all six sub-panels.
-4. Edge function `ads-server-event` for server-side Meta/TikTok events.
-5. Docs strip in Pixels panel showing exactly where to paste the Shopify checkout pixels (one-time manual step per network).
-
-After this ships, you'll paste pixel IDs into the Pixels tab, generate UTM links for each ad, and the Conversions/Dashboard tabs will populate as traffic and orders come in.
+Answer those and I'll start on Phase 1.

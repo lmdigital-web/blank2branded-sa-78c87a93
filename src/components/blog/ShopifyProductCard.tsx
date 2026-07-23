@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchProductByHandle, type CatalogProduct } from "@/lib/shopify-catalog";
+import { buildEnquiryMessage, whatsappHref } from "@/lib/whatsapp";
+import { MessageCircle } from "lucide-react";
 
 type Props = { handle: string; postId?: string | null };
 
@@ -74,9 +76,23 @@ export function ShopifyProductCard({ handle, postId }: Props) {
           <span className="text-lg font-bold text-foreground">
             R{Number(product.price).toFixed(2)}
           </span>
-          <span className="text-sm font-medium text-primary">
-            {oos ? "View product →" : "Shop now →"}
-          </span>
+          <a
+            href={whatsappHref(
+              buildEnquiryMessage({
+                title: product.title,
+                quantity: 1,
+                price: { amount: String(product.price), currencyCode: "ZAR" },
+                handle: product.handle,
+              }),
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white no-underline hover:bg-[#1ebe57]"
+          >
+            <MessageCircle className="h-3.5 w-3.5" fill="currentColor" />
+            Enquire on WhatsApp
+          </a>
         </div>
       </div>
     </a>

@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, MessageCircle } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { trackEvent } from "@/lib/ads/pixels";
+import { buildOrderMessage, openWhatsApp } from "@/lib/whatsapp";
 
 export function CartDrawer() {
   const [open, setOpen] = useState(false);
-  const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
+  const { items, updateQuantity, removeItem } = useCartStore();
   const totalItems = items.reduce((s, i) => s + i.quantity, 0);
   const totalPrice = items.reduce((s, i) => s + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "ZAR";
@@ -31,18 +32,24 @@ export function CartDrawer() {
   const moqShort = teeQty > 0 && teeQty < 3;
   const moqRemaining = moqShort ? 3 - teeQty : 0;
 
-  useEffect(() => { if (open) syncCart(); }, [open, syncCart]);
-
-  const checkout = () => {
-    if (moqShort) return;
-    const url = getCheckoutUrl();
-    if (url) {
-      trackEvent("initiate_checkout", { value: totalPrice, currency });
-      window.open(url, "_blank");
-      setOpen(false);
-    }
+  const sendOrder = () => {
+    if (moqShort || items.length === 0) return;
+    trackEvent("initiate_checkout", { value: totalPrice, currency });
+    const msg = buildOrderMessage(
+      items.map((i) => {
+        const node = i.product.node as { title?: string; handle?: string };
+        return {
+          title: node.title ?? i.variantTitle,
+          selectedOptions: i.selectedOptions,
+          quantity: i.quantity,
+          price: i.price,
+          handle: node.handle,
+        };
+      }),
+    );
+    openWhatsApp(msg);
+    setOpen(false);
   };
-
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -58,9 +65,11 @@ export function CartDrawer() {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg flex flex-col h-full">
         <SheetHeader>
-          <SheetTitle>Your Cart</SheetTitle>
+          <SheetTitle>Your Order</SheetTitle>
           <SheetDescription>
-            {totalItems === 0 ? "Your cart is empty" : `${totalItems} item${totalItems !== 1 ? "s" : ""}`}
+            {totalItems === 0
+              ? "No items yet — add products to send us a quote."
+              : `${totalItems} item${totalItems !== 1 ? "s" : ""} — send on WhatsApp to get a quote.`}
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col flex-1 pt-6 min-h-0">
@@ -107,18 +116,26 @@ export function CartDrawer() {
                 {moqShort && (
                   <div className="rounded-md border border-magenta/40 bg-magenta/5 p-3 text-xs leading-relaxed text-charcoal">
                     <span className="font-semibold text-magenta">Minimum order: 3 tees.</span>{" "}
-                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to checkout. DTF prints are exempt and can be ordered from 1.
+                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to send. DTF prints are exempt and can be ordered from 1.
                   </div>
                 )}
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total</span>
+                  <span className="text-lg font-semibold">Estimated total</span>
                   <span className="text-xl font-bold">{currency} {totalPrice.toFixed(2)}</span>
                 </div>
-                <Button onClick={checkout} className="w-full" size="lg" disabled={isLoading || isSyncing || moqShort}>
-                  {isLoading || isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ExternalLink className="w-4 h-4 mr-2" />Checkout</>}
+                <Button
+                  onClick={sendOrder}
+                  className="w-full bg-[#25D366] text-white hover:bg-[#1ebe57]"
+                  size="lg"
+                  disabled={moqShort}
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" fill="currentColor" />
+                  Send order on WhatsApp
                 </Button>
+                <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
+                  We'll reply with a final quote, artwork check and payment details. No card is charged on this site.
+                </p>
               </div>
-
             </>
           )}
         </div>
