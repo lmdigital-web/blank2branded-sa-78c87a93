@@ -374,17 +374,18 @@ function RecentlyViewed({ currentHandle }: { currentHandle: string }) {
     queryKey: ["recently-viewed", handles],
     enabled: handles.length > 0,
     queryFn: async () => {
-      const results = await Promise.all(
-        handles.map(async (h) => {
-          const d = await storefrontApiRequest(PRODUCT_LITE_QUERY, { handle: h });
-          return d?.data?.productByHandle as null | {
-            id: string; handle: string; title: string;
-            images: { edges: Array<{ node: { url: string; altText: string | null } }> };
-            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
-          };
-        })
-      );
-      return results.filter(Boolean) as Array<NonNullable<typeof results[number]>>;
+      const all = await listPublishedProducts();
+      const byHandle = new Map(all.map((p) => [p.node.handle, p]));
+      return handles
+        .map((h) => byHandle.get(h))
+        .filter(Boolean)
+        .map((p) => ({
+          id: p!.node.id,
+          handle: p!.node.handle,
+          title: p!.node.title,
+          images: p!.node.images,
+          priceRange: p!.node.priceRange,
+        }));
     },
   });
 
