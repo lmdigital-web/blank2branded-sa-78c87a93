@@ -102,6 +102,7 @@ export function CartDrawer() {
       };
     });
 
+    let invoiceNumber: string | undefined;
     try {
       const { data, error } = await supabase.functions.invoke("zoho-create-invoice", {
         body: {
@@ -112,17 +113,31 @@ export function CartDrawer() {
         },
       });
       if (error) throw error;
+      invoiceNumber = data?.invoice_number;
       toast.success(
-        data?.invoice_number
-          ? `Invoice ${data.invoice_number} emailed to ${parsed.data.email}`
+        invoiceNumber
+          ? `Invoice ${invoiceNumber} emailed to ${parsed.data.email}`
           : "Invoice sent to your email",
       );
     } catch (err) {
       console.error("Zoho invoice failed:", err);
       toast.error("We couldn't create the invoice automatically — we'll send it manually on WhatsApp.");
-    } finally {
-      setSending(false);
     }
+
+    // Fire-and-forget order confirmation email (customer + owner)
+    supabase.functions
+      .invoke("send-order-notification", {
+        body: {
+          customer: parsed.data,
+          items: lineItems.map((l) => l._invoice),
+          shipping: SHIPPING_FEE,
+          currency,
+          invoiceNumber,
+        },
+      })
+      .catch((err) => console.error("Order email failed:", err));
+
+    setSending(false);
 
     const msg = buildOrderMessage(lineItems, parsed.data);
     openWhatsApp(msg);
