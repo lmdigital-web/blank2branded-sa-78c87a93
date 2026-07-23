@@ -1,80 +1,64 @@
-# Plan: Move from Shopify Checkout → WhatsApp Shop
+# Phase 2 — Move the catalogue to Supabase + Admin CRUD
 
-## Goal
-Keep a browsable product catalogue on the site, but route every order request into WhatsApp (`+27 69 838 4045`) instead of going through Shopify checkout. No credit-card processing on the site — quoting, payment and fulfilment happen over chat.
+Storefront starts reading products/categories from Supabase instead of Shopify. WhatsApp checkout from Phase 1 keeps working. An admin **Catalogue** section lets you add and manage categories, products, variants and images. Shopify code stays in place for now (removed in Phase 3).
 
-## Options (pick one)
+## What already exists
 
-### Option A — WhatsApp Catalog (native, recommended)
-Use **WhatsApp Business Catalog** inside the WhatsApp Business app.
-- Products, images, prices live inside WhatsApp itself.
-- Customers browse the catalogue in-chat, tap "Message business" and their cart is pre-filled as a message.
-- No site-side inventory needed. Site just links to `https://wa.me/27698384045` and to the catalog URL (`https://wa.me/c/27698384045`).
-- Free. Managed from your phone / Meta Business Suite.
-- Downside: catalog only visible after they open WhatsApp — weaker for SEO/discovery.
+Supabase already has the tables from an earlier build — we'll reuse them, not recreate:
 
-### Option B — Site catalogue + WhatsApp "Enquire / Order" button (recommended for us)
-Keep our current shop UI (grid, product pages, categories) but:
-- Remove Add to Cart / Shopify checkout.
-- Each product page has a **"Order on WhatsApp"** button that opens WhatsApp with a pre-filled message including product name, selected variant, quantity, and a link back to the product page.
-- Optional lightweight "cart" that just collects items client-side (localStorage) and, on "Send order", opens WhatsApp with the full list.
-- Products stored in **Supabase** (our own DB), managed from the existing admin panel — no Shopify dependency.
+- `shop_categories` — `name`, `slug`, `parent_id`, `position` (RLS: public read, admin write).
+- `shop_products` — `title`, `handle`, `description`, `status` (draft/published), `base_price`, `category_id`, `meta_title`, `meta_description`, `position` (RLS: public reads published only).
+- `shop_product_variants` — 3 option pairs, `price`, `sku`, `available`, `position`.
+- `shop_product_images` — `url`, `alt`, `position`.
 
-### Option C — Hybrid
-Keep Shopify as the product data source (nice admin, inventory) but disable checkout and use only the WhatsApp button flow above.
-- Fastest to ship because catalogue code already exists.
-- Still tied to Shopify billing.
+## Backend changes
 
-## Recommendation
-**Option B**, with a short **Option C transitional phase** so we can turn Shopify off cleanly:
-1. Ship Option C first (button change only, keep Shopify reading).
-2. Migrate product data into Supabase.
-3. Cut Shopify off and disconnect.
+- Flip storage bucket `product-images` to **public** so image URLs render without signed tokens, and add upload/update/delete policies for admins.
+- Small migration for a slug-uniqueness helper and a compound index (`status`, `position`) so the shop page paginates cheaply.
 
-## Implementation plan
+## New shared code
 
-### Phase 1 — Swap checkout for WhatsApp (Option C, ~half day)
-- Add `src/lib/whatsapp.ts` helper: `buildOrderMessage(items)` + `openWhatsApp(msg)`.
-- Replace CTAs on:
-  - `src/routes/products.$handle.tsx` — "Order on WhatsApp" instead of Add to Cart.
-  - `src/routes/shop.tsx` product cards — same.
-  - `src/components/CartDrawer.tsx` — "Send order on WhatsApp" instead of Shopify checkout; keep line-item list; drop Shopify cart sync.
-  - `src/components/blog/ShopifyProductCard.tsx` — "Enquire on WhatsApp".
-- Remove Shopify checkout code paths from `src/stores/cartStore.ts` (keep local items array, drop `cartId`, `checkoutUrl`, sync).
-- Delete `src/hooks/useCartSync.ts` usage.
-- Keep product **reads** from Shopify Storefront API for now.
+- `src/lib/catalog.ts` — Supabase-backed catalogue client with the shape the rest of the app already expects:
+  - `listPublishedProducts()` → array shaped like `ShopifyProduct` (so `shop.tsx`, `products.$handle.tsx`, and the WhatsApp cart keep working with zero prop churn).
+  - `listCategoryTree()` → grouped categories for the sidebar.
+  - `getProductByHandle(handle)` → single product + variants + images.
+- `src/lib/upload-product-image.ts` — thin wrapper around `supabase.storage.from('product-images')`.
 
-### Phase 2 — Own the product data (~1 day)
-- New Supabase tables: `products`, `product_variants`, `product_images`, `collections`.
-- Admin CRUD screen under `/admin` (reuse existing patterns).
-- One-off import script that pulls current Shopify products into Supabase.
-- Repoint `src/routes/shop.tsx` and `products.$handle.tsx` to Supabase.
+## Storefront swap
 
-### Phase 3 — Turn off Shopify (~1 hour)
-- Delete `src/lib/shopify.ts`, `shopify-catalog.ts`, `ShopifyProductPicker`, `ShopifyProductNode`, `ShopifySyncPanel`, `shopify-order-webhook` edge function.
-- Remove Shopify from admin nav / blog editor toolbar.
-- Call `shopify--disconnect_store`.
+- `src/routes/shop.tsx` — replace the Shopify `products` + `collections` queries with `listPublishedProducts()` and `listCategoryTree()`. Category sidebar reads real `shop_categories` rows; "All products" and per-category counts still work.
+- `src/routes/products.$handle.tsx` — read from `getProductByHandle`; variant picker, gallery, price display, MOQ upsell, and "Add to Cart" (→ WhatsApp drawer) stay exactly as they are.
+- `src/components/blog/ShopifyProductCard.tsx` — resolves handle via Supabase; if a post references a product that no longer exists it renders nothing (already does that).
+- Shopify Storefront API code (`src/lib/shopify.ts`, `src/lib/shopify-catalog.ts`) stays in the repo but is no longer imported by the storefront.
 
-### Phase 4 — Optional WhatsApp Catalog mirror
-- Set up WhatsApp Business Catalog on the phone that owns +27 69 838 4045.
-- Link `wa.me/c/…` from the footer + shop page so mobile users get the native experience too.
+## Admin — Catalogue tab
 
-## Message format example
-```
-Hi Blank2Branded, I'd like to order:
+New top-level tab in `src/routes/admin.tsx` (alongside Blog, SEO, Ads, BOFU, etc.), with two panels:
 
-• Platinum T-Shirt — Black / L × 5
-• DTF Print A4 × 10
+### Categories panel
+- Tree view of categories (parent → children).
+- Add / rename / delete / re-order (drag or up-down buttons).
+- Parent picker to nest categories (e.g. Apparel → T-shirts, Hoodies).
+- Slug auto-generated from name, editable, uniqueness enforced.
 
-Link: https://blank2branded.co.za/products/platinum-t-shirt
+### Products panel
+- Searchable, filterable product list (status, category).
+- **Product editor** (drawer or `/admin/products/:id` route):
+  - Basics: title, handle (auto from title, editable), category, status (draft/published), base price, description (plain textarea + light markdown, matches the rest of the site).
+  - SEO: meta title, meta description with character counters.
+  - Images: multi-upload to `product-images`, drag-to-reorder, delete, first image = primary.
+  - Variants: table editor for option name/value pairs (Colour, Size, etc.), price, SKU, available toggle, position. Includes a **"Generate variants from options"** helper — enter Colour values (Red, Black) and Size values (S, M, L) and it produces the full grid at the base price for quick editing.
+  - Save runs a transactional upsert (product + variants + image rows).
+- Duplicate and delete actions from the list.
 
-Please send a quote.
-```
+## Out of scope for this phase
 
-## Things to decide before I build
-1. Go straight to Option B (own DB) or take the Option C shortcut first?
-2. Keep the multi-item "cart" concept, or just a single-product "Order on WhatsApp" per page?
-3. Also enable native WhatsApp Catalog (Phase 4)?
-4. Do we want the message to include price totals, or just items + quantities (let you quote back)?
+- Migrating existing Shopify products into Supabase (we'll do that as a one-off import in Phase 3 once you're happy with the new admin).
+- Removing Shopify code and running `disconnect_store` (Phase 3).
+- Inventory tracking beyond the per-variant `available` toggle.
 
-Answer those and I'll start on Phase 1.
+## Technical notes
+
+- All writes go through Supabase RLS — admin-only, enforced by `has_role(auth.uid(),'admin')`.
+- No new edge functions needed; everything is direct table access from the admin UI.
+- The Supabase-shaped catalogue objects are adapted to the existing `ShopifyProduct` shape used by the cart, so `cartStore` and `CartDrawer` stay untouched.
