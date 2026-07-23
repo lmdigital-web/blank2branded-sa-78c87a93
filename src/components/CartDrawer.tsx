@@ -39,6 +39,7 @@ export function CartDrawer() {
   const [step, setStep] = useState<"cart" | "details">("cart");
   const [customer, setCustomer] = useState<WhatsAppCustomer>(EMPTY_CUSTOMER);
   const [errors, setErrors] = useState<Partial<Record<keyof WhatsAppCustomer, string>>>({});
+  const [sending, setSending] = useState(false);
   const { items, updateQuantity, removeItem } = useCartStore();
   const totalItems = items.reduce((s, i) => s + i.quantity, 0);
   const subtotal = items.reduce((s, i) => s + parseFloat(i.price.amount) * i.quantity, 0);
