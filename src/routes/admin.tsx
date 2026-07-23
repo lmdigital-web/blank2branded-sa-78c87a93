@@ -188,7 +188,6 @@ export function AdminPage() {
     { id: "bofu" as const, label: "BOFU Ranker", icon: Rocket },
     { id: "backlinks" as const, label: "Backlinks", icon: Link2 },
     { id: "authors" as const, label: "Authors", icon: Users },
-    { id: "shopify" as const, label: "Shopify Sync", icon: ShoppingBag },
     { id: "social" as const, label: "Social Integrations", icon: Share2 },
     { id: "ads" as const, label: "Ads Manager", icon: Megaphone },
   ];
