@@ -1,0 +1,1 @@
+UPDATE public.posts SET title='Small Custom T-Shirt Order South Africa: The 3-Tee Minimum', slug='small-custom-t-shirt-order-south-africa-3-tee-minimum', meta_title='Small Custom T-Shirt Order South Africa | 3-Tee Minimum' WHERE id='362db693-9f03-4afd-8d05-1c9b7b80c225';
