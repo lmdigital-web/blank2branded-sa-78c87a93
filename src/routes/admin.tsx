@@ -5,7 +5,7 @@ import { Link, navigate } from "@/lib/static-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, ShoppingBag, Users, Share2, CheckCircle2, AlertCircle, MinusCircle, Search, Rocket, Megaphone } from "lucide-react";
+import { Plus, Edit, Trash2, LogOut, ExternalLink, Eye, TrendingUp, Globe, Link2, FileText, ShoppingBag, Users, Share2, CheckCircle2, AlertCircle, MinusCircle, Search, Rocket, Megaphone, Package } from "lucide-react";
 import { toast } from "sonner";
 import { ShopifySyncPanel } from "@/components/admin/ShopifySyncPanel";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
@@ -14,6 +14,7 @@ import { SeoHub } from "@/components/admin/SeoHub";
 import { BofuHub } from "@/components/admin/bofu/BofuHub";
 import { BacklinksPanel } from "@/components/admin/BacklinksPanel";
 import { AdsHub } from "@/components/admin/ads/AdsHub";
+import { CatalogueHub } from "@/components/admin/CatalogueHub";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -48,7 +49,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "seo" | "bofu" | "backlinks" | "authors" | "shopify" | "social" | "ads">("blog");
+  const [section, setSection] = useState<"blog" | "catalogue" | "seo" | "bofu" | "backlinks" | "authors" | "shopify" | "social" | "ads">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
@@ -182,6 +183,7 @@ export function AdminPage() {
 
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
+    { id: "catalogue" as const, label: "Catalogue", icon: Package },
     { id: "seo" as const, label: "SEO", icon: Search },
     { id: "bofu" as const, label: "BOFU Ranker", icon: Rocket },
     { id: "backlinks" as const, label: "Backlinks", icon: Link2 },
@@ -461,6 +463,12 @@ export function AdminPage() {
             )}
 
             {section === "ads" && <AdsHub />}
+
+            {section === "catalogue" && (
+              <div className="mt-8">
+                <CatalogueHub />
+              </div>
+            )}
           </div>
         </div>
       </main>

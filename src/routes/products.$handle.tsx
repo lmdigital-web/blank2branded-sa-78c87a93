@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { storefrontApiRequest, PRODUCT_BY_HANDLE_QUERY, type ShopifyVariant } from "@/lib/shopify";
+import type { ShopifyVariant } from "@/lib/shopify";
+import { getProductByHandle, listPublishedProducts } from "@/lib/catalog";
 import { useCartStore } from "@/stores/cartStore";
 import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -33,15 +34,8 @@ const GANG_BUILDER_URLS: Record<string, string> = {
 
 const RECENT_KEY = "recently-viewed-products";
 
-const PRODUCT_LITE_QUERY = `
-  query ProductLite($handle: String!) {
-    productByHandle(handle: $handle) {
-      id handle title
-      images(first: 1) { edges { node { url altText } } }
-      priceRange { minVariantPrice { amount currencyCode } }
-    }
-  }
-`;
+// (recently viewed pulls the full published-product list from Supabase)
+
 
 
 const COLOR_MAP: Record<string, string> = {
@@ -72,16 +66,20 @@ export function ProductPage() {
   const [lastAddedQty, setLastAddedQty] = useState(1);
 
   const { data: product, isLoading: loading } = useQuery({
-    queryKey: ["shopify-product", handle],
+    queryKey: ["catalog-product", handle],
     queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
-      const p = d?.data?.productByHandle;
-      if (!p) return null;
-      return p as {
-        id: string; title: string; description: string; descriptionHtml: string; handle: string;
-        images: { edges: Array<{ node: { url: string; altText: string | null } }> };
-        variants: { edges: Array<{ node: ShopifyVariant }> };
-        options: Array<{ name: string; values: string[] }>;
+      const shaped = await getProductByHandle(handle);
+      if (!shaped) return null;
+      // Adapt to the shape this page has always used.
+      return {
+        id: shaped.node.id,
+        title: shaped.node.title,
+        description: shaped.node.description,
+        descriptionHtml: shaped.node.descriptionHtml,
+        handle: shaped.node.handle,
+        images: shaped.node.images,
+        variants: shaped.node.variants,
+        options: shaped.node.options,
       };
     },
   });
@@ -376,17 +374,18 @@ function RecentlyViewed({ currentHandle }: { currentHandle: string }) {
     queryKey: ["recently-viewed", handles],
     enabled: handles.length > 0,
     queryFn: async () => {
-      const results = await Promise.all(
-        handles.map(async (h) => {
-          const d = await storefrontApiRequest(PRODUCT_LITE_QUERY, { handle: h });
-          return d?.data?.productByHandle as null | {
-            id: string; handle: string; title: string;
-            images: { edges: Array<{ node: { url: string; altText: string | null } }> };
-            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
-          };
-        })
-      );
-      return results.filter(Boolean) as Array<NonNullable<typeof results[number]>>;
+      const all = await listPublishedProducts();
+      const byHandle = new Map(all.map((p) => [p.node.handle, p]));
+      return handles
+        .map((h) => byHandle.get(h))
+        .filter(Boolean)
+        .map((p) => ({
+          id: p!.node.id,
+          handle: p!.node.handle,
+          title: p!.node.title,
+          images: p!.node.images,
+          priceRange: p!.node.priceRange,
+        }));
     },
   });
 
