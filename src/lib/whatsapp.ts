@@ -68,6 +68,10 @@ export function buildOrderMessage(
   return `Hi Blank2Branded, I'd like to order:\n\n${lines}${totalsStr}${customerStr}${link}\n\nPlease confirm the quote and payment details.`;
 }
 
+export function buildEnquiryMessage(item: WhatsAppLineItem): string {
+  return buildOrderMessage([item]);
+}
+
 
 export function whatsappHref(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
