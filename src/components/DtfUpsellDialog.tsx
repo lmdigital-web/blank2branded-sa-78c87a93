@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, Sparkles, Info } from "lucide-react";
-import { storefrontApiRequest, PRODUCT_BY_HANDLE_QUERY, type ShopifyVariant, type ShopifyProduct } from "@/lib/shopify";
+import { getProductByHandle } from "@/lib/catalog";
+import type { ShopifyVariant, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -49,8 +50,9 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
     queryKey: ["dtf-addon-product"],
     enabled: open,
     queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle: DTF_ADDON_HANDLE });
-      return (d?.data?.productByHandle ?? null) as AddonProduct | null;
+      const p = await getProductByHandle(DTF_ADDON_HANDLE);
+      if (!p) return null;
+      return { id: p.node.id, title: p.node.title, handle: p.node.handle, description: p.node.description, images: p.node.images, variants: p.node.variants, priceRange: p.node.priceRange } as AddonProduct;
     },
   });
 
@@ -58,8 +60,9 @@ export function DtfUpsellDialog({ open, onOpenChange, quantity, garmentTitle }: 
     queryKey: ["setup-fee-product"],
     enabled: open,
     queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle: SETUP_FEE_HANDLE });
-      return (d?.data?.productByHandle ?? null) as AddonProduct | null;
+      const p = await getProductByHandle(SETUP_FEE_HANDLE);
+      if (!p) return null;
+      return { id: p.node.id, title: p.node.title, handle: p.node.handle, description: p.node.description, images: p.node.images, variants: p.node.variants, priceRange: p.node.priceRange } as AddonProduct;
     },
   });
 
