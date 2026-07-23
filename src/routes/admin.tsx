@@ -463,6 +463,12 @@ export function AdminPage() {
             )}
 
             {section === "ads" && <AdsHub />}
+
+            {section === "catalogue" && (
+              <div className="mt-8">
+                <CatalogueHub />
+              </div>
+            )}
           </div>
         </div>
       </main>
