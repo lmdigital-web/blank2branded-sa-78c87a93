@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchProductByHandle, type CatalogProduct } from "@/lib/shopify-catalog";
+import { buildEnquiryMessage, whatsappHref } from "@/lib/whatsapp";
+import { MessageCircle } from "lucide-react";
 
 type Props = { handle: string; postId?: string | null };
 
