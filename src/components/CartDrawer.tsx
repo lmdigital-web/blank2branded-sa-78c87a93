@@ -69,8 +69,8 @@ export function CartDrawer() {
     if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  const sendOrder = () => {
-    if (moqShort || items.length === 0) return;
+  const sendOrder = async () => {
+    if (moqShort || items.length === 0 || sending) return;
     const parsed = customerSchema.safeParse(customer);
     if (!parsed.success) {
       const fieldErrors: Partial<Record<keyof WhatsAppCustomer, string>> = {};
@@ -81,20 +81,50 @@ export function CartDrawer() {
       setErrors(fieldErrors);
       return;
     }
+    setSending(true);
     trackEvent("initiate_checkout", { value: total, currency });
-    const msg = buildOrderMessage(
-      items.map((i) => {
-        const node = i.product.node as { title?: string; handle?: string };
-        return {
-          title: node.title ?? i.variantTitle,
-          selectedOptions: i.selectedOptions,
+
+    const lineItems = items.map((i) => {
+      const node = i.product.node as { title?: string; handle?: string };
+      const opts = i.selectedOptions?.map((o) => o.value).filter(Boolean).join(" / ");
+      return {
+        title: node.title ?? i.variantTitle,
+        selectedOptions: i.selectedOptions,
+        quantity: i.quantity,
+        price: i.price,
+        handle: node.handle,
+        _invoice: {
+          name: node.title ?? i.variantTitle,
+          description: opts ?? "",
           quantity: i.quantity,
-          price: i.price,
-          handle: node.handle,
-        };
-      }),
-      parsed.data,
-    );
+          rate: parseFloat(i.price.amount),
+        },
+      };
+    });
+
+    try {
+      const { data, error } = await supabase.functions.invoke("zoho-create-invoice", {
+        body: {
+          customer: parsed.data,
+          items: lineItems.map((l) => l._invoice),
+          shipping: SHIPPING_FEE,
+          currency,
+        },
+      });
+      if (error) throw error;
+      toast.success(
+        data?.invoice_number
+          ? `Invoice ${data.invoice_number} emailed to ${parsed.data.email}`
+          : "Invoice sent to your email",
+      );
+    } catch (err) {
+      console.error("Zoho invoice failed:", err);
+      toast.error("We couldn't create the invoice automatically — we'll send it manually on WhatsApp.");
+    } finally {
+      setSending(false);
+    }
+
+    const msg = buildOrderMessage(lineItems, parsed.data);
     openWhatsApp(msg);
     setOpen(false);
   };
