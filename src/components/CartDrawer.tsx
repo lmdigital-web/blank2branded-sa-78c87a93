@@ -317,14 +317,14 @@ export function CartDrawer() {
                     onClick={sendOrder}
                     className="flex-[2] bg-[#25D366] text-white hover:bg-[#1ebe57]"
                     size="lg"
-                    disabled={moqShort}
+                    disabled={moqShort || sending}
                   >
                     <MessageCircle className="w-4 h-4 mr-2" fill="currentColor" />
-                    Send on WhatsApp
+                    {sending ? "Creating invoice…" : "Send on WhatsApp"}
                   </Button>
                 </div>
                 <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
-                  Your details are sent to us on WhatsApp along with your order. No card is charged on this site.
+                  We'll email you a Zoho invoice for payment and send your order to us on WhatsApp.
                 </p>
               </div>
             </>
