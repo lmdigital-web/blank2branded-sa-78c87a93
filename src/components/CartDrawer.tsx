@@ -10,6 +10,8 @@ import { z } from "zod";
 import { useCartStore } from "@/stores/cartStore";
 import { trackEvent } from "@/lib/ads/pixels";
 import { buildOrderMessage, openWhatsApp, SHIPPING_FEE, type WhatsAppCustomer } from "@/lib/whatsapp";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const customerSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(60),
