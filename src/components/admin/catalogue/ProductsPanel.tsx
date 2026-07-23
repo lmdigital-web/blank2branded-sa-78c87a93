@@ -78,17 +78,31 @@ export function ProductsPanel() {
     // Copy variants + images
     const { data: variants } = await supabase.from("shop_product_variants").select("*").eq("product_id", id);
     const { data: images } = await supabase.from("shop_product_images").select("*").eq("product_id", id);
+    type VRow = {
+      option1_name: string | null; option1_value: string | null;
+      option2_name: string | null; option2_value: string | null;
+      option3_name: string | null; option3_value: string | null;
+      price: number; currency_code: string; sku: string | null; available: boolean; position: number;
+    };
+    type IRow = { url: string; alt: string | null; position: number };
     if (variants?.length) {
-      await supabase.from("shop_product_variants").insert(variants.map((v: Record<string, unknown>) => {
-        const { id: _id, product_id: _pid, created_at: _c, updated_at: _u, ...rest } = v;
-        return { ...rest, product_id: created!.id };
-      }));
+      await supabase.from("shop_product_variants").insert(
+        (variants as unknown as VRow[]).map((v) => ({
+          product_id: created!.id,
+          option1_name: v.option1_name, option1_value: v.option1_value,
+          option2_name: v.option2_name, option2_value: v.option2_value,
+          option3_name: v.option3_name, option3_value: v.option3_value,
+          price: v.price, currency_code: v.currency_code, sku: v.sku,
+          available: v.available, position: v.position,
+        })),
+      );
     }
     if (images?.length) {
-      await supabase.from("shop_product_images").insert(images.map((i: Record<string, unknown>) => {
-        const { id: _id, product_id: _pid, created_at: _c, ...rest } = i;
-        return { ...rest, product_id: created!.id };
-      }));
+      await supabase.from("shop_product_images").insert(
+        (images as unknown as IRow[]).map((im) => ({
+          product_id: created!.id, url: im.url, alt: im.alt, position: im.position,
+        })),
+      );
     }
     toast.success("Duplicated");
     void load();
