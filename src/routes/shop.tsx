@@ -3,180 +3,78 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-
-
-const COLLECTIONS_QUERY = `
-  query GetCollections($first: Int!) {
-    collections(first: $first) {
-      edges {
-        node {
-          id
-          title
-          handle
-          products(first: 100) { edges { node { id } } }
-        }
-      }
-    }
-  }
-`;
-
-const PRODUCTS_FULL_QUERY = `
-  query GetProducts($first: Int!) {
-    products(first: $first) {
-      edges {
-        node {
-          id title description handle
-          priceRange { minVariantPrice { amount currencyCode } }
-          images(first: 5) { edges { node { url altText } } }
-          variants(first: 20) {
-            edges {
-              node {
-                id title availableForSale
-                price { amount currencyCode }
-                selectedOptions { name value }
-              }
-            }
-          }
-          options { name values }
-        }
-      }
-    }
-  }
-`;
-
-type Collection = {
-  node: {
-    id: string;
-    title: string;
-    handle: string;
-    products: { edges: Array<{ node: { id: string } }> };
-  };
-};
-
-// Only these top-level parents are surfaced. Apparel's children get flattened
-// into top-level categories alongside DTF Prints.
-const KEEP_PARENTS = ["Apparel", "DTF Prints"] as const;
-const FLATTEN_PARENTS = new Set(["apparel"]);
-
-const SPLIT_RE = /\s+[—\-/>]\s+/; // " — ", " - ", " / ", " > "
-
-function splitTitle(title: string): { parent: string | null; child: string } {
-  const parts = title.split(SPLIT_RE);
-  if (parts.length >= 2) return { parent: parts[0].trim(), child: parts.slice(1).join(" — ").trim() };
-  return { parent: null, child: title.trim() };
-}
-
-type CategoryItem = {
-  key: string; // collection handle or `parent:Name`
-  name: string;
-  productIds: Set<string>;
-};
+import { listPublishedProducts, listCategoryTree, listProductCategoryMap } from "@/lib/catalog";
 
 export function ShopPage() {
-  const [activeCollection, setActiveCollection] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["shopify-products"],
-    queryFn: async () => {
-      const d = await storefrontApiRequest(PRODUCTS_FULL_QUERY, { first: 50 });
-      return (d?.data?.products?.edges ?? []) as ShopifyProduct[];
-    },
+    queryKey: ["shop-products"],
+    queryFn: () => listPublishedProducts(),
   });
 
-  const { data: collections } = useQuery({
-    queryKey: ["shopify-collections"],
-    queryFn: async () => {
-      const d = await storefrontApiRequest(COLLECTIONS_QUERY, { first: 50 });
-      return (d?.data?.collections?.edges ?? []) as Collection[];
-    },
+  const { data: categories } = useQuery({
+    queryKey: ["shop-categories"],
+    queryFn: () => listCategoryTree(),
   });
 
-  // Build a flat list: Apparel children become top-level entries; DTF Prints stays as-is.
-  const categories = useMemo<CategoryItem[]>(() => {
-    if (!collections) return [];
+  const { data: catMap } = useQuery({
+    queryKey: ["shop-product-category-map"],
+    queryFn: () => listProductCategoryMap(),
+  });
 
-    const apparelChildren: CategoryItem[] = [];
-    const otherKept = new Map<string, CategoryItem>(); // key -> item
+  // Only show top-level categories in the sidebar (children collapse into parents).
+  const topLevel = useMemo(
+    () => (categories ?? []).filter((c) => !c.parent_id),
+    [categories],
+  );
 
-    for (const c of collections) {
-      const { parent, child } = splitTitle(c.node.title);
-      const ids = new Set(c.node.products.edges.map((e) => e.node.id));
-
-      if (parent && FLATTEN_PARENTS.has(parent.toLowerCase())) {
-        apparelChildren.push({ key: c.node.handle, name: child, productIds: ids });
-        continue;
-      }
-
-      // Standalone (no separator) collection that matches a kept parent name
-      if (!parent) {
-        const match = KEEP_PARENTS.find(
-          (p) => p.toLowerCase() === c.node.title.toLowerCase(),
-        );
-        if (match) {
-          const existing = otherKept.get(match.toLowerCase());
-          if (existing) {
-            ids.forEach((id) => existing.productIds.add(id));
-          } else {
-            otherKept.set(match.toLowerCase(), {
-              key: c.node.handle,
-              name: match,
-              productIds: ids,
-            });
-          }
-        }
-        continue;
-      }
-
-      // "DTF Prints — Something" style: aggregate under the parent
-      const keptParent = KEEP_PARENTS.find(
-        (p) => p.toLowerCase() === parent.toLowerCase(),
-      );
-      if (keptParent) {
-        const k = keptParent.toLowerCase();
-        const existing = otherKept.get(k);
-        if (existing) {
-          ids.forEach((id) => existing.productIds.add(id));
-        } else {
-          otherKept.set(k, {
-            key: `parent:${keptParent}`,
-            name: keptParent,
-            productIds: ids,
-          });
-        }
-      }
+  // For each top-level category, collect its id plus all descendant ids.
+  const descendantMap = useMemo(() => {
+    const m = new Map<string, Set<string>>();
+    for (const t of topLevel) m.set(t.id, new Set([t.id]));
+    // walk two levels deep, enough for parent -> children.
+    for (const c of categories ?? []) {
+      if (!c.parent_id) continue;
+      if (m.has(c.parent_id)) m.get(c.parent_id)!.add(c.id);
     }
+    return m;
+  }, [topLevel, categories]);
 
-    apparelChildren.sort((a, b) => a.name.localeCompare(b.name));
-    const dtf = otherKept.get("dtf prints");
-    return dtf ? [...apparelChildren, dtf] : apparelChildren;
-  }, [collections]);
+  const countByCategory = useMemo(() => {
+    const out = new Map<string, number>();
+    if (!catMap) return out;
+    for (const c of topLevel) {
+      const ids = descendantMap.get(c.id) ?? new Set<string>();
+      let n = 0;
+      for (const [, cid] of Object.entries(catMap)) {
+        if (cid && ids.has(cid)) n++;
+      }
+      out.set(c.id, n);
+    }
+    return out;
+  }, [catMap, topLevel, descendantMap]);
 
   const filtered = useMemo(() => {
     if (!data) return [];
-    if (!activeCollection) return data;
-    const cat = categories.find((c) => c.key === activeCollection);
-    if (!cat) return data;
-    return data.filter((p) => cat.productIds.has(p.node.id));
-  }, [data, categories, activeCollection]);
-
-
+    if (!activeCategory) return data;
+    const ids = descendantMap.get(activeCategory) ?? new Set<string>();
+    return data.filter((p) => {
+      const cid = catMap?.[p.node.id];
+      return cid ? ids.has(cid) : false;
+    });
+  }, [data, activeCategory, descendantMap, catMap]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <section className="relative overflow-hidden border-b border-border pt-40 pb-20 md:pt-48 md:pb-24">
         <div className="pointer-events-none absolute inset-0">
-          <img
-            src={shopHeroBg}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full scale-105 object-cover blur-[2px]"
-          />
+          <img src={shopHeroBg} alt="" aria-hidden="true" className="h-full w-full scale-105 object-cover blur-[2px]" />
           <div className="absolute inset-0 bg-background/40" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
         </div>
@@ -191,7 +89,7 @@ export function ShopPage() {
             <span className="text-gradient-dtf">Blanks.</span> Prints. Ready to ship.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Browse our catalogue. Pick what you need. Checkout securely — nationwide shipping from Mbombela.
+            Browse our catalogue. Send an order on WhatsApp — nationwide shipping from Mbombela.
           </p>
         </div>
       </section>
@@ -199,18 +97,15 @@ export function ShopPage() {
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col gap-8 lg:flex-row">
-            {/* Sidebar */}
             <aside className="lg:w-64 lg:shrink-0">
               <div className="lg:sticky lg:top-28">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Categories
-                </p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Categories</p>
                 <nav className="flex flex-col gap-1">
                   <button
-                    onClick={() => setActiveCollection(null)}
+                    onClick={() => setActiveCategory(null)}
                     className={cn(
                       "w-full rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors",
-                      activeCollection === null
+                      activeCategory === null
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
                     )}
@@ -218,13 +113,12 @@ export function ShopPage() {
                     All products
                     {data && <span className="ml-2 text-xs opacity-70">({data.length})</span>}
                   </button>
-
-                  {categories.map((cat) => {
-                    const isActive = activeCollection === cat.key;
+                  {topLevel.map((cat) => {
+                    const isActive = activeCategory === cat.id;
                     return (
                       <button
-                        key={cat.key}
-                        onClick={() => setActiveCollection(cat.key)}
+                        key={cat.id}
+                        onClick={() => setActiveCategory(cat.id)}
                         className={cn(
                           "w-full rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
                           isActive
@@ -233,16 +127,14 @@ export function ShopPage() {
                         )}
                       >
                         {cat.name}
-                        <span className="ml-2 text-xs opacity-70">({cat.productIds.size})</span>
+                        <span className="ml-2 text-xs opacity-70">({countByCategory.get(cat.id) ?? 0})</span>
                       </button>
                     );
                   })}
                 </nav>
-
               </div>
             </aside>
 
-            {/* Products grid */}
             <div className="flex-1 min-w-0">
               {isLoading ? (
                 <div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
@@ -250,7 +142,7 @@ export function ShopPage() {
                 <div className="text-center py-24">
                   <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
                   <h2 className="mt-4 text-xl font-semibold">No products found</h2>
-                  <p className="mt-2 text-muted-foreground">Try a different category or add products to the store.</p>
+                  <p className="mt-2 text-muted-foreground">Try a different category, or add products from the admin dashboard.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
