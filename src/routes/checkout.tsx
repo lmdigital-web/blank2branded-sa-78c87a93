@@ -25,16 +25,42 @@ const customerSchema = z.object({
     .max(20)
     .regex(/^[0-9+\s()-]+$/, "Only digits, spaces and + - ( ) allowed"),
   email: z.string().trim().email("Enter a valid email").max(160),
-  address: z.string().trim().min(10, "Enter your full delivery address").max(400),
+  street: z.string().trim().min(3, "Street address is required").max(160),
+  suburb: z.string().trim().min(2, "Suburb is required").max(80),
+  city: z.string().trim().min(2, "City is required").max(80),
+  province: z.string().trim().min(2, "Province is required").max(60),
+  postalCode: z
+    .string()
+    .trim()
+    .min(4, "Enter a valid postal code")
+    .max(10)
+    .regex(/^[0-9]+$/, "Postal code must be digits only"),
   notes: z.string().trim().max(500).optional(),
 });
 
-const EMPTY: WhatsAppCustomer & { notes: string } = {
+type CustomerForm = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  street: string;
+  suburb: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  notes: string;
+};
+
+const EMPTY: CustomerForm = {
   firstName: "",
   lastName: "",
   phone: "",
   email: "",
-  address: "",
+  street: "",
+  suburb: "",
+  city: "",
+  province: "",
+  postalCode: "",
   notes: "",
 };
 
