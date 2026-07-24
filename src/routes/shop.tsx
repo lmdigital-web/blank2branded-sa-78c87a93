@@ -4,9 +4,11 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2, Shirt, ShoppingBag, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
+import shopApparelImg from "@/assets/shop-apparel.jpg";
+import shopCorporateImg from "@/assets/shop-corporate.jpg";
 import {
   listPublishedProducts,
   listCategoryTree,
