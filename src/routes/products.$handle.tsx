@@ -491,75 +491,97 @@ export function ProductPage() {
                   <div className="mt-6 rounded-lg border border-border bg-card p-4">
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold text-foreground">Branding options</p>
-                      {selectedBrandingId && (
+                      {brandType && (
                         <button
                           type="button"
-                          onClick={() => setSelectedBrandingId(null)}
+                          onClick={() => setBrandType("")}
                           className="text-xs text-muted-foreground hover:text-foreground underline"
                         >
-                          Clear selection
+                          Clear
                         </button>
                       )}
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Optional — pick a branding method to add it to your cart. Unit cost is charged per item, plus a one-time setup fee per order.
+                      Optional — pick a branding method to add it to your cart. Unit cost is per item, plus a one-time setup fee per order.
                     </p>
-                    <div className="mt-3 overflow-x-auto">
-                      <table className="w-full text-xs">
-                        <thead className="text-left text-muted-foreground">
-                          <tr>
-                            <th className="py-1.5 pr-3 w-8"></th>
-                            <th className="py-1.5 pr-3">Method</th>
-                            <th className="py-1.5 pr-3">Position</th>
-                            <th className="py-1.5 pr-3">Size</th>
-                            <th className="py-1.5 pr-3">Colours</th>
-                            <th className="py-1.5 pr-3 text-right">Unit</th>
-                            <th className="py-1.5 text-right">Setup</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {brandingOptions.map((b) => {
-                            const isSel = selectedBrandingId === b.id;
-                            return (
-                              <tr
-                                key={b.id}
-                                onClick={() => setSelectedBrandingId(isSel ? null : b.id)}
-                                className={cn(
-                                  "border-t border-border cursor-pointer transition-colors",
-                                  isSel ? "bg-primary/10" : "hover:bg-muted/50",
-                                )}
-                              >
-                                <td className="py-1.5 pr-3">
-                                  <span
-                                    className={cn(
-                                      "flex h-4 w-4 items-center justify-center rounded-full border-2",
-                                      isSel ? "border-primary bg-primary" : "border-border",
-                                    )}
-                                  >
-                                    {isSel && <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />}
-                                  </span>
-                                </td>
-                                <td className="py-1.5 pr-3">{b.branding_type}</td>
-                                <td className="py-1.5 pr-3">{b.position}</td>
-                                <td className="py-1.5 pr-3">{b.branding_size || "—"}</td>
-                                <td className="py-1.5 pr-3">{b.max_colour_count ?? "—"}</td>
-                                <td className="py-1.5 pr-3 text-right tabular-nums">R {Number(b.unit_cost).toFixed(2)}</td>
-                                <td className="py-1.5 text-right tabular-nums">R {Number(b.setup_fee).toFixed(2)}</td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {/* Method */}
+                      <label className="block text-xs">
+                        <span className="mb-1 block font-medium text-muted-foreground">Method</span>
+                        <select
+                          value={brandType}
+                          onChange={(e) => setBrandType(e.target.value)}
+                          className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                          <option value="">Select method…</option>
+                          {brandTypes.map((t) => (
+                            <option key={t} value={t}>{t}</option>
+                          ))}
+                        </select>
+                      </label>
+
+                      {/* Position */}
+                      {brandType && brandPositions.length > 0 && (
+                        <label className="block text-xs">
+                          <span className="mb-1 block font-medium text-muted-foreground">Position</span>
+                          <select
+                            value={brandPosition}
+                            onChange={(e) => setBrandPosition(e.target.value)}
+                            className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
+                            <option value="">Select position…</option>
+                            {brandPositions.map((p) => (
+                              <option key={p} value={p}>{p}</option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+
+                      {/* Size */}
+                      {brandType && brandPosition && brandSizes.length > 0 && (brandSizes.length > 1 || brandSizes[0] !== "") && (
+                        <label className="block text-xs">
+                          <span className="mb-1 block font-medium text-muted-foreground">Size</span>
+                          <select
+                            value={brandSize}
+                            onChange={(e) => setBrandSize(e.target.value)}
+                            className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
+                            <option value="">Select size…</option>
+                            {brandSizes.map((s) => (
+                              <option key={s || "none"} value={s}>{s || "Standard"}</option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+
+                      {/* Colours */}
+                      {brandType && brandPosition && brandColourOpts.length > 1 && (
+                        <label className="block text-xs">
+                          <span className="mb-1 block font-medium text-muted-foreground">Max colours</span>
+                          <select
+                            value={brandColours}
+                            onChange={(e) => setBrandColours(e.target.value)}
+                            className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
+                            <option value="">Select colours…</option>
+                            {brandColourOpts.map((c) => (
+                              <option key={c || "none"} value={c}>{c || "N/A"}</option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
                     </div>
-                    {selectedBrandingId && (() => {
-                      const b = brandingOptions.find((x) => x.id === selectedBrandingId)!;
+
+                    {matchedBranding && (() => {
+                      const b = matchedBranding;
                       const unit = Number(b.unit_cost);
                       const setup = Number(b.setup_fee);
                       const brandingTotal = unit * quantity + setup;
                       return (
                         <div className="mt-3 flex items-center justify-between rounded-md border border-primary/40 bg-primary/5 p-3 text-xs">
                           <span className="text-foreground">
-                            <span className="font-semibold">{b.branding_type} — {b.position}</span>
+                            <span className="font-semibold">{b.branding_type} — {b.position}{b.branding_size ? ` (${b.branding_size})` : ""}</span>
                             <span className="text-muted-foreground"> · R {unit.toFixed(2)} × {quantity} + R {setup.toFixed(2)} setup</span>
                           </span>
                           <span className="font-bold text-foreground tabular-nums">+ R {brandingTotal.toFixed(2)}</span>
