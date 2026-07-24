@@ -137,8 +137,50 @@ export function CartDrawer() {
       })
       .catch((err) => console.error("Order email failed:", err));
 
-    setSending(false);
+    // Kick off PayFast checkout (redirect current window to PayFast)
+    const paymentId = `B2B-${Date.now()}`;
+    try {
+      const { data: pf, error: pfErr } = await supabase.functions.invoke("payfast-create-payment", {
+        body: {
+          customer: {
+            firstName: parsed.data.firstName,
+            lastName: parsed.data.lastName,
+            email: parsed.data.email,
+            phone: parsed.data.phone,
+          },
+          amount: total,
+          itemName: invoiceNumber ? `Order ${invoiceNumber}` : "Blank2Branded Order",
+          itemDescription: lineItems.map((l) => `${l._invoice.quantity}x ${l._invoice.name}`).join(", ").slice(0, 250),
+          invoiceNumber,
+          paymentId,
+        },
+      });
+      if (pfErr) throw pfErr;
 
+      // Open WhatsApp with the order summary (new tab) so we still receive it.
+      const msg = buildOrderMessage(lineItems, parsed.data);
+      openWhatsApp(msg);
+
+      // Auto-submit a form to PayFast to redirect the buyer.
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = pf.process_url;
+      Object.entries(pf.fields as Record<string, string>).forEach(([k, v]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = k;
+        input.value = String(v);
+        form.appendChild(input);
+      });
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    } catch (err) {
+      console.error("PayFast redirect failed:", err);
+      toast.error("Couldn't open PayFast — we'll take payment via the emailed invoice instead.");
+    }
+
+    setSending(false);
     const msg = buildOrderMessage(lineItems, parsed.data);
     openWhatsApp(msg);
     setOpen(false);
@@ -330,16 +372,15 @@ export function CartDrawer() {
                   </Button>
                   <Button
                     onClick={sendOrder}
-                    className="flex-[2] bg-[#25D366] text-white hover:bg-[#1ebe57]"
+                    className="flex-[2]"
                     size="lg"
                     disabled={moqShort || sending}
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" fill="currentColor" />
-                    {sending ? "Creating invoice…" : "Send on WhatsApp"}
+                    {sending ? "Preparing payment…" : "Pay securely with PayFast"}
                   </Button>
                 </div>
                 <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
-                  We'll email you a Zoho invoice for payment and send your order to us on WhatsApp.
+                  We'll email your invoice, send the order to us on WhatsApp, and redirect you to PayFast to pay securely.
                 </p>
               </div>
             </>
