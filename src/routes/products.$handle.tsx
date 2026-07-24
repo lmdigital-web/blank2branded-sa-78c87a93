@@ -353,6 +353,42 @@ export function ProductPage() {
                   </Button>
                 </div>
 
+                {hasBranding && (
+                  <div className="mt-6 rounded-lg border border-border bg-card p-4">
+                    <p className="text-sm font-semibold text-foreground">Branding options</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Available branding methods for this product. Let us know your choice on WhatsApp after checkout — pricing shown is per unit plus a one-time setup fee.
+                    </p>
+                    <div className="mt-3 overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead className="text-left text-muted-foreground">
+                          <tr>
+                            <th className="py-1.5 pr-3">Method</th>
+                            <th className="py-1.5 pr-3">Position</th>
+                            <th className="py-1.5 pr-3">Size</th>
+                            <th className="py-1.5 pr-3">Colours</th>
+                            <th className="py-1.5 pr-3 text-right">Unit</th>
+                            <th className="py-1.5 text-right">Setup</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {brandingOptions.map((b) => (
+                            <tr key={b.id} className="border-t border-border">
+                              <td className="py-1.5 pr-3">{b.branding_type}</td>
+                              <td className="py-1.5 pr-3">{b.position}</td>
+                              <td className="py-1.5 pr-3">{b.branding_size || "—"}</td>
+                              <td className="py-1.5 pr-3">{b.max_colour_count ?? "—"}</td>
+                              <td className="py-1.5 pr-3 text-right tabular-nums">R {Number(b.unit_cost).toFixed(2)}</td>
+                              <td className="py-1.5 text-right tabular-nums">R {Number(b.setup_fee).toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+
                 {product && GANG_BUILDER_URLS[product.handle] && (
                   <div className="mt-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
                     <p className="text-sm font-semibold text-foreground">
