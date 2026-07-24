@@ -159,6 +159,8 @@ export function ProductPage() {
   }, [product, variants]);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [selectedBrandingId, setSelectedBrandingId] = useState<string | null>(null);
+  const cartItems = useCartStore((s) => s.items);
 
   const initialSelected = useMemo(() => {
     if (variants.length === 0) return {};
