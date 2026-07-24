@@ -106,6 +106,22 @@ export function ProductPage() {
     } catch { /* ignore */ }
   }, [product]);
 
+  const { data: brandingOptions = [] } = useQuery({
+    queryKey: ["product-branding", product?.id],
+    enabled: !!product?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("shop_product_branding_options")
+        .select("id,branding_type,position,branding_size,max_colour_count,unit_cost,setup_fee")
+        .eq("product_id", product!.id)
+        .order("branding_type")
+        .order("position");
+      if (error) throw error;
+      return (data ?? []) as BrandingOption[];
+    },
+  });
+  const hasBranding = brandingOptions.length > 0;
+
   const variants = product?.variants.edges.map((e) => e.node) ?? [];
   const options = product?.options ?? [];
 
