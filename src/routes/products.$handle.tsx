@@ -12,6 +12,17 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
 import { productSchema, breadcrumbSchema, injectJsonLd, removeJsonLd, SITE_URL } from "@/lib/schema-builder";
+import { supabase } from "@/integrations/supabase/client";
+
+type BrandingOption = {
+  id: string;
+  branding_type: string;
+  position: string;
+  branding_size: string | null;
+  max_colour_count: number | null;
+  unit_cost: number;
+  setup_fee: number;
+};
 
 const DTF_ADDON_HANDLE = "dtf-print-add-on";
 // Products that are themselves prints — no upsell popup needed.
