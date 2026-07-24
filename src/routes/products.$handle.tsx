@@ -159,6 +159,8 @@ export function ProductPage() {
   }, [product, variants]);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [selectedBrandingId, setSelectedBrandingId] = useState<string | null>(null);
+  const cartItems = useCartStore((s) => s.items);
 
   const initialSelected = useMemo(() => {
     if (variants.length === 0) return {};
@@ -196,7 +198,61 @@ export function ProductPage() {
         quantity,
         selectedOptions: selectedVariant.selectedOptions ?? [],
       });
-      toast.success("Added to cart");
+
+      // If a branding option is selected, add branding-per-unit line + one-time setup fee.
+      const chosenBranding = brandingOptions.find((b) => b.id === selectedBrandingId);
+      if (chosenBranding) {
+        const currency = selectedVariant.price.currencyCode || "ZAR";
+        const brandingLabel = `${chosenBranding.branding_type} — ${chosenBranding.position}${chosenBranding.branding_size ? ` (${chosenBranding.branding_size})` : ""}`;
+        const brandingVariantId = `branding:${chosenBranding.id}`;
+        const brandingProductShell = {
+          node: {
+            id: `branding-product:${chosenBranding.id}`,
+            title: `Branding — ${product.title}`,
+            description: brandingLabel,
+            handle: `${product.handle}-branding`,
+            priceRange: { minVariantPrice: { amount: String(chosenBranding.unit_cost), currencyCode: currency } },
+            images: product.images,
+            variants: { edges: [] },
+            options: [{ name: "Branding", values: [brandingLabel] }],
+          },
+        } as never;
+        await addItem({
+          product: brandingProductShell,
+          variantId: brandingVariantId,
+          variantTitle: brandingLabel,
+          price: { amount: String(chosenBranding.unit_cost), currencyCode: currency },
+          quantity,
+          selectedOptions: [{ name: "Branding", value: brandingLabel }],
+        });
+
+        const setupVariantId = `branding-setup:${chosenBranding.id}`;
+        const alreadyHasSetup = cartItems.some((i) => i.variantId === setupVariantId);
+        if (!alreadyHasSetup && Number(chosenBranding.setup_fee) > 0) {
+          const setupShell = {
+            node: {
+              id: `branding-setup-product:${chosenBranding.id}`,
+              title: `Artwork setup — ${chosenBranding.branding_type}`,
+              description: "One-time setup fee",
+              handle: `${product.handle}-branding-setup`,
+              priceRange: { minVariantPrice: { amount: String(chosenBranding.setup_fee), currencyCode: currency } },
+              images: product.images,
+              variants: { edges: [] },
+              options: [{ name: "Fee", values: ["Setup"] }],
+            },
+          } as never;
+          await addItem({
+            product: setupShell,
+            variantId: setupVariantId,
+            variantTitle: `Setup — ${chosenBranding.branding_type}`,
+            price: { amount: String(chosenBranding.setup_fee), currencyCode: currency },
+            quantity: 1,
+            selectedOptions: [{ name: "Fee", value: "One-time setup" }],
+          });
+        }
+      }
+
+      toast.success(chosenBranding ? "Added with branding to cart" : "Added to cart");
     } catch (err) {
       console.error("[cart] addItem failed", err);
       toast.error("Could not add to cart");
@@ -355,14 +411,26 @@ export function ProductPage() {
 
                 {hasBranding && (
                   <div className="mt-6 rounded-lg border border-border bg-card p-4">
-                    <p className="text-sm font-semibold text-foreground">Branding options</p>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-foreground">Branding options</p>
+                      {selectedBrandingId && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedBrandingId(null)}
+                          className="text-xs text-muted-foreground hover:text-foreground underline"
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                    </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Available branding methods for this product. Let us know your choice on WhatsApp after checkout — pricing shown is per unit plus a one-time setup fee.
+                      Optional — pick a branding method to add it to your cart. Unit cost is charged per item, plus a one-time setup fee per order.
                     </p>
                     <div className="mt-3 overflow-x-auto">
                       <table className="w-full text-xs">
                         <thead className="text-left text-muted-foreground">
                           <tr>
+                            <th className="py-1.5 pr-3 w-8"></th>
                             <th className="py-1.5 pr-3">Method</th>
                             <th className="py-1.5 pr-3">Position</th>
                             <th className="py-1.5 pr-3">Size</th>
@@ -372,19 +440,54 @@ export function ProductPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {brandingOptions.map((b) => (
-                            <tr key={b.id} className="border-t border-border">
-                              <td className="py-1.5 pr-3">{b.branding_type}</td>
-                              <td className="py-1.5 pr-3">{b.position}</td>
-                              <td className="py-1.5 pr-3">{b.branding_size || "—"}</td>
-                              <td className="py-1.5 pr-3">{b.max_colour_count ?? "—"}</td>
-                              <td className="py-1.5 pr-3 text-right tabular-nums">R {Number(b.unit_cost).toFixed(2)}</td>
-                              <td className="py-1.5 text-right tabular-nums">R {Number(b.setup_fee).toFixed(2)}</td>
-                            </tr>
-                          ))}
+                          {brandingOptions.map((b) => {
+                            const isSel = selectedBrandingId === b.id;
+                            return (
+                              <tr
+                                key={b.id}
+                                onClick={() => setSelectedBrandingId(isSel ? null : b.id)}
+                                className={cn(
+                                  "border-t border-border cursor-pointer transition-colors",
+                                  isSel ? "bg-primary/10" : "hover:bg-muted/50",
+                                )}
+                              >
+                                <td className="py-1.5 pr-3">
+                                  <span
+                                    className={cn(
+                                      "flex h-4 w-4 items-center justify-center rounded-full border-2",
+                                      isSel ? "border-primary bg-primary" : "border-border",
+                                    )}
+                                  >
+                                    {isSel && <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />}
+                                  </span>
+                                </td>
+                                <td className="py-1.5 pr-3">{b.branding_type}</td>
+                                <td className="py-1.5 pr-3">{b.position}</td>
+                                <td className="py-1.5 pr-3">{b.branding_size || "—"}</td>
+                                <td className="py-1.5 pr-3">{b.max_colour_count ?? "—"}</td>
+                                <td className="py-1.5 pr-3 text-right tabular-nums">R {Number(b.unit_cost).toFixed(2)}</td>
+                                <td className="py-1.5 text-right tabular-nums">R {Number(b.setup_fee).toFixed(2)}</td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
+                    {selectedBrandingId && (() => {
+                      const b = brandingOptions.find((x) => x.id === selectedBrandingId)!;
+                      const unit = Number(b.unit_cost);
+                      const setup = Number(b.setup_fee);
+                      const brandingTotal = unit * quantity + setup;
+                      return (
+                        <div className="mt-3 flex items-center justify-between rounded-md border border-primary/40 bg-primary/5 p-3 text-xs">
+                          <span className="text-foreground">
+                            <span className="font-semibold">{b.branding_type} — {b.position}</span>
+                            <span className="text-muted-foreground"> · R {unit.toFixed(2)} × {quantity} + R {setup.toFixed(2)} setup</span>
+                          </span>
+                          <span className="font-bold text-foreground tabular-nums">+ R {brandingTotal.toFixed(2)}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
 
