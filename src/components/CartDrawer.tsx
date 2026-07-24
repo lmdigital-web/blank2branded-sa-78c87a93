@@ -372,16 +372,15 @@ export function CartDrawer() {
                   </Button>
                   <Button
                     onClick={sendOrder}
-                    className="flex-[2] bg-[#25D366] text-white hover:bg-[#1ebe57]"
+                    className="flex-[2]"
                     size="lg"
                     disabled={moqShort || sending}
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" fill="currentColor" />
-                    {sending ? "Creating invoice…" : "Send on WhatsApp"}
+                    {sending ? "Preparing payment…" : "Pay securely with PayFast"}
                   </Button>
                 </div>
                 <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
-                  We'll email you a Zoho invoice for payment and send your order to us on WhatsApp.
+                  We'll email your invoice, send the order to us on WhatsApp, and redirect you to PayFast to pay securely.
                 </p>
               </div>
             </>
