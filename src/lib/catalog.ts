@@ -117,11 +117,17 @@ const PRODUCT_SELECT = `
   shop_product_images ( id, url, alt, position )
 `;
 
-export async function listPublishedProducts() {
-  const { data, error } = await supabase
+export type Collection = "apparel" | "corporate";
+
+export async function listPublishedProducts(collection?: Collection) {
+  let query = supabase
     .from("shop_products")
     .select(PRODUCT_SELECT)
-    .eq("status", "published")
+    .eq("status", "published");
+  if (collection) {
+    query = query.in("collection", [collection, "both"]);
+  }
+  const { data, error } = await query
     .order("position", { ascending: true })
     .order("created_at", { ascending: false });
   if (error) throw error;
