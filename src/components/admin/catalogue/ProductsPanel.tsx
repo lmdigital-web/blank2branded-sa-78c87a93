@@ -108,6 +108,14 @@ export function ProductsPanel() {
     void load();
   }
 
+  async function togglePublish(id: string, current: "draft" | "published") {
+    const next = current === "published" ? "draft" : "published";
+    const { error } = await supabase.from("shop_products").update({ status: next }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(next === "published" ? "Product is now live" : "Moved to draft");
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, status: next } : r)));
+  }
+
   async function remove(id: string, title: string) {
     if (!confirm(`Delete "${title}"? This removes its variants and image records too.`)) return;
     const { error } = await supabase.from("shop_products").delete().eq("id", id);
