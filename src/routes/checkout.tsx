@@ -25,16 +25,42 @@ const customerSchema = z.object({
     .max(20)
     .regex(/^[0-9+\s()-]+$/, "Only digits, spaces and + - ( ) allowed"),
   email: z.string().trim().email("Enter a valid email").max(160),
-  address: z.string().trim().min(10, "Enter your full delivery address").max(400),
+  street: z.string().trim().min(3, "Street address is required").max(160),
+  suburb: z.string().trim().min(2, "Suburb is required").max(80),
+  city: z.string().trim().min(2, "City is required").max(80),
+  province: z.string().trim().min(2, "Province is required").max(60),
+  postalCode: z
+    .string()
+    .trim()
+    .min(4, "Enter a valid postal code")
+    .max(10)
+    .regex(/^[0-9]+$/, "Postal code must be digits only"),
   notes: z.string().trim().max(500).optional(),
 });
 
-const EMPTY: WhatsAppCustomer & { notes: string } = {
+type CustomerForm = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  street: string;
+  suburb: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  notes: string;
+};
+
+const EMPTY: CustomerForm = {
   firstName: "",
   lastName: "",
   phone: "",
   email: "",
-  address: "",
+  street: "",
+  suburb: "",
+  city: "",
+  province: "",
+  postalCode: "",
   notes: "",
 };
 
@@ -92,7 +118,10 @@ export function CheckoutPage() {
     setSending(true);
     trackEvent("initiate_checkout", { value: total, currency });
 
-    const { notes: _notes, ...customerForApi } = parsed.data;
+    const { notes: _notes, street, suburb, city, province, postalCode, ...rest } = parsed.data;
+    const address = `${street}, ${suburb}, ${city}, ${province}, ${postalCode}`;
+    const customerForApi = { ...rest, street, suburb, city, province, postalCode, address };
+    const customerForWhatsApp = { ...rest, address };
     const lineItems = items.map((i) => {
       const node = i.product.node as { title?: string; handle?: string };
       const opts = i.selectedOptions?.map((o) => o.value).filter(Boolean).join(" / ");
@@ -166,7 +195,7 @@ export function CheckoutPage() {
       if (pfErr) throw pfErr;
 
       // Open WhatsApp with the order summary (new tab) so we still receive it.
-      const msg = buildOrderMessage(lineItems, customerForApi);
+      const msg = buildOrderMessage(lineItems, customerForWhatsApp);
       openWhatsApp(msg);
 
       // Auto-submit a form to PayFast to redirect the buyer.
@@ -187,7 +216,7 @@ export function CheckoutPage() {
       console.error("PayFast redirect failed:", err);
       toast.error("Couldn't open PayFast — we'll take payment via the emailed invoice instead.");
       setSending(false);
-      const msg = buildOrderMessage(lineItems, customerForApi);
+      const msg = buildOrderMessage(lineItems, customerForWhatsApp);
       openWhatsApp(msg);
     }
   };
@@ -306,17 +335,67 @@ export function CheckoutPage() {
                   </p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="address">Street, suburb, city, postal code</Label>
-                  <Textarea
-                    id="address"
-                    rows={3}
-                    placeholder="e.g. 12 Main Road, Sonheuwel, Mbombela, 1200"
-                    value={customer.address}
-                    onChange={(e) => updateField("address", e.target.value)}
-                    autoComplete="street-address"
-                    aria-invalid={!!errors.address}
+                  <Label htmlFor="street">Street address</Label>
+                  <Input
+                    id="street"
+                    placeholder="e.g. 12 Main Road"
+                    value={customer.street}
+                    onChange={(e) => updateField("street", e.target.value)}
+                    autoComplete="address-line1"
+                    aria-invalid={!!errors.street}
                   />
-                  {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
+                  {errors.street && <p className="text-xs text-destructive">{errors.street}</p>}
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="suburb">Suburb</Label>
+                    <Input
+                      id="suburb"
+                      placeholder="e.g. Sonheuwel"
+                      value={customer.suburb}
+                      onChange={(e) => updateField("suburb", e.target.value)}
+                      autoComplete="address-level2"
+                      aria-invalid={!!errors.suburb}
+                    />
+                    {errors.suburb && <p className="text-xs text-destructive">{errors.suburb}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      placeholder="e.g. Mbombela"
+                      value={customer.city}
+                      onChange={(e) => updateField("city", e.target.value)}
+                      autoComplete="address-level2"
+                      aria-invalid={!!errors.city}
+                    />
+                    {errors.city && <p className="text-xs text-destructive">{errors.city}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="province">Province</Label>
+                    <Input
+                      id="province"
+                      placeholder="e.g. Mpumalanga"
+                      value={customer.province}
+                      onChange={(e) => updateField("province", e.target.value)}
+                      autoComplete="address-level1"
+                      aria-invalid={!!errors.province}
+                    />
+                    {errors.province && <p className="text-xs text-destructive">{errors.province}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="postalCode">Postal code</Label>
+                    <Input
+                      id="postalCode"
+                      inputMode="numeric"
+                      placeholder="e.g. 1200"
+                      value={customer.postalCode}
+                      onChange={(e) => updateField("postalCode", e.target.value)}
+                      autoComplete="postal-code"
+                      aria-invalid={!!errors.postalCode}
+                    />
+                    {errors.postalCode && <p className="text-xs text-destructive">{errors.postalCode}</p>}
+                  </div>
                 </div>
               </section>
 
