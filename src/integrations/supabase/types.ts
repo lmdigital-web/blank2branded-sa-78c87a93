@@ -1288,6 +1288,7 @@ export type Database = {
           base_price: number | null
           brand: string | null
           category_id: string | null
+          collection: string
           created_at: string
           currency_code: string
           description: string | null
@@ -1306,6 +1307,7 @@ export type Database = {
           base_price?: number | null
           brand?: string | null
           category_id?: string | null
+          collection?: string
           created_at?: string
           currency_code?: string
           description?: string | null
@@ -1324,6 +1326,7 @@ export type Database = {
           base_price?: number | null
           brand?: string | null
           category_id?: string | null
+          collection?: string
           created_at?: string
           currency_code?: string
           description?: string | null
