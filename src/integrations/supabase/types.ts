@@ -1127,6 +1127,56 @@ export type Database = {
           },
         ]
       }
+      shop_product_branding_options: {
+        Row: {
+          branding_size: string | null
+          branding_type: string
+          created_at: string
+          id: string
+          max_colour_count: number | null
+          position: string | null
+          product_id: string
+          setup_fee: number
+          sort_order: number
+          unit_cost: number
+          updated_at: string
+        }
+        Insert: {
+          branding_size?: string | null
+          branding_type: string
+          created_at?: string
+          id?: string
+          max_colour_count?: number | null
+          position?: string | null
+          product_id: string
+          setup_fee?: number
+          sort_order?: number
+          unit_cost?: number
+          updated_at?: string
+        }
+        Update: {
+          branding_size?: string | null
+          branding_type?: string
+          created_at?: string
+          id?: string
+          max_colour_count?: number | null
+          position?: string | null
+          product_id?: string
+          setup_fee?: number
+          sort_order?: number
+          unit_cost?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_product_branding_options_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "shop_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shop_product_images: {
         Row: {
           alt: string | null
@@ -1167,7 +1217,9 @@ export type Database = {
           available: boolean
           created_at: string
           currency_code: string
+          hex_code: string | null
           id: string
+          image_url: string | null
           option1_name: string | null
           option1_value: string | null
           option2_name: string | null
@@ -1178,13 +1230,16 @@ export type Database = {
           price: number
           product_id: string
           sku: string | null
+          stock: number
           updated_at: string
         }
         Insert: {
           available?: boolean
           created_at?: string
           currency_code?: string
+          hex_code?: string | null
           id?: string
+          image_url?: string | null
           option1_name?: string | null
           option1_value?: string | null
           option2_name?: string | null
@@ -1195,13 +1250,16 @@ export type Database = {
           price: number
           product_id: string
           sku?: string | null
+          stock?: number
           updated_at?: string
         }
         Update: {
           available?: boolean
           created_at?: string
           currency_code?: string
+          hex_code?: string | null
           id?: string
+          image_url?: string | null
           option1_name?: string | null
           option1_value?: string | null
           option2_name?: string | null
@@ -1212,6 +1270,7 @@ export type Database = {
           price?: number
           product_id?: string
           sku?: string | null
+          stock?: number
           updated_at?: string
         }
         Relationships: [
@@ -1227,6 +1286,7 @@ export type Database = {
       shop_products: {
         Row: {
           base_price: number | null
+          brand: string | null
           category_id: string | null
           created_at: string
           currency_code: string
@@ -1236,12 +1296,15 @@ export type Database = {
           meta_description: string | null
           meta_title: string | null
           position: number
+          product_features: string | null
           status: string
+          supplier_item_number: string | null
           title: string
           updated_at: string
         }
         Insert: {
           base_price?: number | null
+          brand?: string | null
           category_id?: string | null
           created_at?: string
           currency_code?: string
@@ -1251,12 +1314,15 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           position?: number
+          product_features?: string | null
           status?: string
+          supplier_item_number?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           base_price?: number | null
+          brand?: string | null
           category_id?: string | null
           created_at?: string
           currency_code?: string
@@ -1266,7 +1332,9 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           position?: number
+          product_features?: string | null
           status?: string
+          supplier_item_number?: string | null
           title?: string
           updated_at?: string
         }

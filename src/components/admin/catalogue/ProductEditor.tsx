@@ -30,6 +30,16 @@ type EditorVariant = {
   position: number;
 };
 
+type EditorBranding = {
+  id?: string;
+  branding_type: string;
+  position: string;
+  branding_size: string;
+  max_colour_count: string;
+  unit_cost: string;
+  setup_fee: string;
+};
+
 type Props = {
   productId: string | null;
   onClose: () => void;
@@ -44,6 +54,15 @@ const EMPTY_VARIANT = (): EditorVariant => ({
   sku: "",
   available: true,
   position: 0,
+});
+
+const EMPTY_BRANDING = (): EditorBranding => ({
+  branding_type: "",
+  position: "",
+  branding_size: "",
+  max_colour_count: "1",
+  unit_cost: "0",
+  setup_fee: "0",
 });
 
 export function ProductEditor({ productId, onClose, onSaved }: Props) {
@@ -65,7 +84,9 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
 
   const [images, setImages] = useState<EditorImage[]>([]);
   const [variants, setVariants] = useState<EditorVariant[]>([]);
+  const [branding, setBranding] = useState<EditorBranding[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [tab, setTab] = useState<"details" | "variants" | "branding">("details");
 
   // Variant generator inputs
   const [genOpt1Name, setGenOpt1Name] = useState("Colour");
@@ -78,10 +99,11 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
       const { data: c } = await supabase.from("shop_categories").select("id,name,parent_id").order("name");
       setCats((c as Category[]) ?? []);
       if (!isNew && productId) {
-        const [prod, vars, imgs] = await Promise.all([
+        const [prod, vars, imgs, brnd] = await Promise.all([
           supabase.from("shop_products").select("*").eq("id", productId).single(),
           supabase.from("shop_product_variants").select("*").eq("product_id", productId).order("position"),
           supabase.from("shop_product_images").select("*").eq("product_id", productId).order("position"),
+          supabase.from("shop_product_branding_options").select("*").eq("product_id", productId).order("sort_order"),
         ]);
         if (prod.data) {
           const p = prod.data as Record<string, unknown>;
@@ -114,6 +136,15 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
           url: i.url as string,
           alt: (i.alt as string | null) ?? null,
           position: i.position as number,
+        })));
+        setBranding(((brnd.data ?? []) as Record<string, unknown>[]).map((b) => ({
+          id: b.id as string,
+          branding_type: (b.branding_type as string) ?? "",
+          position: (b.position as string) ?? "",
+          branding_size: (b.branding_size as string) ?? "",
+          max_colour_count: b.max_colour_count != null ? String(b.max_colour_count) : "",
+          unit_cost: String(b.unit_cost ?? "0"),
+          setup_fee: String(b.setup_fee ?? "0"),
         })));
         setLoading(false);
       } else {
@@ -259,6 +290,22 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
         );
         if (iErr) throw iErr;
       }
+      await supabase.from("shop_product_branding_options").delete().eq("product_id", productIdNow);
+      if (branding.length) {
+        const { error: bErr } = await supabase.from("shop_product_branding_options").insert(
+          branding.map((b, i) => ({
+            product_id: productIdNow,
+            branding_type: b.branding_type,
+            position: b.position || null,
+            branding_size: b.branding_size || null,
+            max_colour_count: b.max_colour_count ? Number(b.max_colour_count) : null,
+            unit_cost: Number(b.unit_cost || 0),
+            setup_fee: Number(b.setup_fee || 0),
+            sort_order: i,
+          })),
+        );
+        if (bErr) throw bErr;
+      }
       toast.success(isNew ? "Product created" : "Product saved");
       onSaved();
     } catch (err) {
@@ -280,6 +327,14 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
           <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin" /></div>
         ) : (
           <div className="mt-6 space-y-8">
+            <div className="inline-flex rounded-md border border-border bg-card p-1">
+              {(["details","variants","branding"] as const).map((t) => (
+                <button key={t} onClick={() => setTab(t)} className={`rounded px-3 py-1.5 text-xs font-medium capitalize transition ${tab===t?"bg-primary text-primary-foreground":"text-muted-foreground hover:text-foreground"}`}>
+                  {t === "details" ? "Product" : t === "variants" ? `Variants (${variants.length})` : `Branding (${branding.length})`}
+                </button>
+              ))}
+            </div>
+            {tab === "details" && (<>
             {/* Basics */}
             <section className="space-y-3">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Basics</h3>
@@ -367,8 +422,9 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
                 </div>
               )}
             </section>
+            </>)}
 
-            {/* Variants */}
+            {tab === "variants" && (
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Variants ({variants.length})</h3>
@@ -428,6 +484,50 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
                 </div>
               )}
             </section>
+            )}
+
+            {tab === "branding" && (
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Branding options ({branding.length})</h3>
+                <Button size="sm" variant="outline" onClick={() => setBranding([...branding, EMPTY_BRANDING()])}><Plus className="h-3.5 w-3.5 mr-1" />Add option</Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">Print/embroidery methods available for this product. Unit cost is charged per item, setup fee is once per order line.</p>
+              {branding.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No branding options yet.</p>
+              ) : (
+                <div className="overflow-x-auto rounded-md border border-border">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/40 text-left text-[11px] uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-2 py-2">Method</th>
+                        <th className="px-2 py-2">Position</th>
+                        <th className="px-2 py-2">Size</th>
+                        <th className="px-2 py-2 text-right">Colours</th>
+                        <th className="px-2 py-2 text-right">Unit cost</th>
+                        <th className="px-2 py-2 text-right">Setup fee</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {branding.map((b, i) => (
+                        <tr key={i} className="border-t border-border">
+                          <td className="px-2 py-1"><Input value={b.branding_type} onChange={(e) => setBranding(branding.map((x,j)=>j===i?{...x,branding_type:e.target.value}:x))} className="h-8" placeholder="DTF, Embroidery…" /></td>
+                          <td className="px-2 py-1"><Input value={b.position} onChange={(e) => setBranding(branding.map((x,j)=>j===i?{...x,position:e.target.value}:x))} className="h-8" placeholder="Chest, Back…" /></td>
+                          <td className="px-2 py-1"><Input value={b.branding_size} onChange={(e) => setBranding(branding.map((x,j)=>j===i?{...x,branding_size:e.target.value}:x))} className="h-8" placeholder="A4, A5…" /></td>
+                          <td className="px-2 py-1"><Input value={b.max_colour_count} onChange={(e) => setBranding(branding.map((x,j)=>j===i?{...x,max_colour_count:e.target.value}:x))} className="h-8 text-right" inputMode="numeric" /></td>
+                          <td className="px-2 py-1"><Input value={b.unit_cost} onChange={(e) => setBranding(branding.map((x,j)=>j===i?{...x,unit_cost:e.target.value}:x))} className="h-8 text-right" inputMode="decimal" /></td>
+                          <td className="px-2 py-1"><Input value={b.setup_fee} onChange={(e) => setBranding(branding.map((x,j)=>j===i?{...x,setup_fee:e.target.value}:x))} className="h-8 text-right" inputMode="decimal" /></td>
+                          <td className="px-2 py-1"><Button size="sm" variant="ghost" onClick={() => setBranding(branding.filter((_,j)=>j!==i))}><Trash2 className="h-3 w-3" /></Button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+            )}
+
 
             <div className="sticky bottom-0 -mx-6 flex items-center justify-end gap-2 border-t border-border bg-background px-6 py-3">
               <Button variant="outline" onClick={onClose}>Cancel</Button>
