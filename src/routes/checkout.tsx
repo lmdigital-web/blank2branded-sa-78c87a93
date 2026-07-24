@@ -79,6 +79,8 @@ export function CheckoutPage() {
   const { items } = useCartStore();
   const [customer, setCustomer] = useState<typeof EMPTY>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof typeof EMPTY, string>>>({});
+  const [ackLeadTime, setAckLeadTime] = useState(false);
+  const [ackError, setAckError] = useState(false);
   const [sending, setSending] = useState(false);
 
   const subtotal = useMemo(
