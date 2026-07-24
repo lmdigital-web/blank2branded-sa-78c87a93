@@ -1,0 +1,439 @@
+import { useMemo, useState } from "react";
+import { z } from "zod";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, Lock, ShieldCheck, Truck } from "lucide-react";
+import { toast } from "sonner";
+import { useCartStore } from "@/stores/cartStore";
+import { supabase } from "@/integrations/supabase/client";
+import { trackEvent } from "@/lib/ads/pixels";
+import { buildOrderMessage, openWhatsApp, SHIPPING_FEE, type WhatsAppCustomer } from "@/lib/whatsapp";
+import { Link, navigate } from "@/lib/static-router";
+
+const customerSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required").max(60),
+  lastName: z.string().trim().min(1, "Surname is required").max(60),
+  phone: z
+    .string()
+    .trim()
+    .min(7, "Enter a valid contact number")
+    .max(20)
+    .regex(/^[0-9+\s()-]+$/, "Only digits, spaces and + - ( ) allowed"),
+  email: z.string().trim().email("Enter a valid email").max(160),
+  address: z.string().trim().min(10, "Enter your full delivery address").max(400),
+  notes: z.string().trim().max(500).optional(),
+});
+
+const EMPTY: WhatsAppCustomer & { notes: string } = {
+  firstName: "",
+  lastName: "",
+  phone: "",
+  email: "",
+  address: "",
+  notes: "",
+};
+
+// MOQ: tees/blanks require a minimum of 3. DTF prints, add-ons, and setup fees are exempt.
+const isExempt = (handle?: string, title?: string) => {
+  const h = (handle ?? "").toLowerCase();
+  const t = (title ?? "").toLowerCase();
+  if (h.startsWith("dtf-") || h.includes("dtf")) return true;
+  if (h.includes("setup") || h.includes("add-on") || h.includes("addon") || h.includes("fee")) return true;
+  if (t.includes("dtf") || t.includes("setup fee") || t.includes("add-on") || t.includes("add on")) return true;
+  return false;
+};
+
+export function CheckoutPage() {
+  const { items } = useCartStore();
+  const [customer, setCustomer] = useState<typeof EMPTY>(EMPTY);
+  const [errors, setErrors] = useState<Partial<Record<keyof typeof EMPTY, string>>>({});
+  const [sending, setSending] = useState(false);
+
+  const subtotal = useMemo(
+    () => items.reduce((s, i) => s + parseFloat(i.price.amount) * i.quantity, 0),
+    [items],
+  );
+  const currency = items[0]?.price.currencyCode ?? "ZAR";
+  const shipping = items.length > 0 ? SHIPPING_FEE : 0;
+  const total = subtotal + shipping;
+
+  const teeQty = items
+    .filter((i) => {
+      const node = i.product.node as { handle?: string; title?: string };
+      return !isExempt(node.handle, node.title);
+    })
+    .reduce((s, i) => s + i.quantity, 0);
+  const moqShort = teeQty > 0 && teeQty < 3;
+  const moqRemaining = moqShort ? 3 - teeQty : 0;
+
+  const updateField = (key: keyof typeof EMPTY, value: string) => {
+    setCustomer((c) => ({ ...c, [key]: value }));
+    if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
+  };
+
+  const payNow = async () => {
+    if (moqShort || items.length === 0 || sending) return;
+    const parsed = customerSchema.safeParse(customer);
+    if (!parsed.success) {
+      const fieldErrors: Partial<Record<keyof typeof EMPTY, string>> = {};
+      parsed.error.issues.forEach((issue) => {
+        const key = issue.path[0] as keyof typeof EMPTY;
+        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+      });
+      setErrors(fieldErrors);
+      toast.error("Please check the highlighted fields.");
+      return;
+    }
+    setSending(true);
+    trackEvent("initiate_checkout", { value: total, currency });
+
+    const { notes: _notes, ...customerForApi } = parsed.data;
+    const lineItems = items.map((i) => {
+      const node = i.product.node as { title?: string; handle?: string };
+      const opts = i.selectedOptions?.map((o) => o.value).filter(Boolean).join(" / ");
+      return {
+        title: node.title ?? i.variantTitle,
+        selectedOptions: i.selectedOptions,
+        quantity: i.quantity,
+        price: i.price,
+        handle: node.handle,
+        _invoice: {
+          name: node.title ?? i.variantTitle,
+          description: opts ?? "",
+          quantity: i.quantity,
+          rate: parseFloat(i.price.amount),
+        },
+      };
+    });
+
+    let invoiceNumber: string | undefined;
+    try {
+      const { data, error } = await supabase.functions.invoke("zoho-create-invoice", {
+        body: {
+          customer: customerForApi,
+          items: lineItems.map((l) => l._invoice),
+          shipping: SHIPPING_FEE,
+          currency,
+          notes: parsed.data.notes,
+        },
+      });
+      if (error) throw error;
+      invoiceNumber = data?.invoice_number;
+    } catch (err) {
+      console.error("Zoho invoice failed:", err);
+      toast.error("Invoice generation had an issue — continuing to payment. We'll follow up manually.");
+    }
+
+    // Fire-and-forget order confirmation email (customer + owner)
+    supabase.functions
+      .invoke("send-order-notification", {
+        body: {
+          customer: customerForApi,
+          items: lineItems.map((l) => l._invoice),
+          shipping: SHIPPING_FEE,
+          currency,
+          invoiceNumber,
+          notes: parsed.data.notes,
+        },
+      })
+      .catch((err) => console.error("Order email failed:", err));
+
+    const paymentId = `B2B-${Date.now()}`;
+    try {
+      const { data: pf, error: pfErr } = await supabase.functions.invoke("payfast-create-payment", {
+        body: {
+          customer: {
+            firstName: parsed.data.firstName,
+            lastName: parsed.data.lastName,
+            email: parsed.data.email,
+            phone: parsed.data.phone,
+          },
+          amount: total,
+          itemName: invoiceNumber ? `Order ${invoiceNumber}` : "Blank2Branded Order",
+          itemDescription: lineItems
+            .map((l) => `${l._invoice.quantity}x ${l._invoice.name}`)
+            .join(", ")
+            .slice(0, 250),
+          invoiceNumber,
+          paymentId,
+        },
+      });
+      if (pfErr) throw pfErr;
+
+      // Open WhatsApp with the order summary (new tab) so we still receive it.
+      const msg = buildOrderMessage(lineItems, customerForApi);
+      openWhatsApp(msg);
+
+      // Auto-submit a form to PayFast to redirect the buyer.
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = pf.process_url;
+      Object.entries(pf.fields as Record<string, string>).forEach(([k, v]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = k;
+        input.value = String(v);
+        form.appendChild(input);
+      });
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    } catch (err) {
+      console.error("PayFast redirect failed:", err);
+      toast.error("Couldn't open PayFast — we'll take payment via the emailed invoice instead.");
+      setSending(false);
+      const msg = buildOrderMessage(lineItems, customerForApi);
+      openWhatsApp(msg);
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header variant="solid" />
+        <main className="flex-1 flex items-center justify-center px-4 py-24">
+          <div className="max-w-md text-center space-y-4">
+            <h1 className="text-3xl font-bold">Your cart is empty</h1>
+            <p className="text-muted-foreground">
+              Add DTF transfers or blank apparel to your cart, then come back to check out.
+            </p>
+            <Button asChild size="lg">
+              <Link to="/shop">Continue shopping</Link>
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header variant="solid" />
+      <main className="flex-1 py-8 md:py-12">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <button
+            onClick={() => navigate("/shop/")}
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Continue shopping
+          </button>
+
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Checkout</h1>
+          <p className="text-muted-foreground mb-8">
+            Enter your details below. Payment is processed securely by PayFast.
+          </p>
+
+          <div className="grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-12">
+            {/* Left: form */}
+            <div className="space-y-8">
+              <section aria-labelledby="contact-heading" className="space-y-4">
+                <div>
+                  <h2 id="contact-heading" className="text-lg font-semibold">
+                    Contact details
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    We'll email your invoice and order confirmation here.
+                  </p>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="firstName">First name</Label>
+                    <Input
+                      id="firstName"
+                      value={customer.firstName}
+                      onChange={(e) => updateField("firstName", e.target.value)}
+                      autoComplete="given-name"
+                      aria-invalid={!!errors.firstName}
+                    />
+                    {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="lastName">Surname</Label>
+                    <Input
+                      id="lastName"
+                      value={customer.lastName}
+                      onChange={(e) => updateField("lastName", e.target.value)}
+                      autoComplete="family-name"
+                      aria-invalid={!!errors.lastName}
+                    />
+                    {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      inputMode="email"
+                      value={customer.email}
+                      onChange={(e) => updateField("email", e.target.value)}
+                      autoComplete="email"
+                      aria-invalid={!!errors.email}
+                    />
+                    {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="phone">Contact number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      inputMode="tel"
+                      placeholder="e.g. 082 123 4567"
+                      value={customer.phone}
+                      onChange={(e) => updateField("phone", e.target.value)}
+                      autoComplete="tel"
+                      aria-invalid={!!errors.phone}
+                    />
+                    {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+                  </div>
+                </div>
+              </section>
+
+              <Separator />
+
+              <section aria-labelledby="delivery-heading" className="space-y-4">
+                <div>
+                  <h2 id="delivery-heading" className="text-lg font-semibold">
+                    Delivery address
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Courier nationwide across South Africa. Flat R{SHIPPING_FEE.toFixed(2)} shipping.
+                  </p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="address">Street, suburb, city, postal code</Label>
+                  <Textarea
+                    id="address"
+                    rows={3}
+                    placeholder="e.g. 12 Main Road, Sonheuwel, Mbombela, 1200"
+                    value={customer.address}
+                    onChange={(e) => updateField("address", e.target.value)}
+                    autoComplete="street-address"
+                    aria-invalid={!!errors.address}
+                  />
+                  {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
+                </div>
+              </section>
+
+              <Separator />
+
+              <section aria-labelledby="notes-heading" className="space-y-4">
+                <div>
+                  <h2 id="notes-heading" className="text-lg font-semibold">
+                    Order notes <span className="text-sm font-normal text-muted-foreground">(optional)</span>
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Artwork instructions, brand colours, deadline — anything we should know.
+                  </p>
+                </div>
+                <Textarea
+                  id="notes"
+                  rows={3}
+                  placeholder="e.g. Please gang my A4 prints tightly. Deadline 25 Nov."
+                  value={customer.notes ?? ""}
+                  onChange={(e) => updateField("notes", e.target.value)}
+                />
+              </section>
+
+              <div className="hidden lg:flex items-center gap-6 text-xs text-muted-foreground pt-2">
+                <div className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secure checkout</div>
+                <div className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> PayFast protected</div>
+                <div className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Nationwide courier</div>
+              </div>
+            </div>
+
+            {/* Right: order summary */}
+            <aside className="lg:sticky lg:top-24 self-start">
+              <div className="rounded-xl border bg-card p-6 shadow-sm space-y-5">
+                <h2 className="text-lg font-semibold">Order summary</h2>
+
+                <ul className="space-y-4 max-h-80 overflow-y-auto pr-1">
+                  {items.map((item) => {
+                    const img = item.product.node.images?.edges?.[0]?.node;
+                    const opts = item.selectedOptions.map((o) => o.value).filter(Boolean).join(" • ");
+                    const lineTotal = parseFloat(item.price.amount) * item.quantity;
+                    return (
+                      <li key={item.variantId} className="flex gap-3">
+                        <div className="relative w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                          {img && (
+                            <img
+                              src={img.url}
+                              alt={item.product.node.title}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                          <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-[11px] font-semibold flex items-center justify-center">
+                            {item.quantity}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0 text-sm">
+                          <p className="font-medium truncate">{item.product.node.title}</p>
+                          {opts && <p className="text-xs text-muted-foreground truncate">{opts}</p>}
+                        </div>
+                        <div className="text-sm font-semibold whitespace-nowrap">
+                          {currency} {lineTotal.toFixed(2)}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <Separator />
+
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{currency} {subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Shipping</span>
+                    <span>{currency} {shipping.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-baseline pt-2">
+                    <span className="text-base font-semibold">Total</span>
+                    <span className="text-2xl font-bold">{currency} {total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                {moqShort && (
+                  <div className="rounded-md border border-magenta/40 bg-magenta/5 p-3 text-xs leading-relaxed text-charcoal">
+                    <span className="font-semibold text-magenta">Minimum order: 3 tees.</span>{" "}
+                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to check out. DTF prints are exempt.
+                  </div>
+                )}
+
+                <Button
+                  onClick={payNow}
+                  disabled={moqShort || sending}
+                  size="lg"
+                  className="w-full"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  {sending ? "Preparing payment…" : `Pay ${currency} ${total.toFixed(2)} with PayFast`}
+                </Button>
+
+                <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
+                  By placing your order you agree to our{" "}
+                  <Link to="/terms" className="underline hover:text-foreground">Terms</Link> and{" "}
+                  <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>.
+                </p>
+
+                <div className="flex lg:hidden items-center justify-center gap-4 text-[11px] text-muted-foreground pt-1">
+                  <div className="flex items-center gap-1"><Lock className="w-3 h-3" /> Secure</div>
+                  <div className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> PayFast</div>
+                  <div className="flex items-center gap-1"><Truck className="w-3 h-3" /> Courier</div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
