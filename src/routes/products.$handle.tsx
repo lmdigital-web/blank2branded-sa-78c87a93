@@ -159,8 +159,86 @@ export function ProductPage() {
   }, [product, variants]);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-  const [selectedBrandingId, setSelectedBrandingId] = useState<string | null>(null);
+  const [brandType, setBrandType] = useState<string>("");
+  const [brandPosition, setBrandPosition] = useState<string>("");
+  const [brandSize, setBrandSize] = useState<string>("");
+  const [brandColours, setBrandColours] = useState<string>("");
   const cartItems = useCartStore((s) => s.items);
+
+  // Cascading branding selectors
+  const brandTypes = useMemo(
+    () => Array.from(new Set(brandingOptions.map((b) => b.branding_type))).sort(),
+    [brandingOptions],
+  );
+  const brandPositions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          brandingOptions
+            .filter((b) => !brandType || b.branding_type === brandType)
+            .map((b) => b.position),
+        ),
+      ).sort(),
+    [brandingOptions, brandType],
+  );
+  const brandSizes = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          brandingOptions
+            .filter(
+              (b) =>
+                (!brandType || b.branding_type === brandType) &&
+                (!brandPosition || b.position === brandPosition),
+            )
+            .map((b) => b.branding_size || ""),
+        ),
+      ),
+    [brandingOptions, brandType, brandPosition],
+  );
+  const brandColourOpts = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          brandingOptions
+            .filter(
+              (b) =>
+                (!brandType || b.branding_type === brandType) &&
+                (!brandPosition || b.position === brandPosition) &&
+                (!brandSize || (b.branding_size || "") === brandSize),
+            )
+            .map((b) => (b.max_colour_count == null ? "" : String(b.max_colour_count))),
+        ),
+      ),
+    [brandingOptions, brandType, brandPosition, brandSize],
+  );
+
+  // Reset downstream selections when an upstream selection changes
+  useEffect(() => {
+    setBrandPosition("");
+    setBrandSize("");
+    setBrandColours("");
+  }, [brandType]);
+  useEffect(() => {
+    setBrandSize("");
+    setBrandColours("");
+  }, [brandPosition]);
+  useEffect(() => {
+    setBrandColours("");
+  }, [brandSize]);
+
+  const matchedBranding = useMemo(() => {
+    if (!brandType) return null;
+    const matches = brandingOptions.filter(
+      (b) =>
+        b.branding_type === brandType &&
+        (!brandPosition || b.position === brandPosition) &&
+        (!brandSize || (b.branding_size || "") === brandSize) &&
+        (!brandColours || String(b.max_colour_count ?? "") === brandColours),
+    );
+    return matches.length === 1 ? matches[0] : null;
+  }, [brandingOptions, brandType, brandPosition, brandSize, brandColours]);
+  const selectedBrandingId = matchedBranding?.id ?? null;
 
   const initialSelected = useMemo(() => {
     if (variants.length === 0) return {};
