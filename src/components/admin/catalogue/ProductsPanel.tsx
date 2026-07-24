@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Loader2, Search, Copy } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, Search, Copy, Eye, EyeOff } from "lucide-react";
 import { ProductEditor } from "./ProductEditor";
 
 type Row = {
@@ -108,6 +108,14 @@ export function ProductsPanel() {
     void load();
   }
 
+  async function togglePublish(id: string, current: "draft" | "published") {
+    const next = current === "published" ? "draft" : "published";
+    const { error } = await supabase.from("shop_products").update({ status: next }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(next === "published" ? "Product is now live" : "Moved to draft");
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, status: next } : r)));
+  }
+
   async function remove(id: string, title: string) {
     if (!confirm(`Delete "${title}"? This removes its variants and image records too.`)) return;
     const { error } = await supabase.from("shop_products").delete().eq("id", id);
@@ -167,6 +175,14 @@ export function ProductsPanel() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
+                      <Button
+                        size="sm"
+                        variant={r.status === "published" ? "outline" : "default"}
+                        onClick={() => togglePublish(r.id, r.status)}
+                        title={r.status === "published" ? "Unpublish (move to draft)" : "Publish live"}
+                      >
+                        {r.status === "published" ? (<><EyeOff className="mr-1 h-3.5 w-3.5" />Unpublish</>) : (<><Eye className="mr-1 h-3.5 w-3.5" />Publish</>)}
+                      </Button>
                       <Button size="sm" variant="ghost" onClick={() => setEditingId(r.id)}><Edit className="h-3.5 w-3.5" /></Button>
                       <Button size="sm" variant="ghost" onClick={() => duplicate(r.id)}><Copy className="h-3.5 w-3.5" /></Button>
                       <Button size="sm" variant="ghost" onClick={() => remove(r.id, r.title)}><Trash2 className="h-3.5 w-3.5" /></Button>
