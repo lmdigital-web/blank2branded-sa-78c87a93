@@ -84,7 +84,9 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
 
   const [images, setImages] = useState<EditorImage[]>([]);
   const [variants, setVariants] = useState<EditorVariant[]>([]);
+  const [branding, setBranding] = useState<EditorBranding[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [tab, setTab] = useState<"details" | "variants" | "branding">("details");
 
   // Variant generator inputs
   const [genOpt1Name, setGenOpt1Name] = useState("Colour");
