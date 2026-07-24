@@ -30,6 +30,16 @@ type EditorVariant = {
   position: number;
 };
 
+type EditorBranding = {
+  id?: string;
+  branding_type: string;
+  position: string;
+  branding_size: string;
+  max_colour_count: string;
+  unit_cost: string;
+  setup_fee: string;
+};
+
 type Props = {
   productId: string | null;
   onClose: () => void;
@@ -44,6 +54,15 @@ const EMPTY_VARIANT = (): EditorVariant => ({
   sku: "",
   available: true,
   position: 0,
+});
+
+const EMPTY_BRANDING = (): EditorBranding => ({
+  branding_type: "",
+  position: "",
+  branding_size: "",
+  max_colour_count: "1",
+  unit_cost: "0",
+  setup_fee: "0",
 });
 
 export function ProductEditor({ productId, onClose, onSaved }: Props) {
