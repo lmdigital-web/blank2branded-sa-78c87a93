@@ -327,6 +327,14 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
           <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin" /></div>
         ) : (
           <div className="mt-6 space-y-8">
+            <div className="inline-flex rounded-md border border-border bg-card p-1">
+              {(["details","variants","branding"] as const).map((t) => (
+                <button key={t} onClick={() => setTab(t)} className={`rounded px-3 py-1.5 text-xs font-medium capitalize transition ${tab===t?"bg-primary text-primary-foreground":"text-muted-foreground hover:text-foreground"}`}>
+                  {t === "details" ? "Product" : t === "variants" ? `Variants (${variants.length})` : `Branding (${branding.length})`}
+                </button>
+              ))}
+            </div>
+            {tab === "details" && (<>
             {/* Basics */}
             <section className="space-y-3">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Basics</h3>
