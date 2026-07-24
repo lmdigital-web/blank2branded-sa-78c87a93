@@ -559,18 +559,20 @@ export function ProductPage() {
                         </label>
                       )}
 
-                      {/* Colours */}
-                      {brandType && brandPosition && brandColourOpts.length > 1 && (
+                      {/* Number of colours (per-colour pricing) */}
+                      {matchedBranding && (matchedBranding.max_colour_count ?? 1) > 1 && (
                         <label className="block text-xs">
-                          <span className="mb-1 block font-medium text-muted-foreground">Max colours</span>
+                          <span className="mb-1 block font-medium text-muted-foreground">
+                            Number of colours{" "}
+                            <span className="opacity-70">(up to {matchedBranding.max_colour_count})</span>
+                          </span>
                           <select
-                            value={brandColours}
-                            onChange={(e) => setBrandColours(e.target.value)}
+                            value={colourCount}
+                            onChange={(e) => setColourCount(Number(e.target.value))}
                             className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                           >
-                            <option value="">Select colours…</option>
-                            {brandColourOpts.map((c) => (
-                              <option key={c || "none"} value={c}>{c || "N/A"}</option>
+                            {Array.from({ length: matchedBranding.max_colour_count ?? 1 }, (_, i) => i + 1).map((n) => (
+                              <option key={n} value={n}>{n} colour{n === 1 ? "" : "s"}</option>
                             ))}
                           </select>
                         </label>
@@ -579,13 +581,15 @@ export function ProductPage() {
 
                     {matchedBranding && (() => {
                       const b = matchedBranding;
-                      const unit = Number(b.unit_cost);
+                      const perColour = (b.max_colour_count ?? 1) > 1;
+                      const colours = perColour ? colourCount : 1;
+                      const unit = Number(b.unit_cost) * colours;
                       const setup = Number(b.setup_fee);
                       const brandingTotal = unit * quantity + setup;
                       return (
                         <div className="mt-3 flex items-center justify-between rounded-md border border-primary/40 bg-primary/5 p-3 text-xs">
                           <span className="text-foreground">
-                            <span className="font-semibold">{b.branding_type} — {b.position}{b.branding_size ? ` (${b.branding_size})` : ""}</span>
+                            <span className="font-semibold">{b.branding_type} — {b.position}{b.branding_size ? ` (${b.branding_size})` : ""}{perColour ? ` · ${colours} colour${colours === 1 ? "" : "s"}` : ""}</span>
                             <span className="text-muted-foreground"> · R {unit.toFixed(2)} × {quantity} + R {setup.toFixed(2)} setup</span>
                           </span>
                           <span className="font-bold text-foreground tabular-nums">+ R {brandingTotal.toFixed(2)}</span>
