@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-import shopApparelImg from "@/assets/shop-apparel.jpg";
-import shopCorporateImg from "@/assets/shop-corporate.jpg";
+import shopApparelAsset from "@/assets/shop-apparel.jpg.asset.json";
+import shopCorporateAsset from "@/assets/shop-corporate.jpg.asset.json";
+const shopApparelImg = shopApparelAsset.url;
+const shopCorporateImg = shopCorporateAsset.url;
 import {
   listPublishedProducts,
   listCategoryTree,
