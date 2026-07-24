@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Loader2, Search, Copy } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, Search, Copy, Eye, EyeOff } from "lucide-react";
 import { ProductEditor } from "./ProductEditor";
 
 type Row = {
