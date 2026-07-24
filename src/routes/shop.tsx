@@ -4,9 +4,11 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2, Shirt, ShoppingBag, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
+import shopApparelImg from "@/assets/shop-apparel.jpg";
+import shopCorporateImg from "@/assets/shop-corporate.jpg";
 import {
   listPublishedProducts,
   listCategoryTree,
@@ -50,16 +52,16 @@ export function ShopPage() {
             eyebrow="Blanks & prints"
             title="Shop T-Shirts, Hoodies & Sweaters"
             description="Our original blank apparel range plus DTF transfers — ready to print, press or resell."
-            icon={<Shirt className="h-6 w-6" />}
-            accent="from-magenta/20 to-cyan/10"
+            image={shopApparelImg}
+            imageAlt="Stack of blank t-shirts, hoodies and a sweater"
           />
           <CollectionCard
             to="/shop/corporate"
             eyebrow="Corporate & gifting"
             title="Shop Corporate Gifts, Clothing & Branding"
             description="Bags, drinkware, workwear, headwear, chef wear, display and more — with branding options at checkout."
-            icon={<Sparkles className="h-6 w-6" />}
-            accent="from-lime/20 to-magenta/10"
+            image={shopCorporateImg}
+            imageAlt="Branded corporate gifts including a bottle, notebook, cap and mugs"
           />
         </div>
       </section>
@@ -70,35 +72,49 @@ export function ShopPage() {
 }
 
 function CollectionCard({
-  to, eyebrow, title, description, icon, accent,
+  to, eyebrow, title, description, image, imageAlt,
 }: {
   to: string;
   eyebrow: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
-  accent: string;
+  image: string;
+  imageAlt: string;
 }) {
   return (
     <Link
       to={to}
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border bg-card p-8 transition-all",
-        "hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl md:p-10",
+        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all",
+        "hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl",
       )}
     >
-      <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60", accent)} />
-      <div className="relative flex h-full flex-col">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{eyebrow}</p>
-        </div>
-        <h2 className="mt-6 text-2xl font-black tracking-tight text-foreground md:text-3xl">{title}</h2>
-        <p className="mt-3 text-sm text-muted-foreground md:text-base">{description}</p>
-        <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+        <img
+          src={image}
+          alt={imageAlt}
+          loading="lazy"
+          width={1280}
+          height={960}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
+        <span className="absolute left-5 top-5 rounded-full bg-background/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary backdrop-blur">
+          {eyebrow}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-6 md:p-8">
+        <h2 className="text-2xl font-black tracking-tight text-foreground md:text-3xl">{title}</h2>
+        <p className="mt-3 flex-1 text-sm text-muted-foreground md:text-base">{description}</p>
+        <span
+          className={cn(
+            "mt-6 inline-flex w-fit items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold",
+            "text-primary-foreground shadow-sm transition-all group-hover:bg-primary/90 group-hover:shadow-lg group-hover:shadow-primary/20",
+          )}
+        >
           Browse range
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </div>
+        </span>
       </div>
     </Link>
   );
