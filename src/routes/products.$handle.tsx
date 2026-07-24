@@ -163,6 +163,7 @@ export function ProductPage() {
   const [brandPosition, setBrandPosition] = useState<string>("");
   const [brandSize, setBrandSize] = useState<string>("");
   const [brandColours, setBrandColours] = useState<string>("");
+  const [colourCount, setColourCount] = useState<number>(1);
   const cartItems = useCartStore((s) => s.items);
 
   // Cascading branding selectors
