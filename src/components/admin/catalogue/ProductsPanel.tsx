@@ -175,6 +175,14 @@ export function ProductsPanel() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
+                      <Button
+                        size="sm"
+                        variant={r.status === "published" ? "outline" : "default"}
+                        onClick={() => togglePublish(r.id, r.status)}
+                        title={r.status === "published" ? "Unpublish (move to draft)" : "Publish live"}
+                      >
+                        {r.status === "published" ? (<><EyeOff className="mr-1 h-3.5 w-3.5" />Unpublish</>) : (<><Eye className="mr-1 h-3.5 w-3.5" />Publish</>)}
+                      </Button>
                       <Button size="sm" variant="ghost" onClick={() => setEditingId(r.id)}><Edit className="h-3.5 w-3.5" /></Button>
                       <Button size="sm" variant="ghost" onClick={() => duplicate(r.id)}><Copy className="h-3.5 w-3.5" /></Button>
                       <Button size="sm" variant="ghost" onClick={() => remove(r.id, r.title)}><Trash2 className="h-3.5 w-3.5" /></Button>
