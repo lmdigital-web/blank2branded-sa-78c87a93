@@ -99,10 +99,11 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
       const { data: c } = await supabase.from("shop_categories").select("id,name,parent_id").order("name");
       setCats((c as Category[]) ?? []);
       if (!isNew && productId) {
-        const [prod, vars, imgs] = await Promise.all([
+        const [prod, vars, imgs, brnd] = await Promise.all([
           supabase.from("shop_products").select("*").eq("id", productId).single(),
           supabase.from("shop_product_variants").select("*").eq("product_id", productId).order("position"),
           supabase.from("shop_product_images").select("*").eq("product_id", productId).order("position"),
+          supabase.from("shop_product_branding_options").select("*").eq("product_id", productId).order("sort_order"),
         ]);
         if (prod.data) {
           const p = prod.data as Record<string, unknown>;
