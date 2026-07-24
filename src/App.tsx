@@ -221,6 +221,7 @@ function AppContent() {
   else if (cleanPath === "/catalogues") page = <CataloguesPage />;
   else if (cleanPath === "/sports-kits") page = <SportsKitsPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
+  else if (cleanPath === "/checkout") page = <CheckoutPage />;
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
   else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
   else if (/^\/local\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
