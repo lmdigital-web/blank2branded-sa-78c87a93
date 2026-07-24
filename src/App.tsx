@@ -209,6 +209,8 @@ function AppContent() {
   else if (cleanPath === "/contact") page = <ContactPage />;
   else if (cleanPath === "/dtf") page = <DtfPage />;
   else if (cleanPath === "/shop") page = <ShopPage />;
+  else if (cleanPath === "/shop/apparel") page = <ShopApparelPage />;
+  else if (cleanPath === "/shop/corporate") page = <ShopCorporatePage />;
   else if (cleanPath === "/blog") page = <BlogIndexPage />;
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
