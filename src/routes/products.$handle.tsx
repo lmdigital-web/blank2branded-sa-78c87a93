@@ -285,15 +285,19 @@ export function ProductPage() {
       const chosenBranding = brandingOptions.find((b) => b.id === selectedBrandingId);
       if (chosenBranding) {
         const currency = selectedVariant.price.currencyCode || "ZAR";
-        const brandingLabel = `${chosenBranding.branding_type} — ${chosenBranding.position}${chosenBranding.branding_size ? ` (${chosenBranding.branding_size})` : ""}`;
-        const brandingVariantId = `branding:${chosenBranding.id}`;
+        const perColour = (chosenBranding.max_colour_count ?? 1) > 1;
+        const colours = perColour ? colourCount : 1;
+        const effectiveUnit = Number(chosenBranding.unit_cost) * colours;
+        const colourSuffix = perColour ? ` · ${colours} colour${colours === 1 ? "" : "s"}` : "";
+        const brandingLabel = `${chosenBranding.branding_type} — ${chosenBranding.position}${chosenBranding.branding_size ? ` (${chosenBranding.branding_size})` : ""}${colourSuffix}`;
+        const brandingVariantId = `branding:${chosenBranding.id}:${colours}`;
         const brandingProductShell = {
           node: {
-            id: `branding-product:${chosenBranding.id}`,
+            id: `branding-product:${chosenBranding.id}:${colours}`,
             title: `Branding — ${product.title}`,
             description: brandingLabel,
             handle: `${product.handle}-branding`,
-            priceRange: { minVariantPrice: { amount: String(chosenBranding.unit_cost), currencyCode: currency } },
+            priceRange: { minVariantPrice: { amount: String(effectiveUnit), currencyCode: currency } },
             images: product.images,
             variants: { edges: [] },
             options: [{ name: "Branding", values: [brandingLabel] }],
@@ -303,7 +307,7 @@ export function ProductPage() {
           product: brandingProductShell,
           variantId: brandingVariantId,
           variantTitle: brandingLabel,
-          price: { amount: String(chosenBranding.unit_cost), currencyCode: currency },
+          price: { amount: String(effectiveUnit), currencyCode: currency },
           quantity,
           selectedOptions: [{ name: "Branding", value: brandingLabel }],
         });
