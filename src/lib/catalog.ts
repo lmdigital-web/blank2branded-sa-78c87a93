@@ -117,11 +117,17 @@ const PRODUCT_SELECT = `
   shop_product_images ( id, url, alt, position )
 `;
 
-export async function listPublishedProducts() {
-  const { data, error } = await supabase
+export type Collection = "apparel" | "corporate";
+
+export async function listPublishedProducts(collection?: Collection) {
+  let query = supabase
     .from("shop_products")
     .select(PRODUCT_SELECT)
-    .eq("status", "published")
+    .eq("status", "published");
+  if (collection) {
+    query = query.in("collection", [collection, "both"]);
+  }
+  const { data, error } = await query
     .order("position", { ascending: true })
     .order("created_at", { ascending: false });
   if (error) throw error;
@@ -150,11 +156,13 @@ export async function listCategoryTree() {
 }
 
 /** Map of product id -> category id (for the shop sidebar filter). */
-export async function listProductCategoryMap(): Promise<Record<string, string | null>> {
-  const { data, error } = await supabase
+export async function listProductCategoryMap(collection?: Collection): Promise<Record<string, string | null>> {
+  let query = supabase
     .from("shop_products")
     .select("id,category_id")
     .eq("status", "published");
+  if (collection) query = query.in("collection", [collection, "both"]);
+  const { data, error } = await query;
   if (error) throw error;
   const out: Record<string, string | null> = {};
   for (const r of (data ?? []) as Array<{ id: string; category_id: string | null }>) {

@@ -4,17 +4,134 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { ArrowRight, Loader2, Shirt, ShoppingBag, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-import { listPublishedProducts, listCategoryTree, listProductCategoryMap } from "@/lib/catalog";
+import {
+  listPublishedProducts,
+  listCategoryTree,
+  listProductCategoryMap,
+  type Collection,
+} from "@/lib/catalog";
+
+/* -------------------------------------------------------------------------- */
+/*  Landing page — two collection blocks                                       */
+/* -------------------------------------------------------------------------- */
 
 export function ShopPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
+        <div className="pointer-events-none absolute inset-0">
+          <img src={shopHeroBg} alt="" aria-hidden="true" className="h-full w-full scale-105 object-cover blur-[2px]" />
+          <div className="absolute inset-0 bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 opacity-25">
+          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-6">
+          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
+          <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
+            What are you shopping for today?
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+            Pick a range below — browse blank apparel & DTF prints, or dive into our full corporate gifting and branding catalogue.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-2">
+          <CollectionCard
+            to="/shop/apparel"
+            eyebrow="Blanks & prints"
+            title="Shop T-Shirts, Hoodies & Sweaters"
+            description="Our original blank apparel range plus DTF transfers — ready to print, press or resell."
+            icon={<Shirt className="h-6 w-6" />}
+            accent="from-magenta/20 to-cyan/10"
+          />
+          <CollectionCard
+            to="/shop/corporate"
+            eyebrow="Corporate & gifting"
+            title="Shop Corporate Gifts, Clothing & Branding"
+            description="Bags, drinkware, workwear, headwear, chef wear, display and more — with branding options at checkout."
+            icon={<Sparkles className="h-6 w-6" />}
+            accent="from-lime/20 to-magenta/10"
+          />
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}
+
+function CollectionCard({
+  to, eyebrow, title, description, icon, accent,
+}: {
+  to: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  accent: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border border-border bg-card p-8 transition-all",
+        "hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl md:p-10",
+      )}
+    >
+      <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60", accent)} />
+      <div className="relative flex h-full flex-col">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{eyebrow}</p>
+        </div>
+        <h2 className="mt-6 text-2xl font-black tracking-tight text-foreground md:text-3xl">{title}</h2>
+        <p className="mt-3 text-sm text-muted-foreground md:text-base">{description}</p>
+        <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+          Browse range
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Collection page — filtered grid + sidebar                                  */
+/* -------------------------------------------------------------------------- */
+
+const COLLECTION_META: Record<Collection, { eyebrow: string; title: React.ReactNode; description: string }> = {
+  apparel: {
+    eyebrow: "T-Shirts, Hoodies & Sweaters",
+    title: (
+      <>
+        <span className="text-gradient-dtf">Blanks.</span> Prints. Ready to ship.
+      </>
+    ),
+    description: "Our core blank apparel range plus DTF transfers — courier nationwide from Mbombela.",
+  },
+  corporate: {
+    eyebrow: "Corporate Gifts, Clothing & Branding",
+    title: <>Corporate gifting, workwear & branded merch.</>,
+    description: "Browse bags, drinkware, workwear, headwear, display and more — add branding at checkout.",
+  },
+};
+
+export function ShopCollectionPage({ collection }: { collection: Collection }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const meta = COLLECTION_META[collection];
 
   const { data, isLoading } = useQuery({
-    queryKey: ["shop-products"],
-    queryFn: () => listPublishedProducts(),
+    queryKey: ["shop-products", collection],
+    queryFn: () => listPublishedProducts(collection),
   });
 
   const { data: categories } = useQuery({
@@ -23,21 +140,29 @@ export function ShopPage() {
   });
 
   const { data: catMap } = useQuery({
-    queryKey: ["shop-product-category-map"],
-    queryFn: () => listProductCategoryMap(),
+    queryKey: ["shop-product-category-map", collection],
+    queryFn: () => listProductCategoryMap(collection),
   });
 
-  // Only show top-level categories in the sidebar (children collapse into parents).
-  const topLevel = useMemo(
-    () => (categories ?? []).filter((c) => !c.parent_id),
-    [categories],
-  );
+  // Only show top-level categories that actually contain products in this collection.
+  const topLevel = useMemo(() => {
+    const all = (categories ?? []).filter((c) => !c.parent_id);
+    const usedRoots = new Set<string>();
+    if (categories && catMap) {
+      const parentById = new Map((categories ?? []).map((c) => [c.id, c]));
+      for (const cid of Object.values(catMap)) {
+        if (!cid) continue;
+        let node = parentById.get(cid);
+        while (node?.parent_id) node = parentById.get(node.parent_id);
+        if (node) usedRoots.add(node.id);
+      }
+    }
+    return all.filter((c) => usedRoots.has(c.id));
+  }, [categories, catMap]);
 
-  // For each top-level category, collect its id plus all descendant ids.
   const descendantMap = useMemo(() => {
     const m = new Map<string, Set<string>>();
     for (const t of topLevel) m.set(t.id, new Set([t.id]));
-    // walk two levels deep, enough for parent -> children.
     for (const c of categories ?? []) {
       if (!c.parent_id) continue;
       if (m.has(c.parent_id)) m.get(c.parent_id)!.add(c.id);
@@ -84,13 +209,15 @@ export function ShopPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Link to="/shop" className="hover:text-primary">Shop</Link>
+            <span aria-hidden="true">/</span>
+            <span className="font-semibold text-magenta uppercase tracking-wider">{meta.eyebrow}</span>
+          </div>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            <span className="text-gradient-dtf">Blanks.</span> Prints. Ready to ship.
+            {meta.title}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Browse our catalogue. Send an order on WhatsApp — nationwide shipping from Mbombela.
-          </p>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{meta.description}</p>
         </div>
       </section>
 
@@ -132,6 +259,13 @@ export function ShopPage() {
                     );
                   })}
                 </nav>
+
+                <Link
+                  to="/shop"
+                  className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary"
+                >
+                  ← Back to shop
+                </Link>
               </div>
             </aside>
 
@@ -142,7 +276,7 @@ export function ShopPage() {
                 <div className="text-center py-24">
                   <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
                   <h2 className="mt-4 text-xl font-semibold">No products found</h2>
-                  <p className="mt-2 text-muted-foreground">Try a different category, or add products from the admin dashboard.</p>
+                  <p className="mt-2 text-muted-foreground">Try a different category, or check the other shop range.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

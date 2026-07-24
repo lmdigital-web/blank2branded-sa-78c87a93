@@ -11,6 +11,8 @@ const BlanksPage = lazy(() => import("@/routes/blanks").then((m) => ({ default: 
 const ContactPage = lazy(() => import("@/routes/contact").then((m) => ({ default: m.ContactPage })));
 const DtfPage = lazy(() => import("@/routes/dtf").then((m) => ({ default: m.DtfPage })));
 const ShopPage = lazy(() => import("@/routes/shop").then((m) => ({ default: m.ShopPage })));
+const ShopApparelPage = lazy(() => import("@/routes/shop").then((m) => ({ default: () => <m.ShopCollectionPage collection="apparel" /> })));
+const ShopCorporatePage = lazy(() => import("@/routes/shop").then((m) => ({ default: () => <m.ShopCollectionPage collection="corporate" /> })));
 const ProductPage = lazy(() => import("@/routes/products.$handle").then((m) => ({ default: m.ProductPage })));
 const BlogIndexPage = lazy(() => import("@/routes/blog").then((m) => ({ default: m.BlogIndexPage })));
 const BlogPostPage = lazy(() => import("@/routes/blog.$slug").then((m) => ({ default: m.BlogPostPage })));
@@ -81,11 +83,27 @@ const pageMeta: Record<
   },
   "/shop": {
     focusKeyword: "buy DTF prints and blank t-shirts online South Africa",
-    title: "Shop DTF Transfers & Blank T-Shirts Online | Blank2Branded South Africa",
+    title: "Shop Online | Blank Apparel, DTF & Corporate Gifting | Blank2Branded",
     description:
-      "Shop DTF transfers, blank t-shirts, golf shirts and hoodies online. Wholesale pricing, secure checkout and nationwide courier across South Africa.",
+      "Shop DTF transfers, blank t-shirts, hoodies and sweaters, plus corporate gifts, workwear and branding. Nationwide courier across South Africa.",
     keywords:
-      "buy DTF prints online South Africa, buy blank t-shirts online South Africa, online DTF shop, wholesale blanks online, order DTF transfers South Africa, blank apparel online store",
+      "buy DTF prints online South Africa, buy blank t-shirts online South Africa, online DTF shop, corporate gifts South Africa, branded merch South Africa, wholesale blanks online",
+  },
+  "/shop/apparel": {
+    focusKeyword: "blank t-shirts hoodies sweaters South Africa",
+    title: "Shop Blank T-Shirts, Hoodies & Sweaters | DTF Prints | Blank2Branded",
+    description:
+      "Browse blank t-shirts, hoodies and sweaters plus A4–1m DTF transfers. Wholesale pricing and nationwide courier from Mbombela.",
+    keywords:
+      "blank t-shirts South Africa, blank hoodies, blank sweaters, DTF prints South Africa, wholesale blanks, buy blanks online",
+  },
+  "/shop/corporate": {
+    focusKeyword: "corporate gifts and branded clothing South Africa",
+    title: "Corporate Gifts, Clothing & Branding Shop | Blank2Branded South Africa",
+    description:
+      "Shop corporate gifts, workwear, headwear, bags, drinkware, chef wear, display and more — with embroidery, DTF, screen print or heat press branding.",
+    keywords:
+      "corporate gifts South Africa, branded corporate clothing, corporate workwear, promotional gifts South Africa, branded bags, branded drinkware, corporate branding South Africa",
   },
   "/blog": {
     focusKeyword: "DTF printing blog South Africa",
@@ -207,6 +225,8 @@ function AppContent() {
   else if (cleanPath === "/contact") page = <ContactPage />;
   else if (cleanPath === "/dtf") page = <DtfPage />;
   else if (cleanPath === "/shop") page = <ShopPage />;
+  else if (cleanPath === "/shop/apparel") page = <ShopApparelPage />;
+  else if (cleanPath === "/shop/corporate") page = <ShopCorporatePage />;
   else if (cleanPath === "/blog") page = <BlogIndexPage />;
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
