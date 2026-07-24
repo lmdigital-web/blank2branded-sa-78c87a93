@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
     const { customer, amount, itemName, itemDescription, invoiceNumber, paymentId } = parsed.data;
 
     // Fields in the exact order PayFast documents for the signature.
-    const fields: Record<string, string> = {
+    const rawFields: Record<string, string> = {
       merchant_id: MERCHANT_ID,
       merchant_key: MERCHANT_KEY,
       return_url: `${SITE_URL}/?payment=success`,
@@ -78,6 +78,14 @@ Deno.serve(async (req) => {
       custom_str2: customer.email,
       custom_str3: `${customer.firstName} ${customer.lastName}`,
     };
+
+    // Strip empty values — PayFast recomputes the signature from POSTed fields,
+    // so any empty field sent to the form but excluded from our sig would break parity.
+    const fields: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawFields)) {
+      const trimmed = String(v ?? '').trim();
+      if (trimmed !== '') fields[k] = trimmed;
+    }
 
     let sigBase = buildSignatureBase(fields);
     if (PASSPHRASE) sigBase += `&passphrase=${pfEncode(PASSPHRASE.trim())}`;
