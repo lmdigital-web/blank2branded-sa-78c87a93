@@ -494,15 +494,56 @@ export function CheckoutPage() {
                   </div>
                 )}
 
+                <div
+                  className={`rounded-md border p-3 space-y-2 ${
+                    ackError && !ackLeadTime
+                      ? "border-destructive bg-destructive/5"
+                      : "border-amber-500/50 bg-amber-500/5"
+                  }`}
+                >
+                  <div className="flex items-start gap-2 text-xs text-charcoal">
+                    <Clock className="w-4 h-4 mt-0.5 text-amber-600 flex-shrink-0" />
+                    <p className="leading-relaxed">
+                      <span className="font-bold uppercase">Please note:</span>{" "}
+                      <span className="font-bold">
+                        Any order that requires artwork or printing has a lead time of 7–14 working days
+                      </span>{" "}
+                      from the date artwork is approved and payment is received. Blank stock only orders
+                      ship within 1–3 working days.
+                    </p>
+                  </div>
+                  <label
+                    htmlFor="ack-lead-time"
+                    className="flex items-start gap-2 text-xs font-semibold text-charcoal cursor-pointer pt-1"
+                  >
+                    <Checkbox
+                      id="ack-lead-time"
+                      checked={ackLeadTime}
+                      onCheckedChange={(v) => {
+                        setAckLeadTime(v === true);
+                        if (v === true) setAckError(false);
+                      }}
+                      className="mt-0.5"
+                    />
+                    <span>I acknowledge and accept the 7–14 working day lead time for printed orders.</span>
+                  </label>
+                  {ackError && !ackLeadTime && (
+                    <p className="text-[11px] text-destructive pl-6">
+                      You must acknowledge the lead time before making payment.
+                    </p>
+                  )}
+                </div>
+
                 <Button
                   onClick={payNow}
-                  disabled={moqShort || sending}
+                  disabled={moqShort || sending || !ackLeadTime}
                   size="lg"
                   className="w-full"
                 >
                   <Lock className="w-4 h-4 mr-2" />
                   {sending ? "Preparing payment…" : `Pay ${currency} ${total.toFixed(2)} with PayFast`}
                 </Button>
+
 
                 <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
                   By placing your order you agree to our{" "}
