@@ -107,6 +107,11 @@ export function CheckoutPage() {
 
   const payNow = async () => {
     if (moqShort || items.length === 0 || sending) return;
+    if (!ackLeadTime) {
+      setAckError(true);
+      toast.error("Please acknowledge the 7–14 working day lead time to continue.");
+      return;
+    }
     const parsed = customerSchema.safeParse(customer);
     if (!parsed.success) {
       const fieldErrors: Partial<Record<keyof typeof EMPTY, string>> = {};
