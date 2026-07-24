@@ -195,7 +195,7 @@ export function CheckoutPage() {
       if (pfErr) throw pfErr;
 
       // Open WhatsApp with the order summary (new tab) so we still receive it.
-      const msg = buildOrderMessage(lineItems, customerForApi);
+      const msg = buildOrderMessage(lineItems, customerForWhatsApp);
       openWhatsApp(msg);
 
       // Auto-submit a form to PayFast to redirect the buyer.
@@ -216,7 +216,7 @@ export function CheckoutPage() {
       console.error("PayFast redirect failed:", err);
       toast.error("Couldn't open PayFast — we'll take payment via the emailed invoice instead.");
       setSending(false);
-      const msg = buildOrderMessage(lineItems, customerForApi);
+      const msg = buildOrderMessage(lineItems, customerForWhatsApp);
       openWhatsApp(msg);
     }
   };
