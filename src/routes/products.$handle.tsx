@@ -219,13 +219,16 @@ export function ProductPage() {
     setBrandPosition("");
     setBrandSize("");
     setBrandColours("");
+    setColourCount(1);
   }, [brandType]);
   useEffect(() => {
     setBrandSize("");
     setBrandColours("");
+    setColourCount(1);
   }, [brandPosition]);
   useEffect(() => {
     setBrandColours("");
+    setColourCount(1);
   }, [brandSize]);
 
   const matchedBranding = useMemo(() => {
