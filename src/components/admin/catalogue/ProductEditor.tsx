@@ -290,6 +290,22 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
         );
         if (iErr) throw iErr;
       }
+      await supabase.from("shop_product_branding_options").delete().eq("product_id", productIdNow);
+      if (branding.length) {
+        const { error: bErr } = await supabase.from("shop_product_branding_options").insert(
+          branding.map((b, i) => ({
+            product_id: productIdNow,
+            branding_type: b.branding_type,
+            position: b.position || null,
+            branding_size: b.branding_size || null,
+            max_colour_count: b.max_colour_count ? Number(b.max_colour_count) : null,
+            unit_cost: Number(b.unit_cost || 0),
+            setup_fee: Number(b.setup_fee || 0),
+            sort_order: i,
+          })),
+        );
+        if (bErr) throw bErr;
+      }
       toast.success(isNew ? "Product created" : "Product saved");
       onSaved();
     } catch (err) {
