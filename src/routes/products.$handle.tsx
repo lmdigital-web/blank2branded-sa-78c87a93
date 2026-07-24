@@ -201,8 +201,10 @@ export function ProductPage() {
       console.error("[cart] addItem failed", err);
       toast.error("Could not add to cart");
     }
-    // Offer DTF prints — but not when the just-added item IS a print product itself.
-    if (!NO_UPSELL_HANDLES.has(product.handle)) {
+    // Offer DTF prints — but not for print products themselves, and not for
+    // products that have their own per-product branding options (e.g. pens,
+    // bags) where the DTF placements (right chest, A3, etc.) don't apply.
+    if (!NO_UPSELL_HANDLES.has(product.handle) && !hasBranding) {
       console.log("[upsell] opening DTF dialog for qty", quantity);
       setLastAddedQty(quantity);
       setUpsellOpen(true);
