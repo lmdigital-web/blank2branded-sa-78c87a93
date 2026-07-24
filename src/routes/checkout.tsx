@@ -118,7 +118,10 @@ export function CheckoutPage() {
     setSending(true);
     trackEvent("initiate_checkout", { value: total, currency });
 
-    const { notes: _notes, ...customerForApi } = parsed.data;
+    const { notes: _notes, street, suburb, city, province, postalCode, ...rest } = parsed.data;
+    const address = `${street}, ${suburb}, ${city}, ${province}, ${postalCode}`;
+    const customerForApi = { ...rest, street, suburb, city, province, postalCode, address };
+    const customerForWhatsApp = { ...rest, address };
     const lineItems = items.map((i) => {
       const node = i.product.node as { title?: string; handle?: string };
       const opts = i.selectedOptions?.map((o) => o.value).filter(Boolean).join(" / ");
