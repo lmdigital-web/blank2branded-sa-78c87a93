@@ -26,6 +26,7 @@ const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ d
 const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
 const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
 const SportsKitsPage = lazy(() => import("@/routes/sports-kits").then((m) => ({ default: m.SportsKitsPage })));
+const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
 
 const queryClient = new QueryClient();
 
