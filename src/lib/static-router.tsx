@@ -21,6 +21,7 @@ const TRAILING_SLASH_ROUTES = new Set([
   "/blanks",
   "/blog",
   "/catalogues",
+  "/checkout",
   "/contact",
   "/display",
   "/dtf",
