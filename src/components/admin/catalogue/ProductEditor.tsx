@@ -137,6 +137,15 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
           alt: (i.alt as string | null) ?? null,
           position: i.position as number,
         })));
+        setBranding(((brnd.data ?? []) as Record<string, unknown>[]).map((b) => ({
+          id: b.id as string,
+          branding_type: (b.branding_type as string) ?? "",
+          position: (b.position as string) ?? "",
+          branding_size: (b.branding_size as string) ?? "",
+          max_colour_count: b.max_colour_count != null ? String(b.max_colour_count) : "",
+          unit_cost: String(b.unit_cost ?? "0"),
+          setup_fee: String(b.setup_fee ?? "0"),
+        })));
         setLoading(false);
       } else {
         setLoading(false);
