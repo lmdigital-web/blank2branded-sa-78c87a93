@@ -425,7 +425,6 @@ export function ProductEditor({ productId, onClose, onSaved }: Props) {
             </>)}
 
             {tab === "variants" && (
-            /* Variants */
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Variants ({variants.length})</h3>
