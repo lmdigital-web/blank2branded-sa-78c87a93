@@ -12,6 +12,17 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
 import { productSchema, breadcrumbSchema, injectJsonLd, removeJsonLd, SITE_URL } from "@/lib/schema-builder";
+import { supabase } from "@/integrations/supabase/client";
+
+type BrandingOption = {
+  id: string;
+  branding_type: string;
+  position: string;
+  branding_size: string | null;
+  max_colour_count: number | null;
+  unit_cost: number;
+  setup_fee: number;
+};
 
 const DTF_ADDON_HANDLE = "dtf-print-add-on";
 // Products that are themselves prints — no upsell popup needed.
@@ -95,6 +106,22 @@ export function ProductPage() {
     } catch { /* ignore */ }
   }, [product]);
 
+  const { data: brandingOptions = [] } = useQuery({
+    queryKey: ["product-branding", product?.id],
+    enabled: !!product?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("shop_product_branding_options")
+        .select("id,branding_type,position,branding_size,max_colour_count,unit_cost,setup_fee")
+        .eq("product_id", product!.id)
+        .order("branding_type")
+        .order("position");
+      if (error) throw error;
+      return (data ?? []) as BrandingOption[];
+    },
+  });
+  const hasBranding = brandingOptions.length > 0;
+
   const variants = product?.variants.edges.map((e) => e.node) ?? [];
   const options = product?.options ?? [];
 
@@ -174,8 +201,10 @@ export function ProductPage() {
       console.error("[cart] addItem failed", err);
       toast.error("Could not add to cart");
     }
-    // Offer DTF prints — but not when the just-added item IS a print product itself.
-    if (!NO_UPSELL_HANDLES.has(product.handle)) {
+    // Offer DTF prints — but not for print products themselves, and not for
+    // products that have their own per-product branding options (e.g. pens,
+    // bags) where the DTF placements (right chest, A3, etc.) don't apply.
+    if (!NO_UPSELL_HANDLES.has(product.handle) && !hasBranding) {
       console.log("[upsell] opening DTF dialog for qty", quantity);
       setLastAddedQty(quantity);
       setUpsellOpen(true);
@@ -323,6 +352,42 @@ export function ProductPage() {
                     )}
                   </Button>
                 </div>
+
+                {hasBranding && (
+                  <div className="mt-6 rounded-lg border border-border bg-card p-4">
+                    <p className="text-sm font-semibold text-foreground">Branding options</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Available branding methods for this product. Let us know your choice on WhatsApp after checkout — pricing shown is per unit plus a one-time setup fee.
+                    </p>
+                    <div className="mt-3 overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead className="text-left text-muted-foreground">
+                          <tr>
+                            <th className="py-1.5 pr-3">Method</th>
+                            <th className="py-1.5 pr-3">Position</th>
+                            <th className="py-1.5 pr-3">Size</th>
+                            <th className="py-1.5 pr-3">Colours</th>
+                            <th className="py-1.5 pr-3 text-right">Unit</th>
+                            <th className="py-1.5 text-right">Setup</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {brandingOptions.map((b) => (
+                            <tr key={b.id} className="border-t border-border">
+                              <td className="py-1.5 pr-3">{b.branding_type}</td>
+                              <td className="py-1.5 pr-3">{b.position}</td>
+                              <td className="py-1.5 pr-3">{b.branding_size || "—"}</td>
+                              <td className="py-1.5 pr-3">{b.max_colour_count ?? "—"}</td>
+                              <td className="py-1.5 pr-3 text-right tabular-nums">R {Number(b.unit_cost).toFixed(2)}</td>
+                              <td className="py-1.5 text-right tabular-nums">R {Number(b.setup_fee).toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
 
                 {product && GANG_BUILDER_URLS[product.handle] && (
                   <div className="mt-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
