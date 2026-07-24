@@ -198,7 +198,61 @@ export function ProductPage() {
         quantity,
         selectedOptions: selectedVariant.selectedOptions ?? [],
       });
-      toast.success("Added to cart");
+
+      // If a branding option is selected, add branding-per-unit line + one-time setup fee.
+      const chosenBranding = brandingOptions.find((b) => b.id === selectedBrandingId);
+      if (chosenBranding) {
+        const currency = selectedVariant.price.currencyCode || "ZAR";
+        const brandingLabel = `${chosenBranding.branding_type} — ${chosenBranding.position}${chosenBranding.branding_size ? ` (${chosenBranding.branding_size})` : ""}`;
+        const brandingVariantId = `branding:${chosenBranding.id}`;
+        const brandingProductShell = {
+          node: {
+            id: `branding-product:${chosenBranding.id}`,
+            title: `Branding — ${product.title}`,
+            description: brandingLabel,
+            handle: `${product.handle}-branding`,
+            priceRange: { minVariantPrice: { amount: String(chosenBranding.unit_cost), currencyCode: currency } },
+            images: product.images,
+            variants: { edges: [] },
+            options: [{ name: "Branding", values: [brandingLabel] }],
+          },
+        } as never;
+        await addItem({
+          product: brandingProductShell,
+          variantId: brandingVariantId,
+          variantTitle: brandingLabel,
+          price: { amount: String(chosenBranding.unit_cost), currencyCode: currency },
+          quantity,
+          selectedOptions: [{ name: "Branding", value: brandingLabel }],
+        });
+
+        const setupVariantId = `branding-setup:${chosenBranding.id}`;
+        const alreadyHasSetup = cartItems.some((i) => i.variantId === setupVariantId);
+        if (!alreadyHasSetup && Number(chosenBranding.setup_fee) > 0) {
+          const setupShell = {
+            node: {
+              id: `branding-setup-product:${chosenBranding.id}`,
+              title: `Artwork setup — ${chosenBranding.branding_type}`,
+              description: "One-time setup fee",
+              handle: `${product.handle}-branding-setup`,
+              priceRange: { minVariantPrice: { amount: String(chosenBranding.setup_fee), currencyCode: currency } },
+              images: product.images,
+              variants: { edges: [] },
+              options: [{ name: "Fee", values: ["Setup"] }],
+            },
+          } as never;
+          await addItem({
+            product: setupShell,
+            variantId: setupVariantId,
+            variantTitle: `Setup — ${chosenBranding.branding_type}`,
+            price: { amount: String(chosenBranding.setup_fee), currencyCode: currency },
+            quantity: 1,
+            selectedOptions: [{ name: "Fee", value: "One-time setup" }],
+          });
+        }
+      }
+
+      toast.success(chosenBranding ? "Added with branding to cart" : "Added to cart");
     } catch (err) {
       console.error("[cart] addItem failed", err);
       toast.error("Could not add to cart");
