@@ -11,8 +11,6 @@ const BlanksPage = lazy(() => import("@/routes/blanks").then((m) => ({ default: 
 const ContactPage = lazy(() => import("@/routes/contact").then((m) => ({ default: m.ContactPage })));
 const DtfPage = lazy(() => import("@/routes/dtf").then((m) => ({ default: m.DtfPage })));
 const ShopPage = lazy(() => import("@/routes/shop").then((m) => ({ default: m.ShopPage })));
-const ShopApparelPage = lazy(() => import("@/routes/shop").then((m) => ({ default: () => <m.ShopCollectionPage collection="apparel" /> })));
-const ShopCorporatePage = lazy(() => import("@/routes/shop").then((m) => ({ default: () => <m.ShopCollectionPage collection="corporate" /> })));
 const ProductPage = lazy(() => import("@/routes/products.$handle").then((m) => ({ default: m.ProductPage })));
 const BlogIndexPage = lazy(() => import("@/routes/blog").then((m) => ({ default: m.BlogIndexPage })));
 const BlogPostPage = lazy(() => import("@/routes/blog.$slug").then((m) => ({ default: m.BlogPostPage })));
@@ -225,8 +223,8 @@ function AppContent() {
   else if (cleanPath === "/contact") page = <ContactPage />;
   else if (cleanPath === "/dtf") page = <DtfPage />;
   else if (cleanPath === "/shop") page = <ShopPage />;
-  else if (cleanPath === "/shop/apparel") page = <ShopApparelPage />;
-  else if (cleanPath === "/shop/corporate") page = <ShopCorporatePage />;
+  else if (cleanPath === "/shop/apparel") page = <ShopPage />;
+  else if (cleanPath === "/shop/corporate") page = <ShopPage />;
   else if (cleanPath === "/blog") page = <BlogIndexPage />;
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
