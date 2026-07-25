@@ -4,152 +4,25 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-import shopApparelAsset from "@/assets/shop-apparel.jpg.asset.json";
-import shopCorporateAsset from "@/assets/shop-corporate.jpg.asset.json";
-const shopApparelImg = shopApparelAsset.url;
-const shopCorporateImg = shopCorporateAsset.url;
 import {
   listPublishedProducts,
   listCategoryTree,
   listProductCategoryMap,
-  type Collection,
 } from "@/lib/catalog";
 
 /* -------------------------------------------------------------------------- */
-/*  Landing page — two collection blocks                                       */
+/*  Shop page — full product grid with category sidebar                        */
 /* -------------------------------------------------------------------------- */
 
 export function ShopPage() {
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
-        <div className="pointer-events-none absolute inset-0">
-          <img src={shopHeroBg} alt="" aria-hidden="true" className="h-full w-full scale-105 object-cover blur-[2px]" />
-          <div className="absolute inset-0 bg-background/40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/65 to-background/20" />
-        </div>
-        <div className="pointer-events-none absolute inset-0 opacity-25">
-          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
-          <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
-        </div>
-        <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
-          <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            What are you shopping for today?
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Pick a range below — browse blank apparel & DTF prints, or dive into our full corporate gifting and branding catalogue.
-          </p>
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-2">
-          <CollectionCard
-            to="/shop/apparel"
-            eyebrow="Blanks & prints"
-            title="Shop T-Shirts, Hoodies & Sweaters"
-            description="Our original blank apparel range plus DTF transfers — ready to print, press or resell."
-            image={shopApparelImg}
-            imageAlt="Stack of blank t-shirts, hoodies and a sweater"
-          />
-          <CollectionCard
-            to="/shop/corporate"
-            eyebrow="Corporate & gifting"
-            title="Shop Corporate Gifts, Clothing & Branding"
-            description="Bags, drinkware, workwear, headwear, chef wear, display and more — with branding options at checkout."
-            image={shopCorporateImg}
-            imageAlt="Branded corporate gifts including a bottle, notebook, cap and mugs"
-          />
-        </div>
-      </section>
-
-      <Footer />
-    </div>
-  );
-}
-
-function CollectionCard({
-  to, eyebrow, title, description, image, imageAlt,
-}: {
-  to: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-  image: string;
-  imageAlt: string;
-}) {
-  return (
-    <Link
-      to={to}
-      className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all",
-        "hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl",
-      )}
-    >
-      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-        <img
-          src={image}
-          alt={imageAlt}
-          loading="lazy"
-          width={1280}
-          height={960}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
-        <span className="absolute left-5 top-5 rounded-full bg-background/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary backdrop-blur">
-          {eyebrow}
-        </span>
-      </div>
-      <div className="flex flex-1 flex-col p-6 md:p-8">
-        <h2 className="text-2xl font-black tracking-tight text-foreground md:text-3xl">{title}</h2>
-        <p className="mt-3 flex-1 text-sm text-muted-foreground md:text-base">{description}</p>
-        <span
-          className={cn(
-            "mt-6 inline-flex w-fit items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold",
-            "text-primary-foreground shadow-sm transition-all group-hover:bg-primary/90 group-hover:shadow-lg group-hover:shadow-primary/20",
-          )}
-        >
-          Browse range
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </span>
-      </div>
-    </Link>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Collection page — filtered grid + sidebar                                  */
-/* -------------------------------------------------------------------------- */
-
-const COLLECTION_META: Record<Collection, { eyebrow: string; title: React.ReactNode; description: string }> = {
-  apparel: {
-    eyebrow: "T-Shirts, Hoodies & Sweaters",
-    title: (
-      <>
-        <span className="text-gradient-dtf">Blanks.</span> Prints. Ready to ship.
-      </>
-    ),
-    description: "Our core blank apparel range plus DTF transfers — courier nationwide from Mbombela.",
-  },
-  corporate: {
-    eyebrow: "Corporate Gifts, Clothing & Branding",
-    title: <>Corporate gifting, workwear & branded merch.</>,
-    description: "Browse bags, drinkware, workwear, headwear, display and more — add branding at checkout.",
-  },
-};
-
-export function ShopCollectionPage({ collection }: { collection: Collection }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const meta = COLLECTION_META[collection];
 
   const { data, isLoading } = useQuery({
-    queryKey: ["shop-products", collection],
-    queryFn: () => listPublishedProducts(collection),
+    queryKey: ["shop-products", "all"],
+    queryFn: () => listPublishedProducts(),
   });
 
   const { data: categories } = useQuery({
@@ -158,11 +31,10 @@ export function ShopCollectionPage({ collection }: { collection: Collection }) {
   });
 
   const { data: catMap } = useQuery({
-    queryKey: ["shop-product-category-map", collection],
-    queryFn: () => listProductCategoryMap(collection),
+    queryKey: ["shop-product-category-map", "all"],
+    queryFn: () => listProductCategoryMap(),
   });
 
-  // Only show top-level categories that actually contain products in this collection.
   const topLevel = useMemo(() => {
     const all = (categories ?? []).filter((c) => !c.parent_id);
     const usedRoots = new Set<string>();
@@ -215,7 +87,7 @@ export function ShopCollectionPage({ collection }: { collection: Collection }) {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <section className="relative overflow-hidden border-b border-border pt-40 pb-20 md:pt-48 md:pb-24">
+      <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
         <div className="pointer-events-none absolute inset-0">
           <img src={shopHeroBg} alt="" aria-hidden="true" className="h-full w-full scale-105 object-cover blur-[2px]" />
           <div className="absolute inset-0 bg-background/40" />
@@ -224,18 +96,15 @@ export function ShopCollectionPage({ collection }: { collection: Collection }) {
         <div className="pointer-events-none absolute inset-0 opacity-25">
           <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-magenta blur-3xl" />
           <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
-          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <Link to="/shop" className="hover:text-primary">Shop</Link>
-            <span aria-hidden="true">/</span>
-            <span className="font-semibold text-magenta uppercase tracking-wider">{meta.eyebrow}</span>
-          </div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            {meta.title}
+            Blanks, prints & branded merch.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{meta.description}</p>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+            Browse our full range — blank apparel, DTF transfers, corporate gifts, workwear and more. Courier nationwide from Mbombela.
+          </p>
         </div>
       </section>
 
@@ -277,13 +146,6 @@ export function ShopCollectionPage({ collection }: { collection: Collection }) {
                     );
                   })}
                 </nav>
-
-                <Link
-                  to="/shop"
-                  className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary"
-                >
-                  ← Back to shop
-                </Link>
               </div>
             </aside>
 
@@ -294,7 +156,7 @@ export function ShopCollectionPage({ collection }: { collection: Collection }) {
                 <div className="text-center py-24">
                   <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
                   <h2 className="mt-4 text-xl font-semibold">No products found</h2>
-                  <p className="mt-2 text-muted-foreground">Try a different category, or check the other shop range.</p>
+                  <p className="mt-2 text-muted-foreground">Try a different category.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
