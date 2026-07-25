@@ -4,6 +4,7 @@ import { z } from 'npm:zod@3.23.8';
 const MERCHANT_ID = Deno.env.get('PAYFAST_MERCHANT_ID');
 const MERCHANT_KEY = Deno.env.get('PAYFAST_MERCHANT_KEY');
 const PASSPHRASE = Deno.env.get('PAYFAST_PASSPHRASE') ?? '';
+const USE_PASSPHRASE = (Deno.env.get('PAYFAST_USE_PASSPHRASE') ?? 'false').toLowerCase() === 'true';
 const MODE = (Deno.env.get('PAYFAST_MODE') ?? 'sandbox').toLowerCase();
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://blank2branded.co.za';
 
@@ -98,7 +99,7 @@ Deno.serve(async (req) => {
     }
 
     let sigBase = buildSignatureBase(fields);
-    if (PASSPHRASE) sigBase += `&passphrase=${pfEncode(PASSPHRASE.trim())}`;
+    if (USE_PASSPHRASE && PASSPHRASE.trim()) sigBase += `&passphrase=${pfEncode(PASSPHRASE.trim())}`;
     const signature = await md5(sigBase);
 
     return new Response(
