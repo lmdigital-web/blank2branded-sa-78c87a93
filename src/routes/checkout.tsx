@@ -150,7 +150,8 @@ export function CheckoutPage() {
     let estimateId: string | undefined;
     let estimateNumber: string | undefined;
     try {
-      const { data, error } = await supabase.functions.invoke("zoho-create-estimate", {
+      // Race Zoho against a 12s timeout so a slow proforma never blocks payment.
+      const zohoPromise = supabase.functions.invoke("zoho-create-estimate", {
         body: {
           customer: customerForApi,
           items: lineItems.map((l) => l._invoice),
@@ -159,15 +160,32 @@ export function CheckoutPage() {
           notes: parsed.data.notes,
         },
       });
+      const timeout = new Promise<{ data: null; error: Error }>((resolve) =>
+        setTimeout(() => resolve({ data: null, error: new Error("zoho timeout") }), 12000),
+      );
+      const { data, error } = (await Promise.race([zohoPromise, timeout])) as {
+        data: { estimate_id?: string | number; estimate_number?: string } | null;
+        error: unknown;
+      };
       if (error) throw error;
       estimateId = data?.estimate_id ? String(data.estimate_id) : undefined;
       estimateNumber = data?.estimate_number ? String(data.estimate_number) : undefined;
     } catch (err) {
       console.error("Zoho proforma failed:", err);
-      toast.error("Proforma generation had an issue — continuing to payment. We'll follow up manually.");
+      toast.message("Proforma will be issued shortly — continuing to payment.");
     }
 
     const paymentId = `B2B-${Date.now()}`;
+
+    // Open a blank window synchronously so browsers don't block the popup after
+    // the async PayFast call resolves.
+    const payWindow = window.open("", "_blank");
+    if (payWindow) {
+      payWindow.document.write(
+        '<!doctype html><title>Redirecting to PayFast…</title><style>body{font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#333}</style><body><p>Redirecting to PayFast…</p></body>',
+      );
+    }
+
     try {
       const { data: pf, error: pfErr } = await supabase.functions.invoke("payfast-create-payment", {
         body: {
@@ -189,28 +207,46 @@ export function CheckoutPage() {
         },
       });
       if (pfErr) throw pfErr;
+      if (!pf?.process_url || !pf?.fields) throw new Error("PayFast did not return a redirect payload");
 
-      // Auto-submit a form to PayFast to redirect the buyer.
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = pf.process_url;
-      form.target = "_top";
-      Object.entries(pf.fields as Record<string, string>).forEach(([k, v]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = k;
-        input.value = String(v);
-        form.appendChild(input);
-      });
-      document.body.appendChild(form);
-      form.submit();
+      const inputs = Object.entries(pf.fields as Record<string, string>)
+        .map(
+          ([k, v]) =>
+            `<input type="hidden" name="${k}" value="${String(v).replace(/"/g, "&quot;")}">`,
+        )
+        .join("");
+      const html = `<!doctype html><title>Redirecting to PayFast…</title><body><form id="pf" method="POST" action="${pf.process_url}">${inputs}</form><script>document.getElementById('pf').submit();</script></body>`;
+
+      if (payWindow && !payWindow.closed) {
+        payWindow.document.open();
+        payWindow.document.write(html);
+        payWindow.document.close();
+      } else {
+        // Fallback: submit inline (top-level navigation).
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = pf.process_url;
+        form.target = "_top";
+        Object.entries(pf.fields as Record<string, string>).forEach(([k, v]) => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = k;
+          input.value = String(v);
+          form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
+      }
+      setSending(false);
       return;
     } catch (err) {
       console.error("PayFast redirect failed:", err);
-      toast.error("Couldn't open PayFast — we'll take payment via the emailed invoice instead.");
+      if (payWindow && !payWindow.closed) payWindow.close();
+      toast.error("Couldn't open PayFast — please try again or contact us.");
       setSending(false);
     }
   };
+
 
   if (items.length === 0) {
     return (
