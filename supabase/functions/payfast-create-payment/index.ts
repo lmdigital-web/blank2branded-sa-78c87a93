@@ -23,6 +23,8 @@ const BodySchema = z.object({
   itemName: z.string().min(1).max(100),
   itemDescription: z.string().max(255).optional().default(''),
   invoiceNumber: z.string().optional(),
+  estimateId: z.string().optional(),
+  estimateNumber: z.string().optional(),
   paymentId: z.string().min(1).max(100),
 });
 
@@ -57,14 +59,14 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    const { customer, amount, itemName, itemDescription, invoiceNumber, paymentId } = parsed.data;
+    const { customer, amount, itemName, itemDescription, invoiceNumber, estimateId, estimateNumber, paymentId } = parsed.data;
 
     // Fields in the exact order PayFast documents for the signature.
     const rawFields: Record<string, string> = {
       merchant_id: MERCHANT_ID,
       merchant_key: MERCHANT_KEY,
-      return_url: `${SITE_URL}/?payment=success`,
-      cancel_url: `${SITE_URL}/?payment=cancelled`,
+      return_url: `${SITE_URL}/checkout/success/?ref=${encodeURIComponent(estimateNumber ?? invoiceNumber ?? paymentId)}`,
+      cancel_url: `${SITE_URL}/checkout/cancelled/`,
       notify_url: `https://enpdahmqwhdukbnykqyy.functions.supabase.co/payfast-itn`,
       name_first: customer.firstName,
       name_last: customer.lastName,
@@ -74,9 +76,11 @@ Deno.serve(async (req) => {
       amount: amount.toFixed(2),
       item_name: itemName.slice(0, 100),
       item_description: (itemDescription || itemName).slice(0, 255),
-      custom_str1: invoiceNumber ?? '',
+      custom_str1: invoiceNumber ?? estimateNumber ?? '',
       custom_str2: customer.email,
       custom_str3: `${customer.firstName} ${customer.lastName}`,
+      custom_str4: estimateId ?? '',
+      custom_str5: estimateNumber ?? '',
     };
 
     // Strip empty values — PayFast recomputes the signature from POSTed fields,

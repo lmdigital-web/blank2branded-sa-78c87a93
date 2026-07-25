@@ -148,9 +148,10 @@ export function CheckoutPage() {
       };
     });
 
-    let invoiceNumber: string | undefined;
+    let estimateId: string | undefined;
+    let estimateNumber: string | undefined;
     try {
-      const { data, error } = await supabase.functions.invoke("zoho-create-invoice", {
+      const { data, error } = await supabase.functions.invoke("zoho-create-estimate", {
         body: {
           customer: customerForApi,
           items: lineItems.map((l) => l._invoice),
@@ -160,25 +161,12 @@ export function CheckoutPage() {
         },
       });
       if (error) throw error;
-      invoiceNumber = data?.invoice_number;
+      estimateId = data?.estimate_id ? String(data.estimate_id) : undefined;
+      estimateNumber = data?.estimate_number ? String(data.estimate_number) : undefined;
     } catch (err) {
-      console.error("Zoho invoice failed:", err);
-      toast.error("Invoice generation had an issue — continuing to payment. We'll follow up manually.");
+      console.error("Zoho proforma failed:", err);
+      toast.error("Proforma generation had an issue — continuing to payment. We'll follow up manually.");
     }
-
-    // Fire-and-forget order confirmation email (customer + owner)
-    supabase.functions
-      .invoke("send-order-notification", {
-        body: {
-          customer: customerForApi,
-          items: lineItems.map((l) => l._invoice),
-          shipping: SHIPPING_FEE,
-          currency,
-          invoiceNumber,
-          notes: parsed.data.notes,
-        },
-      })
-      .catch((err) => console.error("Order email failed:", err));
 
     const paymentId = `B2B-${Date.now()}`;
     try {
@@ -191,12 +179,13 @@ export function CheckoutPage() {
             phone: parsed.data.phone,
           },
           amount: total,
-          itemName: invoiceNumber ? `Order ${invoiceNumber}` : "Blank2Branded Order",
+          itemName: estimateNumber ? `Order ${estimateNumber}` : "Blank2Branded Order",
           itemDescription: lineItems
             .map((l) => `${l._invoice.quantity}x ${l._invoice.name}`)
             .join(", ")
             .slice(0, 250),
-          invoiceNumber,
+          estimateId,
+          estimateNumber,
           paymentId,
         },
       });
