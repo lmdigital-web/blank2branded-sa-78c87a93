@@ -71,7 +71,13 @@ Deno.serve(async (req) => {
       name_first: customer.firstName,
       name_last: customer.lastName,
       email_address: customer.email,
-      cell_number: customer.phone.replace(/[^0-9+]/g, ''),
+      cell_number: (() => {
+        // PayFast expects a 10-digit SA number starting with 0. Strip non-digits
+        // and normalise +27 / 27 prefixes to 0.
+        let d = customer.phone.replace(/\D/g, '');
+        if (d.startsWith('27') && d.length === 11) d = '0' + d.slice(2);
+        return d;
+      })(),
       m_payment_id: paymentId,
       amount: amount.toFixed(2),
       item_name: itemName.slice(0, 100),
