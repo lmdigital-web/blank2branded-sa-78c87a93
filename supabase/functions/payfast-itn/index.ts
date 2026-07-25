@@ -2,6 +2,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const MERCHANT_ID = Deno.env.get('PAYFAST_MERCHANT_ID');
 const PASSPHRASE = Deno.env.get('PAYFAST_PASSPHRASE') ?? '';
+const USE_PASSPHRASE = (Deno.env.get('PAYFAST_USE_PASSPHRASE') ?? 'false').toLowerCase() === 'true';
 const MODE = (Deno.env.get('PAYFAST_MODE') ?? 'sandbox').toLowerCase();
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -159,7 +160,7 @@ Deno.serve(async (req) => {
     let sigBase = Object.entries(data)
       .map(([k, v]) => `${k}=${pfEncode(v.trim())}`)
       .join('&');
-    if (PASSPHRASE) sigBase += `&passphrase=${pfEncode(PASSPHRASE.trim())}`;
+    if (USE_PASSPHRASE && PASSPHRASE.trim()) sigBase += `&passphrase=${pfEncode(PASSPHRASE.trim())}`;
     const expected = await md5(sigBase);
     if (expected !== signature) {
       console.error('payfast-itn: bad signature', { expected, got: signature });

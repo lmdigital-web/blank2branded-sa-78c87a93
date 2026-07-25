@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { useCartStore } from "@/stores/cartStore";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/ads/pixels";
-import { buildOrderMessage, openWhatsApp, SHIPPING_FEE, type WhatsAppCustomer } from "@/lib/whatsapp";
+import { SHIPPING_FEE } from "@/lib/whatsapp";
 import { Link, navigate } from "@/lib/static-router";
 
 const customerSchema = z.object({
@@ -129,7 +129,6 @@ export function CheckoutPage() {
     const { notes: _notes, street, suburb, city, province, postalCode, ...rest } = parsed.data;
     const address = `${street}, ${suburb}, ${city}, ${province}, ${postalCode}`;
     const customerForApi = { ...rest, street, suburb, city, province, postalCode, address };
-    const customerForWhatsApp = { ...rest, address };
     const lineItems = items.map((i) => {
       const node = i.product.node as { title?: string; handle?: string };
       const opts = i.selectedOptions?.map((o) => o.value).filter(Boolean).join(" / ");
@@ -191,10 +190,6 @@ export function CheckoutPage() {
       });
       if (pfErr) throw pfErr;
 
-      // Open WhatsApp with the order summary (new tab) so we still receive it.
-      const msg = buildOrderMessage(lineItems, customerForWhatsApp);
-      openWhatsApp(msg);
-
       // Auto-submit a form to PayFast to redirect the buyer.
       const form = document.createElement("form");
       form.method = "POST";
@@ -213,8 +208,6 @@ export function CheckoutPage() {
       console.error("PayFast redirect failed:", err);
       toast.error("Couldn't open PayFast — we'll take payment via the emailed invoice instead.");
       setSending(false);
-      const msg = buildOrderMessage(lineItems, customerForWhatsApp);
-      openWhatsApp(msg);
     }
   };
 
