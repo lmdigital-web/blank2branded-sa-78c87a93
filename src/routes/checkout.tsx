@@ -194,6 +194,7 @@ export function CheckoutPage() {
       const form = document.createElement("form");
       form.method = "POST";
       form.action = pf.process_url;
+      form.target = "_top";
       Object.entries(pf.fields as Record<string, string>).forEach(([k, v]) => {
         const input = document.createElement("input");
         input.type = "hidden";
