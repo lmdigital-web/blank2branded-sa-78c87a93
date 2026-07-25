@@ -27,6 +27,8 @@ const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ d
 const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
 const SportsKitsPage = lazy(() => import("@/routes/sports-kits").then((m) => ({ default: m.SportsKitsPage })));
 const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
+const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.success").then((m) => ({ default: m.CheckoutSuccessPage })));
+const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.cancelled").then((m) => ({ default: m.CheckoutCancelledPage })));
 
 const queryClient = new QueryClient();
 
@@ -240,6 +242,8 @@ function AppContent() {
   else if (cleanPath === "/sports-kits") page = <SportsKitsPage />;
   else if (/^\/products\/[^/]+$/.test(cleanPath)) page = <ProductPage />;
   else if (cleanPath === "/checkout") page = <CheckoutPage />;
+  else if (cleanPath === "/checkout/success") page = <CheckoutSuccessPage />;
+  else if (cleanPath === "/checkout/cancelled") page = <CheckoutCancelledPage />;
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
   else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
   else if (/^\/local\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
