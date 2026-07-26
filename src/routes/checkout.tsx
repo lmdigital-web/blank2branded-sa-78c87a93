@@ -361,8 +361,7 @@ export function CheckoutPage() {
               </section>
 
               <div className="hidden lg:flex items-center gap-6 text-xs text-muted-foreground pt-2">
-                <div className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secure checkout</div>
-                <div className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> PayFast protected</div>
+                <div className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> Secure order</div>
                 <div className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Nationwide courier</div>
               </div>
             </div>
