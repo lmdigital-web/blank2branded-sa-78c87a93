@@ -29,69 +29,104 @@ const BodySchema = z.object({
 
 const fmt = (n: number, c: string) => `${c} ${n.toFixed(2)}`;
 
-function buildCustomerHtml(data: z.infer<typeof BodySchema>, subtotal: number, total: number) {
-  const rows = data.items
-    .map(
-      (i) => `<tr>
-        <td style="padding:10px;border-bottom:1px solid #eee">
-          <strong>${i.name}</strong>${i.description ? `<br/><span style="color:#666;font-size:13px">${i.description}</span>` : ''}
-        </td>
-        <td style="padding:10px;border-bottom:1px solid #eee;text-align:center">${i.quantity}</td>
-        <td style="padding:10px;border-bottom:1px solid #eee;text-align:right">${fmt(i.rate * i.quantity, data.currency)}</td>
-      </tr>`,
-    )
-    .join('');
+const LOGO = 'https://blank2branded.co.za/logo.png';
+const ORANGE = '#FF5A00';
+const INK = '#1c1c1c';
 
-  return `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#f6f6f6;margin:0;padding:24px">
-    <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden">
-      <div style="background:#111;color:#fff;padding:20px 24px">
-        <h1 style="margin:0;font-size:22px">Order received — thank you, ${data.customer.firstName}!</h1>
-      </div>
-      <div style="padding:24px">
-        <p>Hi ${data.customer.firstName},</p>
-        <p>We've received your order${data.invoiceNumber ? ` (invoice <strong>${data.invoiceNumber}</strong>)` : ''}. A separate email with your invoice and payment link is on the way from our billing system.</p>
-        <table style="width:100%;border-collapse:collapse;margin:16px 0">
-          <thead><tr style="background:#f0f0f0"><th align="left" style="padding:10px">Item</th><th style="padding:10px">Qty</th><th align="right" style="padding:10px">Total</th></tr></thead>
-          <tbody>${rows}</tbody>
+function shell(inner: string, preheader: string) {
+  return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+  <body style="margin:0;padding:0;background:#f4f4f5;font-family:Helvetica,Arial,sans-serif;color:${INK}">
+    <div style="display:none;font-size:1px;color:#f4f4f5;max-height:0;overflow:hidden">${preheader}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:24px 12px">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+          <tr><td style="background:${INK};padding:24px" align="center">
+            <img src="${LOGO}" width="150" alt="Blank2Branded" style="display:block;height:auto;border:0;max-width:150px"/>
+          </td></tr>
+          <tr><td style="height:4px;background:linear-gradient(90deg,#FF5A00,#e0148c,#f5c400,#22a6d8)">&nbsp;</td></tr>
+          ${inner}
+          <tr><td style="background:#fafafa;border-top:1px solid #eee;padding:20px 28px;text-align:center;color:#888;font-size:12px;line-height:1.6">
+            <strong style="color:${INK}">Blank2Branded</strong> — From Blank to Branded<br/>
+            Mbombela, South Africa · Mon–Fri 8am–4pm<br/>
+            <a href="mailto:hello@blank2branded.co.za" style="color:${ORANGE};text-decoration:none">hello@blank2branded.co.za</a> ·
+            <a href="https://wa.me/27698384045" style="color:${ORANGE};text-decoration:none">WhatsApp +27 69 838 4045</a>
+          </td></tr>
         </table>
-        <table style="width:100%;margin-top:8px">
-          <tr><td>Subtotal</td><td align="right">${fmt(subtotal, data.currency)}</td></tr>
-          <tr><td>Shipping</td><td align="right">${fmt(data.shipping, data.currency)}</td></tr>
-          <tr><td style="padding-top:8px;font-size:18px;font-weight:bold">Total</td><td align="right" style="padding-top:8px;font-size:18px;font-weight:bold">${fmt(total, data.currency)}</td></tr>
-        </table>
-        <h3 style="margin-top:24px">Delivery details</h3>
-        <p style="color:#444;line-height:1.5">
-          ${data.customer.firstName} ${data.customer.lastName}<br/>
-          ${data.customer.phone}<br/>
-          ${data.customer.email}<br/>
-          ${data.customer.address.replace(/\n/g, '<br/>')}
-        </p>
-        <p style="margin-top:24px">Any questions? Reply to this email or WhatsApp us on +27 69 838 4045.</p>
-        <p style="color:#888;font-size:12px;margin-top:32px">Blank2Branded · hello@blank2branded.co.za</p>
-      </div>
-    </div>
+      </td></tr>
+    </table>
   </body></html>`;
 }
 
-function buildOwnerHtml(data: z.infer<typeof BodySchema>, subtotal: number, total: number) {
-  const rows = data.items
+function itemRows(data: z.infer<typeof BodySchema>) {
+  return data.items
     .map(
-      (i) =>
-        `<tr><td style="padding:6px;border-bottom:1px solid #eee">${i.name}${i.description ? ` — ${i.description}` : ''}</td><td style="padding:6px;text-align:center">${i.quantity}</td><td style="padding:6px;text-align:right">${fmt(i.rate * i.quantity, data.currency)}</td></tr>`,
+      (i) => `<tr>
+        <td style="padding:12px 0;border-bottom:1px solid #eee;font-size:14px">
+          <strong style="color:${INK}">${i.name}</strong>${i.description ? `<br/><span style="color:#777;font-size:12px">${i.description}</span>` : ''}
+        </td>
+        <td style="padding:12px 8px;border-bottom:1px solid #eee;text-align:center;font-size:14px;color:#555">${i.quantity}</td>
+        <td style="padding:12px 0;border-bottom:1px solid #eee;text-align:right;font-size:14px;white-space:nowrap"><strong>${fmt(i.rate * i.quantity, data.currency)}</strong></td>
+      </tr>`,
     )
     .join('');
-  return `<!doctype html><html><body style="font-family:Arial,sans-serif">
-    <h2>🛒 New order${data.invoiceNumber ? ` — ${data.invoiceNumber}` : ''}</h2>
-    <p><strong>${data.customer.firstName} ${data.customer.lastName}</strong><br/>
-      📞 ${data.customer.phone}<br/>
-      ✉️ ${data.customer.email}<br/>
-      📍 ${data.customer.address.replace(/\n/g, '<br/>')}</p>
-    <table style="width:100%;border-collapse:collapse;margin-top:12px">
-      <thead><tr style="background:#f0f0f0"><th align="left" style="padding:6px">Item</th><th style="padding:6px">Qty</th><th align="right" style="padding:6px">Total</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <p>Subtotal: ${fmt(subtotal, data.currency)}<br/>Shipping: ${fmt(data.shipping, data.currency)}<br/><strong>Total: ${fmt(total, data.currency)}</strong></p>
-  </body></html>`;
+}
+
+function totalsBlock(data: z.infer<typeof BodySchema>, subtotal: number, total: number) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px;font-size:14px">
+    <tr><td style="padding:4px 0;color:#666">Subtotal</td><td align="right" style="padding:4px 0">${fmt(subtotal, data.currency)}</td></tr>
+    <tr><td style="padding:4px 0;color:#666">Shipping</td><td align="right" style="padding:4px 0">${fmt(data.shipping, data.currency)}</td></tr>
+    <tr><td style="padding:12px 0 0;border-top:2px solid ${INK};font-size:17px;font-weight:bold">Total</td>
+        <td align="right" style="padding:12px 0 0;border-top:2px solid ${INK};font-size:17px;font-weight:bold;color:${ORANGE}">${fmt(total, data.currency)}</td></tr>
+  </table>`;
+}
+
+function addressBlock(data: z.infer<typeof BodySchema>) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;background:#fafafa;border:1px solid #eee;border-radius:10px">
+    <tr><td style="padding:16px 18px;font-size:13px;line-height:1.7;color:#444">
+      <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#999;margin-bottom:6px">Delivery details</div>
+      <strong style="color:${INK}">${data.customer.firstName} ${data.customer.lastName}</strong><br/>
+      ${data.customer.phone}<br/>
+      ${data.customer.email}<br/>
+      ${data.customer.address.replace(/\n/g, '<br/>')}
+    </td></tr>
+  </table>`;
+}
+
+function buildCustomerHtml(data: z.infer<typeof BodySchema>, subtotal: number, total: number) {
+  const inner = `<tr><td style="padding:32px 28px">
+      <h1 style="margin:0 0 6px;font-size:24px;color:${INK}">Thanks, ${data.customer.firstName}! 🎉</h1>
+      <p style="margin:0 0 4px;color:#555;font-size:15px;line-height:1.6">
+        We've received your order${data.invoiceNumber ? ` <strong>${data.invoiceNumber}</strong>` : ''} and our team is on it.
+        Someone will be in touch shortly to confirm details and arrange payment.
+      </p>
+      <div style="margin:22px 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#999">Order summary</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemRows(data)}</table>
+      ${totalsBlock(data, subtotal, total)}
+      ${addressBlock(data)}
+      <p style="margin:26px 0 0;font-size:13px;color:#666;line-height:1.6">
+        Please note: any order with artwork or printing has a <strong>7–14 working day</strong> lead time.
+      </p>
+      <div style="margin-top:26px;text-align:center">
+        <a href="https://wa.me/27698384045" style="display:inline-block;background:${ORANGE};color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:13px 26px;border-radius:8px">Chat to us on WhatsApp</a>
+      </div>
+    </td></tr>`;
+  return shell(inner, `Order received — thanks ${data.customer.firstName}, we'll be in touch shortly.`);
+}
+
+function buildOwnerHtml(data: z.infer<typeof BodySchema>, subtotal: number, total: number) {
+  const inner = `<tr><td style="padding:32px 28px">
+      <div style="display:inline-block;background:${ORANGE};color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px">New order</div>
+      <h1 style="margin:12px 0 4px;font-size:23px;color:${INK}">${data.customer.firstName} ${data.customer.lastName} — ${fmt(total, data.currency)}</h1>
+      ${data.invoiceNumber ? `<p style="margin:0;color:#777;font-size:13px">Ref ${data.invoiceNumber}</p>` : ''}
+      <div style="margin:22px 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#999">Items</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemRows(data)}</table>
+      ${totalsBlock(data, subtotal, total)}
+      ${addressBlock(data)}
+      <div style="margin-top:24px;text-align:center">
+        <a href="mailto:${data.customer.email}" style="display:inline-block;background:${INK};color:#fff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 22px;border-radius:8px">Reply to customer</a>
+      </div>
+    </td></tr>`;
+  return shell(inner, `New order from ${data.customer.firstName} ${data.customer.lastName} — ${fmt(total, data.currency)}`);
 }
 
 async function sendEmail(payload: Record<string, unknown>) {
