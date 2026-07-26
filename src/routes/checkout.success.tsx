@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { CheckCircle2, Mail } from "lucide-react";
+import { CheckCircle2, MessageCircle } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/static-router";
 import { useCartStore } from "@/stores/cartStore";
-import { trackEvent } from "@/lib/ads/pixels";
 
 export function CheckoutSuccessPage() {
   const { clearCart } = useCartStore();
@@ -15,8 +14,7 @@ export function CheckoutSuccessPage() {
 
   useEffect(() => {
     clearCart();
-    try { trackEvent("purchase", { reference: ref }); } catch { /* noop */ }
-  }, [clearCart, ref]);
+  }, [clearCart]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -27,17 +25,18 @@ export function CheckoutSuccessPage() {
             <CheckCircle2 className="w-9 h-9 text-emerald-600" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold">Payment received</h1>
+            <h1 className="text-3xl font-bold">Order received</h1>
             <p className="text-muted-foreground">
-              Thanks for your order{ref ? <> for reference <strong>{ref}</strong></> : ""}. We're
-              generating your tax invoice now.
+              Thanks for your order{ref ? <> — reference <strong>{ref}</strong></> : ""}. We've sent
+              the details to our team and someone will be in touch with you shortly to confirm your
+              order and arrange payment.
             </p>
           </div>
           <div className="rounded-md border bg-muted/40 p-4 text-left text-sm text-muted-foreground flex gap-3">
-            <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <p>
-              A tax invoice will arrive by email shortly from our billing system. Your order is now in
-              production — we'll be in touch on WhatsApp with artwork and dispatch updates.
+              Need to reach us right away? WhatsApp <strong>+27 69 838 4045</strong> or email{" "}
+              <a href="mailto:hello@blank2branded.co.za" className="underline">hello@blank2branded.co.za</a>.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
