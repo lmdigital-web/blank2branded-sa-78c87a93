@@ -1,8 +1,6 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { z } from 'npm:zod@3.23.8';
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
 const FROM = 'Blank2Branded <hello@blank2branded.co.za>';
@@ -97,12 +95,11 @@ function buildOwnerHtml(data: z.infer<typeof BodySchema>, subtotal: number, tota
 }
 
 async function sendEmail(payload: Record<string, unknown>) {
-  const res = await fetch(`${GATEWAY_URL}/emails`, {
+  const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      'X-Connection-Api-Key': RESEND_API_KEY!,
+      Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify(payload),
   });
@@ -114,7 +111,7 @@ async function sendEmail(payload: Record<string, unknown>) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (!LOVABLE_API_KEY || !RESEND_API_KEY) throw new Error('Email service not configured');
+    if (!RESEND_API_KEY) throw new Error('Email service not configured');
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
       return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), {
