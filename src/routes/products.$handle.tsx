@@ -459,41 +459,6 @@ export function ProductPage() {
                   })}
                 </div>
 
-                <div className="mt-8 flex items-stretch gap-3">
-                  <div className="flex items-center border border-border rounded-md">
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="h-12 w-12 flex items-center justify-center hover:bg-muted transition-colors"
-                      aria-label="Decrease quantity"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </button>
-                    <span className="w-12 text-center font-semibold">{quantity}</span>
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((q) => q + 1)}
-                      className="h-12 w-12 flex items-center justify-center hover:bg-muted transition-colors"
-                      aria-label="Increase quantity"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <Button
-                    onClick={handleAdd}
-                    size="lg"
-                    className="flex-1 h-12 text-base font-semibold"
-                    disabled={isLoading || !selectedVariant?.availableForSale}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : selectedVariant?.availableForSale ? (
-                      <><ShoppingCart className="h-5 w-5 mr-2" /> Add to Cart</>
-                    ) : (
-                      "Sold out"
-                    )}
-                  </Button>
-                </div>
 
                 {hasBranding && (
                   <div className="mt-6 rounded-lg border border-border bg-card p-4">
@@ -602,6 +567,41 @@ export function ProductPage() {
                     })()}
                   </div>
                 )}
+                <div className="mt-8 flex items-stretch gap-3">
+                  <div className="flex items-center border border-border rounded-md">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="h-12 w-12 flex items-center justify-center hover:bg-muted transition-colors"
+                      aria-label="Decrease quantity"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="w-12 text-center font-semibold">{quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => q + 1)}
+                      className="h-12 w-12 flex items-center justify-center hover:bg-muted transition-colors"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <Button
+                    onClick={handleAdd}
+                    size="lg"
+                    className="flex-1 h-12 text-base font-semibold"
+                    disabled={isLoading || !selectedVariant?.availableForSale}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : selectedVariant?.availableForSale ? (
+                      <><ShoppingCart className="h-5 w-5 mr-2" /> Add to Cart</>
+                    ) : (
+                      "Sold out"
+                    )}
+                  </Button>
+                </div>
 
 
                 {product && GANG_BUILDER_URLS[product.handle] && (
