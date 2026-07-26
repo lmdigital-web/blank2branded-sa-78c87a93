@@ -1,8 +1,6 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { z } from 'npm:zod@3.23.8';
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
 const FROM = 'Blank2Branded <hello@blank2branded.co.za>';
