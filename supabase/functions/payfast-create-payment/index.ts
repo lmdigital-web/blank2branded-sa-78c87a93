@@ -27,6 +27,9 @@ const BodySchema = z.object({
   estimateId: z.string().optional(),
   estimateNumber: z.string().optional(),
   paymentId: z.string().min(1).max(100),
+  returnUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
+  siteUrl: z.string().url().optional(),
 });
 
 // PayFast expects `+` for spaces and uppercase hex escapes (PHP urlencode).
