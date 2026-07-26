@@ -468,13 +468,12 @@ export function CheckoutPage() {
                 </div>
 
                 <Button
-                  onClick={payNow}
+                  onClick={placeOrder}
                   disabled={moqShort || sending || !ackLeadTime}
                   size="lg"
                   className="w-full"
                 >
-                  <Lock className="w-4 h-4 mr-2" />
-                  {sending ? "Preparing payment…" : `Pay ${currency} ${total.toFixed(2)} with PayFast`}
+                  {sending ? "Placing order…" : `Place order · ${currency} ${total.toFixed(2)}`}
                 </Button>
 
 
