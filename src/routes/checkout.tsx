@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Clock, Lock, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, Clock, ShieldCheck, Truck } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores/cartStore";
@@ -105,7 +105,7 @@ export function CheckoutPage() {
     if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  const payNow = async () => {
+  const placeOrder = async () => {
     if (moqShort || items.length === 0 || sending) return;
     if (!ackLeadTime) {
       setAckError(true);
@@ -126,124 +126,37 @@ export function CheckoutPage() {
     setSending(true);
     trackEvent("initiate_checkout", { value: total, currency });
 
-    const { notes: _notes, street, suburb, city, province, postalCode, ...rest } = parsed.data;
+    const { notes, street, suburb, city, province, postalCode, ...rest } = parsed.data;
     const address = `${street}, ${suburb}, ${city}, ${province}, ${postalCode}`;
-    const customerForApi = { ...rest, street, suburb, city, province, postalCode, address };
+    const orderRef = `B2B-${Date.now()}`;
     const lineItems = items.map((i) => {
-      const node = i.product.node as { title?: string; handle?: string };
+      const node = i.product.node as { title?: string };
       const opts = i.selectedOptions?.map((o) => o.value).filter(Boolean).join(" / ");
       return {
-        title: node.title ?? i.variantTitle,
-        selectedOptions: i.selectedOptions,
+        name: node.title ?? i.variantTitle,
+        description: opts ?? "",
         quantity: i.quantity,
-        price: i.price,
-        handle: node.handle,
-        _invoice: {
-          name: node.title ?? i.variantTitle,
-          description: opts ?? "",
-          quantity: i.quantity,
-          rate: parseFloat(i.price.amount),
-        },
+        rate: parseFloat(i.price.amount),
       };
     });
 
-    let estimateId: string | undefined;
-    let estimateNumber: string | undefined;
     try {
-      // Race Zoho against a 12s timeout so a slow proforma never blocks payment.
-      const zohoPromise = supabase.functions.invoke("zoho-create-estimate", {
+      const { error } = await supabase.functions.invoke("send-order-notification", {
         body: {
-          customer: customerForApi,
-          items: lineItems.map((l) => l._invoice),
+          customer: { ...rest, address },
+          items: lineItems,
           shipping: SHIPPING_FEE,
           currency,
-          notes: parsed.data.notes,
+          invoiceNumber: orderRef,
+          notes,
         },
       });
-      const timeout = new Promise<{ data: null; error: Error }>((resolve) =>
-        setTimeout(() => resolve({ data: null, error: new Error("zoho timeout") }), 12000),
-      );
-      const { data, error } = (await Promise.race([zohoPromise, timeout])) as {
-        data: { estimate_id?: string | number; estimate_number?: string } | null;
-        error: unknown;
-      };
       if (error) throw error;
-      estimateId = data?.estimate_id ? String(data.estimate_id) : undefined;
-      estimateNumber = data?.estimate_number ? String(data.estimate_number) : undefined;
+      trackEvent("purchase", { value: total, currency, reference: orderRef });
+      navigate(`/checkout/success/?ref=${encodeURIComponent(orderRef)}`);
     } catch (err) {
-      console.error("Zoho proforma failed:", err);
-      toast.message("Proforma will be issued shortly — continuing to payment.");
-    }
-
-    const paymentId = `B2B-${Date.now()}`;
-
-    // Open a blank window synchronously so browsers don't block the popup after
-    // the async PayFast call resolves.
-    const payWindow = window.open("", "_blank");
-    if (payWindow) {
-      payWindow.document.write(
-        '<!doctype html><title>Redirecting to PayFast…</title><style>body{font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#333}</style><body><p>Redirecting to PayFast…</p></body>',
-      );
-    }
-
-    try {
-      const { data: pf, error: pfErr } = await supabase.functions.invoke("payfast-create-payment", {
-        body: {
-          customer: {
-            firstName: parsed.data.firstName,
-            lastName: parsed.data.lastName,
-            email: parsed.data.email,
-            phone: parsed.data.phone,
-          },
-          amount: total,
-          itemName: estimateNumber ? `Order ${estimateNumber}` : "Blank2Branded Order",
-          itemDescription: lineItems
-            .map((l) => `${l._invoice.quantity}x ${l._invoice.name}`)
-            .join(", ")
-            .slice(0, 250),
-          estimateId,
-          estimateNumber,
-          paymentId,
-          siteUrl: window.location.origin,
-        },
-      });
-      if (pfErr) throw pfErr;
-      if (!pf?.process_url || !pf?.fields) throw new Error("PayFast did not return a redirect payload");
-
-      const inputs = Object.entries(pf.fields as Record<string, string>)
-        .map(
-          ([k, v]) =>
-            `<input type="hidden" name="${k}" value="${String(v).replace(/"/g, "&quot;")}">`,
-        )
-        .join("");
-      const html = `<!doctype html><title>Redirecting to PayFast…</title><body><form id="pf" method="POST" action="${pf.process_url}">${inputs}</form><script>document.getElementById('pf').submit();</script></body>`;
-
-      if (payWindow && !payWindow.closed) {
-        payWindow.document.open();
-        payWindow.document.write(html);
-        payWindow.document.close();
-      } else {
-        // Fallback: submit inline (top-level navigation).
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = pf.process_url;
-        form.target = "_top";
-        Object.entries(pf.fields as Record<string, string>).forEach(([k, v]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = k;
-          input.value = String(v);
-          form.appendChild(input);
-        });
-        document.body.appendChild(form);
-        form.submit();
-      }
-      setSending(false);
-      return;
-    } catch (err) {
-      console.error("PayFast redirect failed:", err);
-      if (payWindow && !payWindow.closed) payWindow.close();
-      toast.error("Couldn't open PayFast — please try again or contact us.");
+      console.error("Order submission failed:", err);
+      toast.error("Couldn't submit your order — please try again or WhatsApp us on +27 69 838 4045.");
       setSending(false);
     }
   };
@@ -283,7 +196,7 @@ export function CheckoutPage() {
 
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Checkout</h1>
           <p className="text-muted-foreground mb-8">
-            Enter your details below. Payment is processed securely by PayFast.
+            Enter your details below and place your order — we'll be in touch shortly to confirm and arrange payment.
           </p>
 
           <div className="grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-12">
@@ -448,8 +361,7 @@ export function CheckoutPage() {
               </section>
 
               <div className="hidden lg:flex items-center gap-6 text-xs text-muted-foreground pt-2">
-                <div className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secure checkout</div>
-                <div className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> PayFast protected</div>
+                <div className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> Secure order</div>
                 <div className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Nationwide courier</div>
               </div>
             </div>
@@ -555,13 +467,12 @@ export function CheckoutPage() {
                 </div>
 
                 <Button
-                  onClick={payNow}
+                  onClick={placeOrder}
                   disabled={moqShort || sending || !ackLeadTime}
                   size="lg"
                   className="w-full"
                 >
-                  <Lock className="w-4 h-4 mr-2" />
-                  {sending ? "Preparing payment…" : `Pay ${currency} ${total.toFixed(2)} with PayFast`}
+                  {sending ? "Placing order…" : `Place order · ${currency} ${total.toFixed(2)}`}
                 </Button>
 
 
@@ -572,8 +483,7 @@ export function CheckoutPage() {
                 </p>
 
                 <div className="flex lg:hidden items-center justify-center gap-4 text-[11px] text-muted-foreground pt-1">
-                  <div className="flex items-center gap-1"><Lock className="w-3 h-3" /> Secure</div>
-                  <div className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> PayFast</div>
+                  <div className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Secure</div>
                   <div className="flex items-center gap-1"><Truck className="w-3 h-3" /> Courier</div>
                 </div>
               </div>
