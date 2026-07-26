@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Clock, Lock, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, Clock, ShieldCheck, Truck } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores/cartStore";
