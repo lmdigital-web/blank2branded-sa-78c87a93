@@ -63,14 +63,19 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    const { customer, amount, itemName, itemDescription, invoiceNumber, estimateId, estimateNumber, paymentId } = parsed.data;
+    const { customer, amount, itemName, itemDescription, invoiceNumber, estimateId, estimateNumber, paymentId, returnUrl, cancelUrl, siteUrl } = parsed.data;
+
+    const base = (siteUrl ?? SITE_URL).replace(/\/$/, '');
+    const ref = estimateNumber ?? invoiceNumber ?? paymentId;
+    const resolvedReturn = returnUrl ?? `${base}/checkout/success/?ref=${encodeURIComponent(ref)}`;
+    const resolvedCancel = cancelUrl ?? `${base}/checkout/cancelled/`;
 
     // Fields in the exact order PayFast documents for the signature.
     const rawFields: Record<string, string> = {
       merchant_id: MERCHANT_ID,
       merchant_key: MERCHANT_KEY,
-      return_url: `${SITE_URL}/checkout/success/?ref=${encodeURIComponent(estimateNumber ?? invoiceNumber ?? paymentId)}`,
-      cancel_url: `${SITE_URL}/checkout/cancelled/`,
+      return_url: resolvedReturn,
+      cancel_url: resolvedCancel,
       notify_url: `https://enpdahmqwhdukbnykqyy.functions.supabase.co/payfast-itn`,
       name_first: customer.firstName,
       name_last: customer.lastName,
