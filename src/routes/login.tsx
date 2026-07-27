@@ -9,14 +9,25 @@ import { useSession } from "@/lib/auth";
 import { navigate } from "@/lib/static-router";
 import { toast } from "sonner";
 
+function safeNext() {
+  const raw = new URLSearchParams(window.location.search).get("next");
+  if (!raw) return null;
+  return /^\/(?!\/)/.test(raw) ? raw : null;
+}
+
 export function LoginPage() {
   const { session, loading: sessionLoading } = useSession();
+  const next = safeNext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [loading, setLoading] = useState(false);
 
   if (!sessionLoading && session) {
+    if (next) {
+      window.location.href = next;
+      return null;
+    }
     navigate("/admin");
     return null;
   }
@@ -29,12 +40,16 @@ export function LoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Signed in");
+        if (next) {
+          window.location.href = next;
+          return;
+        }
         navigate("/admin");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
+          options: { emailRedirectTo: `${window.location.origin}${next ?? "/admin"}` },
         });
         if (error) throw error;
         toast.success("Account created — check email if confirmation is required, then sign in.");
