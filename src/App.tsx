@@ -29,6 +29,7 @@ const SportsKitsPage = lazy(() => import("@/routes/sports-kits").then((m) => ({ 
 const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
 const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.success").then((m) => ({ default: m.CheckoutSuccessPage })));
 const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.cancelled").then((m) => ({ default: m.CheckoutCancelledPage })));
+const OAuthConsentPage = lazy(() => import("@/routes/oauth.consent").then((m) => ({ default: m.OAuthConsentPage })));
 
 const queryClient = new QueryClient();
 
