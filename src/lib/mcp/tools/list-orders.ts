@@ -19,7 +19,7 @@ export default defineTool({
     let q = supabaseForUser(ctx)
       .from("orders")
       .select(
-        "id,order_number,created_at,status,customer_name,customer_email,customer_phone,subtotal,shipping_amount,total_amount,ship_city,ship_province,order_items(title,quantity,unit_price)",
+        "id,order_number,created_at,status,customer_name,customer_email,customer_phone,subtotal,shipping_amount,total_amount,ship_city,ship_province,order_items(product_name,variant_label,quantity,unit_price,line_total)",
       )
       .order("created_at", { ascending: false })
       .limit(Math.min(Math.max(limit ?? 10, 1), 50));
