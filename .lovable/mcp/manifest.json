@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://enpdahmqwhdukbnykqyy.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "blank2branded-mcp",
+      "version": "0.1.0",
+      "title": "Blank2Branded"
+    },
+    "tools": [
+      {
+        "name": "search_products",
+        "title": "Search products",
+        "description": "Search the Blank2Branded shop catalogue by title, handle or brand. Returns product title, handle, status, collection and base price.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Text to match against product title, handle or brand."
+            },
+            "collection": {
+              "type": "string",
+              "enum": [
+                "apparel",
+                "corporate"
+              ],
+              "description": "Limit to one collection."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "active",
+                "draft"
+              ],
+              "description": "Filter by publish status."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Max results (default 20, max 100)."
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_product",
+        "title": "Get product details",
+        "description": "Get one shop product by handle, including its variants (colour/size, price, stock) and branding options (method, position, size, per-unit and setup pricing).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "handle": {
+              "type": "string",
+              "description": "The product handle, e.g. 'unisex-dry-fit-t-shirt'."
+            }
+          },
+          "required": [
+            "handle"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_orders",
+        "title": "List orders",
+        "description": "List recent Blank2Branded orders visible to the signed-in user, with customer, totals, status and line items.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "Filter by order status, e.g. 'pending' or 'paid'."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Max orders to return (default 10, max 50)."
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_blog_posts",
+        "title": "List blog posts",
+        "description": "List Blank2Branded blog posts with title, slug, status, publish date and SEO metadata. Use to review content or find a post to update.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "published",
+                "scheduled",
+                "draft"
+              ],
+              "description": "Filter by post status."
+            },
+            "query": {
+              "type": "string",
+              "description": "Match against post title or slug."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Max posts to return (default 20, max 100)."
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_blog_draft",
+        "title": "Create blog draft",
+        "description": "Create a new blog post in draft status (never published directly). Provide the title and HTML content, plus optional SEO fields.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Post title."
+            },
+            "content": {
+              "type": "string",
+              "description": "Post body as HTML."
+            },
+            "excerpt": {
+              "type": "string",
+              "description": "Short summary shown in listings."
+            },
+            "slug": {
+              "type": "string",
+              "description": "URL slug. Derived from the title when omitted."
+            },
+            "meta_title": {
+              "type": "string",
+              "description": "SEO title tag."
+            },
+            "meta_description": {
+              "type": "string",
+              "description": "SEO meta description."
+            },
+            "keywords": {
+              "type": "string",
+              "description": "Comma-separated focus keywords."
+            }
+          },
+          "required": [
+            "title",
+            "content"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
