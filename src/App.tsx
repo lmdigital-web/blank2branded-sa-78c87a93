@@ -230,6 +230,7 @@ function AppContent() {
   else if (cleanPath === "/blog") page = <BlogIndexPage />;
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
+  else if (cleanPath === "/.lovable/oauth/consent") page = <OAuthConsentPage />;
   else if (cleanPath === "/admin") page = <AdminPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
   else if (/^\/admin\/posts\/[^/]+$/.test(cleanPath)) page = <PostEditorPage />;
