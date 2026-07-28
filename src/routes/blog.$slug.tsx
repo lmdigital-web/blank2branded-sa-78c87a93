@@ -68,6 +68,7 @@ export function BlogPostPage() {
           setNotFound(true);
           setNoindex(true);
         } else {
+          setNoindex(false);
           setPost(data as Post);
           if ((data as Post).author_id) {
             const { data: a } = await (supabase as any)
