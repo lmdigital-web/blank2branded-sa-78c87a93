@@ -157,9 +157,9 @@ function generateSitemap(entries: SitemapEntry[]) {
 }
 
 async function main() {
-  console.log("Fetching Shopify products, blog posts, and BOFU pages for sitemap...");
+  console.log("Fetching catalogue products, blog posts, and BOFU pages for sitemap...");
   const [productEntries, postEntries, bofuEntries] = await Promise.all([
-    fetchShopifyProducts(),
+    fetchCatalogueProducts(),
     fetchBlogPosts(),
     fetchBofuPages(),
   ]);
