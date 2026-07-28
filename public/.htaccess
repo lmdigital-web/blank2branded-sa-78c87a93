@@ -1,6 +1,30 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Retired Shopify product URLs -> shop / DTF page (301, kills the soft-404s)
+  RewriteRule ^products/lightweight-t-shirt-140gsm-premium-blank-cotton-tee-for-printing-branding-south-africa/?$ /shop/ [R=301,L]
+  RewriteRule ^products/heavyweight-t-shirt-180gsm/?$ /shop/ [R=301,L]
+  RewriteRule ^products/dtf-print-add-on/?$ /dtf/ [R=301,L]
+  RewriteRule ^products/artwork-setup-fee/?$ /dtf/ [R=301,L]
+  RewriteRule ^products/platinum-t-shirt/?$ /shop/ [R=301,L]
+  RewriteRule ^products/unisex-dry-fit-t-shirt/?$ /shop/ [R=301,L]
+  RewriteRule ^products/sweater/?$ /shop/ [R=301,L]
+  RewriteRule ^products/v-neck-t-shirt/?$ /shop/ [R=301,L]
+  RewriteRule ^products/hoodie/?$ /shop/ [R=301,L]
+  RewriteRule ^products/mens-polo/?$ /shop/ [R=301,L]
+  RewriteRule ^products/mens-dry-fit-polo/?$ /shop/ [R=301,L]
+  RewriteRule ^products/long-sleeve-t-shirt/?$ /shop/ [R=301,L]
+  RewriteRule ^products/mens-vest/?$ /shop/ [R=301,L]
+  RewriteRule ^products/oxford-jacket/?$ /shop/ [R=301,L]
+  RewriteRule ^products/fleece-hoodie-zip/?$ /shop/ [R=301,L]
+  RewriteRule ^products/womens-polo/?$ /shop/ [R=301,L]
+  RewriteRule ^products/womens-fitted-t-shirt/?$ /shop/ [R=301,L]
+  RewriteRule ^products/womens-racerback/?$ /shop/ [R=301,L]
+  RewriteRule ^products/womens-dry-fit-polo/?$ /shop/ [R=301,L]
+  RewriteRule ^products/dtf-print-a4/?$ /dtf/ [R=301,L]
+  RewriteRule ^products/dtf-print-1-meter-20cm-wide/?$ /dtf/ [R=301,L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
