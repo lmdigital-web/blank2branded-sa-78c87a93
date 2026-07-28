@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
 
+# Non-indexable app routes (redirect trackers, checkout, auth, admin)
+Disallow: /r/
+Disallow: /checkout
+Disallow: /login
+Disallow: /admin
+Disallow: /oauth/
+
 Sitemap: https://blank2branded.co.za/sitemap.xml
