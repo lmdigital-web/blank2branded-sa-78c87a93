@@ -95,7 +95,15 @@ export function ProductPage() {
     },
   });
 
+  // A missing product still returns HTTP 200 (SPA fallback) — mark it noindex
+  // so Google drops the URL instead of logging it as a Soft 404.
+  useEffect(() => {
+    setNoindex(!loading && !product);
+    return () => setNoindex(false);
+  }, [loading, product]);
+
   // Track recently viewed in localStorage
+
   useEffect(() => {
     if (!product) return;
     try {
