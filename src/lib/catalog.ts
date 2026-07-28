@@ -169,16 +169,19 @@ export async function listCategoryTree() {
 
 /** Map of product id -> category id (for the shop sidebar filter). */
 export async function listProductCategoryMap(collection?: Collection): Promise<Record<string, string | null>> {
-  let query = supabase
-    .from("shop_products")
-    .select("id,category_id")
-    .eq("status", "published");
-  if (collection) query = query.in("collection", [collection, "both"]);
-  const { data, error } = await query;
-  if (error) throw error;
   const out: Record<string, string | null> = {};
-  for (const r of (data ?? []) as Array<{ id: string; category_id: string | null }>) {
-    out[r.id] = r.category_id;
+  for (let offset = 0; ; offset += PAGE_SIZE) {
+    let query = supabase
+      .from("shop_products")
+      .select("id,category_id")
+      .eq("status", "published")
+      .order("id", { ascending: true });
+    if (collection) query = query.in("collection", [collection, "both"]);
+    const { data, error } = await query.range(offset, offset + PAGE_SIZE - 1);
+    if (error) throw error;
+    const page = (data ?? []) as Array<{ id: string; category_id: string | null }>;
+    for (const r of page) out[r.id] = r.category_id;
+    if (page.length < PAGE_SIZE) break;
   }
   return out;
 }
