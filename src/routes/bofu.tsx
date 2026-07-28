@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link, useCurrentPath } from "@/lib/static-router";
 import { buildJsonLd, type BofuTemplate } from "@/lib/bofu-templates";
 import { Button } from "@/components/ui/button";
+import { setNoindex } from "@/lib/robots-meta";
 
 const sanitize = (html: string) =>
   DOMPurify.sanitize(html, {
@@ -64,6 +65,9 @@ export function BofuPagePublic() {
     q.maybeSingle().then(({ data }) => {
       setPage(data as BofuPage | null);
       setLoading(false);
+      // Unknown slug still returns HTTP 200 via the SPA fallback; noindex it
+      // so Google drops the URL instead of reporting a Soft 404.
+      setNoindex(!data);
       if (data) {
         document.title = (data as BofuPage).title;
         const desc = document.querySelector('meta[name="description"]');

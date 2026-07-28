@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ArrowLeft, UserCircle2 } from "lucide-react";
 import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
 import { articleSchema, breadcrumbSchema, injectJsonLd, type AuthorProfile } from "@/lib/schema-builder";
+import { setNoindex } from "@/lib/robots-meta";
 
 type Post = {
   id: string;
@@ -65,6 +66,7 @@ export function BlogPostPage() {
       .then(async ({ data }) => {
         if (!data) {
           setNotFound(true);
+          setNoindex(true);
         } else {
           setPost(data as Post);
           if ((data as Post).author_id) {
