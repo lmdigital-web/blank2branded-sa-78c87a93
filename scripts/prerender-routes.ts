@@ -572,7 +572,7 @@ async function main() {
     written++;
   }
 
-  const products = await fetchShopifyProducts();
+  const products = await fetchCatalogueProducts();
   for (const p of products) {
     if (!p.handle) continue;
     const r = productRoute(p);
