@@ -119,20 +119,32 @@ const PRODUCT_SELECT = `
 
 export type Collection = "apparel" | "corporate";
 
+const PAGE_SIZE = 1000;
+
 export async function listPublishedProducts(collection?: Collection) {
-  let query = supabase
-    .from("shop_products")
-    .select(PRODUCT_SELECT)
-    .eq("status", "published");
-  if (collection) {
-    query = query.in("collection", [collection, "both"]);
+  const rows: DbProductRow[] = [];
+  // PostgREST caps responses at 1000 rows — page through so the full
+  // catalogue (2000+ products) loads instead of just the first page.
+  for (let offset = 0; ; offset += PAGE_SIZE) {
+    let query = supabase
+      .from("shop_products")
+      .select(PRODUCT_SELECT)
+      .eq("status", "published");
+    if (collection) {
+      query = query.in("collection", [collection, "both"]);
+    }
+    const { data, error } = await query
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: false })
+      .range(offset, offset + PAGE_SIZE - 1);
+    if (error) throw error;
+    const page = (data as unknown as DbProductRow[]) ?? [];
+    rows.push(...page);
+    if (page.length < PAGE_SIZE) break;
   }
-  const { data, error } = await query
-    .order("position", { ascending: true })
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return ((data as unknown as DbProductRow[]) ?? []).map(toShopifyShape);
+  return rows.map(toShopifyShape);
 }
+
 
 export async function getProductByHandle(handle: string) {
   const { data, error } = await supabase
