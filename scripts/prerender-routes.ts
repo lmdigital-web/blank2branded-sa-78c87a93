@@ -147,78 +147,87 @@ const staticRoutes: RouteMeta[] = [
   },
 ];
 
-// ---- Shopify products --------------------------------------------------------
+// ---- Catalogue products (Supabase) -------------------------------------------
 
-type ShopifyProduct = {
+type CatalogueProduct = {
+  id: string;
   handle: string;
   title: string;
-  description: string;
-  updatedAt?: string;
-  seo?: { title?: string | null; description?: string | null };
-  featuredImage?: { url: string; altText?: string | null } | null;
-  priceRange?: {
-    minVariantPrice?: { amount: string; currencyCode: string };
-  };
-  vendor?: string;
+  description: string | null;
+  updated_at?: string;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  base_price?: number | null;
+  currency_code?: string | null;
+  brand?: string | null;
+  image?: { url: string; alt: string | null } | null;
 };
 
-const SHOPIFY_STOREFRONT_URL =
-  "https://ufg0w7-mr.myshopify.com/api/2025-07/graphql.json";
-const SHOPIFY_STOREFRONT_TOKEN = "a10d448868c45c91fccf6cf354ec66e7";
+const SUPABASE_REST = "https://enpdahmqwhdukbnykqyy.supabase.co/rest/v1";
+const SUPABASE_ANON =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+const SUPABASE_HEADERS = {
+  apikey: SUPABASE_ANON,
+  Authorization: `Bearer ${SUPABASE_ANON}`,
+};
 
-const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!) {
-    products(first: $first) {
-      edges {
-        node {
-          handle
-          title
-          description
-          updatedAt
-          vendor
-          seo { title description }
-          featuredImage { url altText }
-          priceRange { minVariantPrice { amount currencyCode } }
-        }
-      }
-    }
-  }
-`;
-
-async function fetchShopifyProducts(): Promise<ShopifyProduct[]> {
+async function fetchCatalogueProducts(): Promise<CatalogueProduct[]> {
+  const products: CatalogueProduct[] = [];
   try {
-    const res = await fetch(SHOPIFY_STOREFRONT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-      },
-      body: JSON.stringify({ query: PRODUCTS_QUERY, variables: { first: 250 } }),
-    });
-    if (!res.ok) {
-      console.warn("prerender-routes: Shopify fetch failed", res.status);
-      return [];
+    for (let offset = 0; ; offset += 1000) {
+      const res = await fetch(
+        `${SUPABASE_REST}/shop_products?select=id,handle,title,description,updated_at,meta_title,meta_description,base_price,currency_code,brand&status=eq.published&order=handle.asc&limit=1000&offset=${offset}`,
+        { headers: SUPABASE_HEADERS },
+      );
+      if (!res.ok) {
+        console.warn("prerender-routes: product fetch failed", res.status);
+        break;
+      }
+      const rows = (await res.json()) as CatalogueProduct[];
+      products.push(...rows.filter((r) => r.handle));
+      if (rows.length < 1000) break;
     }
-    const data = await res.json();
-    const edges = data?.data?.products?.edges ?? [];
-    return edges.map((e: { node: ShopifyProduct }) => e.node);
   } catch (err) {
-    console.warn("prerender-routes: Shopify fetch error", err);
-    return [];
+    console.warn("prerender-routes: product fetch error", err);
+    return products;
   }
+
+  // Attach the primary image per product (batched by id).
+  try {
+    for (let i = 0; i < products.length; i += 100) {
+      const batch = products.slice(i, i + 100);
+      const ids = batch.map((p) => p.id).join(",");
+      const res = await fetch(
+        `${SUPABASE_REST}/shop_product_images?select=product_id,url,alt,position&product_id=in.(${ids})&order=position.asc`,
+        { headers: SUPABASE_HEADERS },
+      );
+      if (!res.ok) continue;
+      const rows = (await res.json()) as {
+        product_id: string;
+        url: string;
+        alt: string | null;
+      }[];
+      const byProduct = new Map<string, { url: string; alt: string | null }>();
+      for (const r of rows) if (!byProduct.has(r.product_id)) byProduct.set(r.product_id, r);
+      for (const p of batch) p.image = byProduct.get(p.id) ?? null;
+    }
+  } catch (err) {
+    console.warn("prerender-routes: product image fetch error", err);
+  }
+
+  return products;
 }
 
-function productRoute(p: ShopifyProduct): RouteMeta {
+function productRoute(p: CatalogueProduct): RouteMeta {
   const path = `/products/${p.handle}`;
   const url = canonicalUrlForPath(path);
-  const baseTitle = p.seo?.title || p.title;
+  const baseTitle = p.meta_title || p.title;
   const title = `${baseTitle} | Blank2Branded South Africa`;
   const description = (
-    p.seo?.description ||
-    (p.description || "").replace(/\s+/g, " ").trim()
+    p.meta_description ||
+    (p.description || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
   ).slice(0, 300);
-  const image = p.featuredImage?.url || "";
-  const price = p.priceRange?.minVariantPrice;
+  const image = p.image?.url || "";
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -226,14 +235,14 @@ function productRoute(p: ShopifyProduct): RouteMeta {
     description,
     url,
     ...(image ? { image: [image] } : {}),
-    brand: { "@type": "Brand", name: p.vendor || "Blank2Branded" },
-    ...(price
+    brand: { "@type": "Brand", name: p.brand || "Blank2Branded" },
+    ...(p.base_price
       ? {
           offers: {
             "@type": "Offer",
             url,
-            priceCurrency: price.currencyCode,
-            price: price.amount,
+            priceCurrency: p.currency_code || "ZAR",
+            price: String(p.base_price),
             availability: "https://schema.org/InStock",
           },
         }
@@ -244,13 +253,14 @@ function productRoute(p: ShopifyProduct): RouteMeta {
     title,
     description:
       description ||
-      `Buy ${p.title} from Blank2Branded — DTF prints and blank apparel with nationwide shipping across South Africa.`,
+      `Buy ${p.title} from Blank2Branded — branded apparel and corporate gifts with nationwide delivery across South Africa.`,
     keywords: `${p.title}, ${p.title} South Africa, buy ${p.title} online, Blank2Branded`,
     image,
     ogType: "product",
     jsonLd,
   };
 }
+
 
 // ---- Template rewrite --------------------------------------------------------
 
