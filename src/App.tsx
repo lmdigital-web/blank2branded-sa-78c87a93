@@ -20,6 +20,7 @@ const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) 
 const PostPreviewPage = lazy(() => import("@/routes/admin.preview").then((m) => ({ default: m.PostPreviewPage })));
 const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
+const ReturnsPage = lazy(() => import("@/routes/returns").then((m) => ({ default: m.ReturnsPage })));
 const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
 const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
 const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
@@ -128,6 +129,15 @@ const pageMeta: Record<
       "Terms and conditions for buying DTF transfers and blank apparel from Blank2Branded — orders, delivery, returns and refunds for South African customers.",
     keywords: "terms and conditions, returns policy, refund policy, Blank2Branded terms",
   },
+  "/returns": {
+    focusKeyword: "returns policy South Africa",
+    title: "Return & Refund Policy | Blank2Branded South Africa",
+    description:
+      "Blank2Branded return policy: 7 days for defective or damaged goods, with delivery damage reported the same day. Refunds, replacements and return shipping explained.",
+    keywords:
+      "returns policy South Africa, refund policy, damaged delivery claim, defective goods return, Blank2Branded returns",
+  },
+
   "/display": {
     focusKeyword: "branded display products South Africa",
     title: "Branded Display & Signage South Africa | Gazebos, Banners, Flags | Blank2Branded",
@@ -238,6 +248,7 @@ function AppContent() {
   else if (/^\/admin\/preview\/[^/]+$/.test(cleanPath)) page = <PostPreviewPage />;
   else if (cleanPath === "/privacy") page = <PrivacyPage />;
   else if (cleanPath === "/terms") page = <TermsPage />;
+  else if (cleanPath === "/returns") page = <ReturnsPage />;
   else if (cleanPath === "/display") page = <DisplayPage />;
   else if (cleanPath === "/sublimation") page = <SublimationPage />;
   else if (cleanPath === "/catalogues") page = <CataloguesPage />;
