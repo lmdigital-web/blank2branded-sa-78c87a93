@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
 import { productSchema, breadcrumbSchema, injectJsonLd, removeJsonLd, SITE_URL } from "@/lib/schema-builder";
 import { supabase } from "@/integrations/supabase/client";
+import { setNoindex } from "@/lib/robots-meta";
 
 type BrandingOption = {
   id: string;
