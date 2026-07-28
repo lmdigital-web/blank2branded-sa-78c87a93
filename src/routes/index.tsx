@@ -90,7 +90,7 @@ export function Home() {
             </div>
 
             <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Open to brands, businesses & individuals · Min 3 tees per order · DTF prints from 1
+              Open to brands, businesses & individuals
             </p>
 
           </div>
@@ -349,7 +349,7 @@ export function Home() {
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Premium tees, polos, hoodies and more — held in stock at our
-                  Mbombela facility and couriered nationwide. Minimum 3 tees per order (DTF prints exempt — order from 1).
+                  Mbombela facility and couriered nationwide.
                 </p>
 
               </div>

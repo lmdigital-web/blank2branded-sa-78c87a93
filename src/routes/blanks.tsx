@@ -194,7 +194,7 @@ export function BlanksPage() {
             <span className="text-gradient-dtf">Blank</span> Apparel.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Minimum 3 tees per order (DTF prints exempt — order from 1). Nationwide shipping from Mbombela.
+            Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Nationwide shipping from Mbombela.
           </p>
 
 
@@ -235,7 +235,7 @@ export function BlanksPage() {
             Ready to <span className="text-gradient-dtf">brand</span> your blanks?
           </h2>
           <p className="mt-4 text-lg text-background/70">
-            Tell us what you need and we'll quote you fast. Minimum 3 tees per order — DTF prints from 1.
+            Tell us what you need and we'll quote you fast.
           </p>
 
           <Link

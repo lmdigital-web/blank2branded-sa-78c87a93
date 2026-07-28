@@ -16,24 +16,6 @@ export function CartDrawer() {
   const shipping = items.length > 0 ? SHIPPING_FEE : 0;
   const total = subtotal + shipping;
 
-  // MOQ: tees/blanks require a minimum of 3. DTF prints, add-ons, and setup fees are exempt.
-  const isExempt = (handle?: string, title?: string) => {
-    const h = (handle ?? "").toLowerCase();
-    const t = (title ?? "").toLowerCase();
-    if (h.startsWith("dtf-") || h.includes("dtf")) return true;
-    if (h.includes("setup") || h.includes("add-on") || h.includes("addon") || h.includes("fee")) return true;
-    if (t.includes("dtf") || t.includes("setup fee") || t.includes("add-on") || t.includes("add on")) return true;
-    return false;
-  };
-  const teeQty = items
-    .filter((i) => {
-      const node = i.product.node as { handle?: string; title?: string };
-      return !isExempt(node.handle, node.title);
-    })
-    .reduce((s, i) => s + i.quantity, 0);
-  const moqShort = teeQty > 0 && teeQty < 3;
-  const moqRemaining = moqShort ? 3 - teeQty : 0;
-
   const goToCheckout = () => {
     setOpen(false);
     navigate("/checkout/");
@@ -101,12 +83,6 @@ export function CartDrawer() {
                 ))}
               </div>
               <div className="space-y-3 pt-4 border-t">
-                {moqShort && (
-                  <div className="rounded-md border border-magenta/40 bg-magenta/5 p-3 text-xs leading-relaxed text-charcoal">
-                    <span className="font-semibold text-magenta">Minimum order: 3 tees.</span>{" "}
-                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to check out. DTF prints are exempt.
-                  </div>
-                )}
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between text-muted-foreground">
                     <span>Subtotal</span>
@@ -125,7 +101,6 @@ export function CartDrawer() {
                   onClick={goToCheckout}
                   className="w-full"
                   size="lg"
-                  disabled={moqShort}
                 >
                   <Lock className="w-4 h-4 mr-2" /> Proceed to checkout
                 </Button>

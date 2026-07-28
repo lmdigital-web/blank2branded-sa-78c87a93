@@ -65,16 +65,6 @@ const EMPTY: CustomerForm = {
   notes: "",
 };
 
-// MOQ: tees/blanks require a minimum of 3. DTF prints, add-ons, and setup fees are exempt.
-const isExempt = (handle?: string, title?: string) => {
-  const h = (handle ?? "").toLowerCase();
-  const t = (title ?? "").toLowerCase();
-  if (h.startsWith("dtf-") || h.includes("dtf")) return true;
-  if (h.includes("setup") || h.includes("add-on") || h.includes("addon") || h.includes("fee")) return true;
-  if (t.includes("dtf") || t.includes("setup fee") || t.includes("add-on") || t.includes("add on")) return true;
-  return false;
-};
-
 export function CheckoutPage() {
   const { items } = useCartStore();
   const [customer, setCustomer] = useState<typeof EMPTY>(EMPTY);
@@ -91,22 +81,13 @@ export function CheckoutPage() {
   const shipping = items.length > 0 ? SHIPPING_FEE : 0;
   const total = subtotal + shipping;
 
-  const teeQty = items
-    .filter((i) => {
-      const node = i.product.node as { handle?: string; title?: string };
-      return !isExempt(node.handle, node.title);
-    })
-    .reduce((s, i) => s + i.quantity, 0);
-  const moqShort = teeQty > 0 && teeQty < 3;
-  const moqRemaining = moqShort ? 3 - teeQty : 0;
-
   const updateField = (key: keyof typeof EMPTY, value: string) => {
     setCustomer((c) => ({ ...c, [key]: value }));
     if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
   const placeOrder = async () => {
-    if (moqShort || items.length === 0 || sending) return;
+    if (items.length === 0 || sending) return;
     if (!ackLeadTime) {
       setAckError(true);
       toast.error("Please acknowledge the 7–14 working day lead time to continue.");
@@ -419,13 +400,6 @@ export function CheckoutPage() {
                   </div>
                 </div>
 
-                {moqShort && (
-                  <div className="rounded-md border border-magenta/40 bg-magenta/5 p-3 text-xs leading-relaxed text-charcoal">
-                    <span className="font-semibold text-magenta">Minimum order: 3 tees.</span>{" "}
-                    Add {moqRemaining} more tee{moqRemaining === 1 ? "" : "s"} to check out. DTF prints are exempt.
-                  </div>
-                )}
-
                 <div
                   className={`rounded-md border p-3 space-y-2 ${
                     ackError && !ackLeadTime
@@ -468,7 +442,7 @@ export function CheckoutPage() {
 
                 <Button
                   onClick={placeOrder}
-                  disabled={moqShort || sending || !ackLeadTime}
+                  disabled={sending || !ackLeadTime}
                   size="lg"
                   className="w-full"
                 >

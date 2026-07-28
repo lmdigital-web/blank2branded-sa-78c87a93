@@ -33,10 +33,6 @@ export function TermsPage() {
             <h2 className="text-2xl font-bold text-charcoal">2. Orders</h2>
             <ul className="list-disc space-y-2 pl-6">
               <li>
-                <strong>Minimum order:</strong> 3 t-shirts per order (DTF prints, setup fees and
-                add-ons are excluded from this minimum).
-              </li>
-              <li>
                 An order is only confirmed once payment has been received and approved. We reserve
                 the right to refuse or cancel any order.
               </li>
