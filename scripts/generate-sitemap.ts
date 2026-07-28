@@ -98,52 +98,41 @@ async function fetchBofuPages(): Promise<SitemapEntry[]> {
   }
 }
 
-const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!) {
-    products(first: $first) {
-      edges {
-        node {
-          handle
-          updatedAt
-        }
-      }
-    }
-  }
-`;
-
-async function fetchShopifyProducts(): Promise<SitemapEntry[]> {
-  const SHOPIFY_STOREFRONT_URL = "https://ufg0w7-mr.myshopify.com/api/2025-07/graphql.json";
-  const SHOPIFY_STOREFRONT_TOKEN = "a10d448868c45c91fccf6cf354ec66e7";
-
+async function fetchCatalogueProducts(): Promise<SitemapEntry[]> {
+  const SUPABASE_URL = "https://enpdahmqwhdukbnykqyy.supabase.co";
+  const ANON =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+  const out: SitemapEntry[] = [];
   try {
-    const response = await fetch(SHOPIFY_STOREFRONT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-      },
-      body: JSON.stringify({ query: PRODUCTS_QUERY, variables: { first: 250 } }),
-    });
-
-    if (!response.ok) {
-      console.warn("Failed to fetch Shopify products for sitemap:", response.status);
-      return [];
+    // Page through so large catalogues aren't truncated by PostgREST's row cap.
+    for (let offset = 0; ; offset += 1000) {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/shop_products?select=handle,updated_at&status=eq.published&order=handle.asc&limit=1000&offset=${offset}`,
+        { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` } },
+      );
+      if (!res.ok) {
+        console.warn("Failed to fetch catalogue products for sitemap:", res.status);
+        break;
+      }
+      const rows: { handle: string; updated_at: string }[] = await res.json();
+      for (const r of rows) {
+        if (!r.handle) continue;
+        out.push({
+          path: `/products/${r.handle}/`,
+          lastmod: r.updated_at?.split("T")[0],
+          changefreq: "weekly",
+          priority: "0.8",
+        });
+      }
+      if (rows.length < 1000) break;
     }
-
-    const data = await response.json();
-    const edges = data?.data?.products?.edges ?? [];
-
-    return edges.map((edge: { node: { handle: string; updatedAt?: string } }) => ({
-      path: `/products/${edge.node.handle}/`,
-      lastmod: edge.node.updatedAt ? edge.node.updatedAt.split("T")[0] : undefined,
-      changefreq: "weekly" as const,
-      priority: "0.8",
-    }));
+    return out;
   } catch (err) {
-    console.warn("Error fetching Shopify products for sitemap:", err);
-    return [];
+    console.warn("Error fetching catalogue products for sitemap:", err);
+    return out;
   }
 }
+
 
 function generateSitemap(entries: SitemapEntry[]) {
   const urls = entries.map((e) =>
