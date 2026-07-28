@@ -365,7 +365,7 @@ export function ProductPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <section className="pt-32 pb-16">
+      <section className="pt-32 pb-16 md:pt-52">
         <div className="mx-auto max-w-7xl px-6">
           <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
             <ArrowLeft className="h-4 w-4" /> Back to shop
