@@ -390,12 +390,11 @@ function renderStaticBody(r: RouteMeta): string {
     </main>`;
 }
 
-function renderProductBody(p: ShopifyProduct, r: RouteMeta): string {
-  const image = p.featuredImage?.url || "";
-  const alt = p.featuredImage?.altText || p.title;
-  const price = p.priceRange?.minVariantPrice;
-  const priceStr = price ? `${price.currencyCode} ${price.amount}` : "";
-  const desc = (p.description || r.description || "").replace(/\s+/g, " ").trim();
+function renderProductBody(p: CatalogueProduct, r: RouteMeta): string {
+  const image = p.image?.url || "";
+  const alt = p.image?.alt || p.title;
+  const priceStr = p.base_price ? `${p.currency_code || "ZAR"} ${Number(p.base_price).toFixed(2)}` : "";
+  const desc = ((p.description || r.description || "").replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
   return `
     <main>
       <article>
