@@ -69,7 +69,7 @@ export function ContactPage() {
             Get a <span className="text-gradient-dtf">Quote.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Open to brands, businesses and individuals — minimum 5 pieces per order. We reply to all enquiries within 4 business hours.
+            Open to brands, businesses and individuals. We reply to all enquiries within 4 business hours.
           </p>
         </div>
       </section>
