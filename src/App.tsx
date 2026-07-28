@@ -248,6 +248,7 @@ function AppContent() {
   else if (/^\/admin\/preview\/[^/]+$/.test(cleanPath)) page = <PostPreviewPage />;
   else if (cleanPath === "/privacy") page = <PrivacyPage />;
   else if (cleanPath === "/terms") page = <TermsPage />;
+  else if (cleanPath === "/returns") page = <ReturnsPage />;
   else if (cleanPath === "/display") page = <DisplayPage />;
   else if (cleanPath === "/sublimation") page = <SublimationPage />;
   else if (cleanPath === "/catalogues") page = <CataloguesPage />;
