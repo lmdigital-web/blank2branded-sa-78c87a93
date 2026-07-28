@@ -129,6 +129,15 @@ const pageMeta: Record<
       "Terms and conditions for buying DTF transfers and blank apparel from Blank2Branded — orders, delivery, returns and refunds for South African customers.",
     keywords: "terms and conditions, returns policy, refund policy, Blank2Branded terms",
   },
+  "/returns": {
+    focusKeyword: "returns policy South Africa",
+    title: "Return & Refund Policy | Blank2Branded South Africa",
+    description:
+      "Blank2Branded return policy: 7 days for defective or damaged goods, with delivery damage reported the same day. Refunds, replacements and return shipping explained.",
+    keywords:
+      "returns policy South Africa, refund policy, damaged delivery claim, defective goods return, Blank2Branded returns",
+  },
+
   "/display": {
     focusKeyword: "branded display products South Africa",
     title: "Branded Display & Signage South Africa | Gazebos, Banners, Flags | Blank2Branded",
