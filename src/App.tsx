@@ -20,6 +20,7 @@ const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) 
 const PostPreviewPage = lazy(() => import("@/routes/admin.preview").then((m) => ({ default: m.PostPreviewPage })));
 const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
+const ReturnsPage = lazy(() => import("@/routes/returns").then((m) => ({ default: m.ReturnsPage })));
 const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
 const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
 const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
