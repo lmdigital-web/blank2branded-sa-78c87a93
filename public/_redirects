@@ -1,1 +1,26 @@
+# Retired Shopify product URLs (catalogue moved to the Supabase-backed shop).
+# 301 them to the shop so Google drops the soft-404s instead of re-crawling them.
+/products/lightweight-t-shirt-140gsm-premium-blank-cotton-tee-for-printing-branding-south-africa /shop/ 301
+/products/heavyweight-t-shirt-180gsm /shop/ 301
+/products/dtf-print-add-on /dtf/ 301
+/products/artwork-setup-fee /dtf/ 301
+/products/platinum-t-shirt /shop/ 301
+/products/unisex-dry-fit-t-shirt /shop/ 301
+/products/sweater /shop/ 301
+/products/v-neck-t-shirt /shop/ 301
+/products/hoodie /shop/ 301
+/products/mens-polo /shop/ 301
+/products/mens-dry-fit-polo /shop/ 301
+/products/long-sleeve-t-shirt /shop/ 301
+/products/mens-vest /shop/ 301
+/products/oxford-jacket /shop/ 301
+/products/fleece-hoodie-zip /shop/ 301
+/products/womens-polo /shop/ 301
+/products/womens-fitted-t-shirt /shop/ 301
+/products/womens-racerback /shop/ 301
+/products/womens-dry-fit-polo /shop/ 301
+/products/dtf-print-a4 /dtf/ 301
+/products/dtf-print-1-meter-20cm-wide /dtf/ 301
+
+# SPA fallback
 /* /index.html 200
