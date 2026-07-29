@@ -244,9 +244,29 @@ function productRoute(p: CatalogueProduct): RouteMeta {
             priceCurrency: p.currency_code || "ZAR",
             price: String(p.base_price),
             availability: "https://schema.org/InStock",
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingRate: { "@type": "MonetaryAmount", value: "150.00", currency: "ZAR" },
+              shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
+              deliveryTime: {
+                "@type": "ShippingDeliveryTime",
+                handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
+                transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
+              },
+            },
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "ZA",
+              returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 7,
+              returnMethod: "https://schema.org/ReturnByMail",
+              returnFees: "https://schema.org/FreeReturn",
+              merchantReturnLink: `${BASE_URL}/returns/`,
+            },
           },
         }
       : {}),
+
   };
   return {
     path,
