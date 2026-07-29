@@ -87,6 +87,34 @@ export function articleSchema(input: ArticleInput) {
   };
 }
 
+export const SHIPPING_DETAILS = {
+  "@type": "OfferShippingDetails",
+  shippingRate: {
+    "@type": "MonetaryAmount",
+    value: "150.00",
+    currency: "ZAR",
+  },
+  shippingDestination: {
+    "@type": "DefinedRegion",
+    addressCountry: "ZA",
+  },
+  deliveryTime: {
+    "@type": "ShippingDeliveryTime",
+    handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
+    transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
+  },
+};
+
+export const MERCHANT_RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "ZA",
+  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+  merchantReturnDays: 7,
+  returnMethod: "https://schema.org/ReturnByMail",
+  returnFees: "https://schema.org/FreeReturn",
+  merchantReturnLink: `${SITE_URL}/returns/`,
+};
+
 export function productSchema(input: ProductInput) {
   const url = `${SITE_URL}/products/${input.handle}/`;
   const offers =
@@ -98,9 +126,12 @@ export function productSchema(input: ProductInput) {
             price: String(input.price),
             priceCurrency: input.currency || "ZAR",
             availability: `https://schema.org/${input.availability || "InStock"}`,
+            shippingDetails: SHIPPING_DETAILS,
+            hasMerchantReturnPolicy: MERCHANT_RETURN_POLICY,
           },
         }
       : {};
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
