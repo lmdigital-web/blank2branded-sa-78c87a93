@@ -80,13 +80,38 @@ export function ShopPage() {
 
   const filtered = useMemo(() => {
     if (!data) return [];
-    if (!activeCategory) return data;
-    const ids = descendantMap.get(activeCategory) ?? new Set<string>();
-    return data.filter((p) => {
-      const cid = catMap?.[p.node.id];
-      return cid ? ids.has(cid) : false;
-    });
-  }, [data, activeCategory, descendantMap, catMap]);
+    let list = data;
+    if (activeCategory) {
+      const ids = descendantMap.get(activeCategory) ?? new Set<string>();
+      list = list.filter((p) => {
+        const cid = catMap?.[p.node.id];
+        return cid ? ids.has(cid) : false;
+      });
+    }
+    const q = search.trim().toLowerCase();
+    if (q) {
+      const terms = q.split(/\s+/);
+      list = list.filter((p) => {
+        const hay = `${p.node.title} ${p.node.description ?? ""} ${p.node.handle}`.toLowerCase();
+        return terms.every((t) => hay.includes(t));
+      });
+    }
+    if (inStockOnly) {
+      list = list.filter((p) => p.node.variants.edges.some((v) => v.node.availableForSale));
+    }
+    if (sort !== "featured") {
+      const price = (p: (typeof list)[number]) => parseFloat(p.node.priceRange.minVariantPrice.amount) || 0;
+      list = [...list].sort((a, b) =>
+        sort === "price-asc"
+          ? price(a) - price(b)
+          : sort === "price-desc"
+            ? price(b) - price(a)
+            : a.node.title.localeCompare(b.node.title),
+      );
+    }
+    return list;
+  }, [data, activeCategory, descendantMap, catMap, search, inStockOnly, sort]);
+
 
   return (
     <div className="min-h-screen bg-background">
