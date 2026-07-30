@@ -291,7 +291,15 @@ export function ProductPage() {
 
   const handleAdd = async () => {
     if (!product || !selectedVariant) return;
+    // Started picking branding but didn't finish — don't silently drop it.
+    if (brandType && !matchedBranding) {
+      toast.error("Finish your branding selection", {
+        description: !brandPosition && requiresPosition ? "Choose a position." : "Choose a size.",
+      });
+      return;
+    }
     try {
+
       await addItem({
         product: { node: { ...product, priceRange: { minVariantPrice: selectedVariant.price } } as never },
         variantId: selectedVariant.id,
