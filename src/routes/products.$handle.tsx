@@ -240,8 +240,14 @@ export function ProductPage() {
     setColourCount(1);
   }, [brandSize]);
 
+  // Which selectors the customer still has to answer for this method.
+  const requiresPosition = brandPositions.length > 0;
+  const requiresSize = brandSizes.length > 1 || (brandSizes.length === 1 && brandSizes[0] !== "");
+  const brandingComplete =
+    !!brandType && (!requiresPosition || !!brandPosition) && (!requiresSize || !!brandSize);
+
   const matchedBranding = useMemo(() => {
-    if (!brandType) return null;
+    if (!brandType || !brandingComplete) return null;
     const matches = brandingOptions.filter(
       (b) =>
         b.branding_type === brandType &&
@@ -249,9 +255,14 @@ export function ProductPage() {
         (!brandSize || (b.branding_size || "") === brandSize) &&
         (!brandColours || String(b.max_colour_count ?? "") === brandColours),
     );
-    return matches.length === 1 ? matches[0] : null;
-  }, [brandingOptions, brandType, brandPosition, brandSize, brandColours]);
+    // Previously this required exactly one match, so any remaining ambiguity
+    // silently dropped the branding from the cart. Fall back to the first
+    // (cheapest) match instead.
+    if (matches.length === 0) return null;
+    return [...matches].sort((a, b) => Number(a.unit_cost) - Number(b.unit_cost))[0];
+  }, [brandingOptions, brandType, brandPosition, brandSize, brandColours, brandingComplete]);
   const selectedBrandingId = matchedBranding?.id ?? null;
+
 
   const initialSelected = useMemo(() => {
     if (variants.length === 0) return {};
