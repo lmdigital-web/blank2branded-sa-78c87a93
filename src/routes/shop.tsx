@@ -20,6 +20,9 @@ import {
 
 export function ShopPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"featured" | "price-asc" | "price-desc" | "title">("featured");
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["shop-products", "all"],
