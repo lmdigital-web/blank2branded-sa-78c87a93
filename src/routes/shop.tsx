@@ -175,10 +175,81 @@ export function ShopPage() {
                     );
                   })}
                 </nav>
+
+                <p className="mb-2 mt-8 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Search</p>
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                  <Input
+                    type="search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search products…"
+                    aria-label="Search products"
+                    className="pl-9 pr-9"
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch("")}
+                      aria-label="Clear search"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+
+                <p className="mb-2 mt-6 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Filters</p>
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={inStockOnly}
+                    onChange={(e) => setInStockOnly(e.target.checked)}
+                    className="h-4 w-4 accent-[hsl(var(--primary))]"
+                  />
+                  In stock only
+                </label>
+
+                <label className="mt-4 block text-sm">
+                  <span className="mb-1 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">Sort by</span>
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as typeof sort)}
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <option value="featured">Featured</option>
+                    <option value="price-asc">Price: low to high</option>
+                    <option value="price-desc">Price: high to low</option>
+                    <option value="title">Name: A–Z</option>
+                  </select>
+                </label>
+
+                {(search || inStockOnly || sort !== "featured" || activeCategory) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-4 w-full"
+                    onClick={() => {
+                      setSearch("");
+                      setInStockOnly(false);
+                      setSort("featured");
+                      setActiveCategory(null);
+                    }}
+                  >
+                    Reset filters
+                  </Button>
+                )}
               </div>
             </aside>
 
             <div className="flex-1 min-w-0">
+              {!isLoading && (
+                <p className="mb-4 text-sm text-muted-foreground" aria-live="polite">
+                  {filtered.length} product{filtered.length === 1 ? "" : "s"}
+                  {search && <> for “{search}”</>}
+                </p>
+              )}
+
               {isLoading ? (
                 <div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
               ) : !filtered || filtered.length === 0 ? (
