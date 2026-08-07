@@ -8,11 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Search, ShoppingBag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-import {
-  listPublishedProducts,
-  listCategoryTree,
-  listProductCategoryMap,
-} from "@/lib/catalog";
+import { listProductCards, listCategoryTree } from "@/lib/catalog";
 
 /* -------------------------------------------------------------------------- */
 /*  Shop page — full product grid with category sidebar                        */
@@ -25,19 +21,24 @@ export function ShopPage() {
   const [inStockOnly, setInStockOnly] = useState(false);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["shop-products", "all"],
-    queryFn: () => listPublishedProducts(),
+    queryKey: ["shop-product-cards", "all"],
+    queryFn: () => listProductCards(),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: categories } = useQuery({
     queryKey: ["shop-categories"],
     queryFn: () => listCategoryTree(),
+    staleTime: 30 * 60 * 1000,
   });
 
-  const { data: catMap } = useQuery({
-    queryKey: ["shop-product-category-map", "all"],
-    queryFn: () => listProductCategoryMap(),
-  });
+  // Category ids come back with the product cards — no extra round trip.
+  const catMap = useMemo(() => {
+    if (!data) return undefined;
+    const out: Record<string, string | null> = {};
+    for (const p of data) out[p.id] = p.categoryId;
+    return out;
+  }, [data]);
 
   const topLevel = useMemo(() => {
     const all = (categories ?? []).filter((c) => !c.parent_id);
@@ -83,30 +84,27 @@ export function ShopPage() {
     let list = data;
     if (activeCategory) {
       const ids = descendantMap.get(activeCategory) ?? new Set<string>();
-      list = list.filter((p) => {
-        const cid = catMap?.[p.node.id];
-        return cid ? ids.has(cid) : false;
-      });
+      list = list.filter((p) => (p.categoryId ? ids.has(p.categoryId) : false));
     }
     const q = search.trim().toLowerCase();
     if (q) {
       const terms = q.split(/\s+/);
       list = list.filter((p) => {
-        const hay = `${p.node.title} ${p.node.description ?? ""} ${p.node.handle}`.toLowerCase();
+        const hay = `${p.title} ${p.handle}`.toLowerCase();
         return terms.every((t) => hay.includes(t));
       });
     }
     if (inStockOnly) {
-      list = list.filter((p) => p.node.variants.edges.some((v) => v.node.availableForSale));
+      list = list.filter((p) => p.inStock);
     }
     if (sort !== "featured") {
-      const price = (p: (typeof list)[number]) => parseFloat(p.node.priceRange.minVariantPrice.amount) || 0;
+      const price = (p: (typeof list)[number]) => p.minPrice || 0;
       list = [...list].sort((a, b) =>
         sort === "price-asc"
           ? price(a) - price(b)
           : sort === "price-desc"
             ? price(b) - price(a)
-            : a.node.title.localeCompare(b.node.title),
+            : a.title.localeCompare(b.title),
       );
     }
     return list;
@@ -260,26 +258,30 @@ export function ShopPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.map((p) => {
-                    const img = p.node.images.edges[0]?.node;
-                    const price = p.node.priceRange.minVariantPrice;
+                  {filtered.map((p, i) => {
                     return (
                       <Link
-                        key={p.node.id}
+                        key={p.id}
                         to="/products/$handle"
-                        params={{ handle: p.node.handle }}
+                        params={{ handle: p.handle }}
                         className="group rounded-xl border border-border bg-card overflow-hidden transition-all hover:shadow-lg hover:border-primary/30"
                       >
                         <div className="aspect-square bg-muted overflow-hidden">
-                          {img ? (
-                            <img src={img.url} alt={img.altText ?? p.node.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          {p.imageUrl ? (
+                            <img
+                              src={p.imageUrl}
+                              alt={p.imageAlt ?? p.title}
+                              loading={i < 6 ? "eager" : "lazy"}
+                              decoding="async"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center text-muted-foreground"><ShoppingBag /></div>
                           )}
                         </div>
                         <div className="p-4">
-                          <h3 className="font-semibold text-foreground line-clamp-1">{p.node.title}</h3>
-                          <p className="mt-1 text-sm text-muted-foreground">From {price.currencyCode} {parseFloat(price.amount).toFixed(2)}</p>
+                          <h3 className="font-semibold text-foreground line-clamp-1">{p.title}</h3>
+                          <p className="mt-1 text-sm text-muted-foreground">From {p.currencyCode} {p.minPrice.toFixed(2)}</p>
                           <Button variant="outline" size="sm" className="mt-3 w-full">View</Button>
                         </div>
                       </Link>
