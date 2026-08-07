@@ -83,7 +83,7 @@ export function ShopPage() {
     if (!data) return [];
     let list = data;
     if (activeCategory) {
-      const ids = descendantMap.get(activeCategory) ?? new Set<string>();
+      const ids = descendantMap.get(activeCategory) || new Set([activeCategory]);
       list = list.filter((p) => (p.categoryId ? ids.has(p.categoryId) : false));
     }
     const q = search.trim().toLowerCase();
