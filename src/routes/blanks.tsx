@@ -191,7 +191,7 @@ export function BlanksPage() {
             Our Blanks
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            <span className="text-gradient-dtf">Blank</span> Apparel.
+            <span className="text-gradient-dtf">Blank</span> Apparel SA.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
             Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Nationwide shipping from Mbombela.
