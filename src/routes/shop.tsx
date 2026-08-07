@@ -156,20 +156,42 @@ export function ShopPage() {
                   </button>
                   {topLevel.map((cat) => {
                     const isActive = activeCategory === cat.id;
+                    const subCats = (categories ?? []).filter(c => c.parent_id === cat.id);
+                    
                     return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setActiveCategory(cat.id)}
-                        className={cn(
-                          "w-full rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
-                          isActive
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                      <div key={cat.id} className="flex flex-col gap-1">
+                        <button
+                          onClick={() => setActiveCategory(cat.id)}
+                          className={cn(
+                            "w-full rounded-lg border px-4 py-2 text-left text-sm font-semibold transition-colors",
+                            isActive
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-background text-foreground hover:border-primary/40 hover:text-primary",
+                          )}
+                        >
+                          {cat.name}
+                          <span className="ml-2 text-xs opacity-70">({countByCategory.get(cat.id) ?? 0})</span>
+                        </button>
+                        
+                        {(isActive || subCats.some(sc => activeCategory === sc.id)) && subCats.length > 0 && (
+                          <div className="ml-4 flex flex-col gap-1 border-l-2 border-border/50 pl-2">
+                            {subCats.map(sub => (
+                              <button
+                                key={sub.id}
+                                onClick={() => setActiveCategory(sub.id)}
+                                className={cn(
+                                  "w-full rounded-md px-3 py-1.5 text-left text-xs font-medium transition-colors",
+                                  activeCategory === sub.id
+                                    ? "bg-muted text-primary"
+                                    : "text-muted-foreground hover:text-primary hover:bg-muted/50"
+                                )}
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </div>
                         )}
-                      >
-                        {cat.name}
-                        <span className="ml-2 text-xs opacity-70">({countByCategory.get(cat.id) ?? 0})</span>
-                      </button>
+                      </div>
                     );
                   })}
                 </nav>
