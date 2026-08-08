@@ -25,9 +25,9 @@ const NETWORK_META: Record<string, { name: string; placeholder: string; help: st
   google: {
     name: "Google Ads / GA4",
     placeholder: "Google Ads ID: AW-123456789",
-    help: "Google Ads → Tools → Conversions. Add GA4 measurement ID (G-XXXX) for analytics.",
+    help: "Google Ads → Tools → Conversions. Add your numeric GA4 Property ID (Admin → Property Settings) for dashboard stats.",
     docsUrl: "https://ads.google.com/",
-    extra: [{ key: "ga4_id", label: "GA4 Measurement ID (optional)", placeholder: "G-XXXXXXX" }],
+    extra: [{ key: "ga4_id", label: "GA4 Property ID (numeric)", placeholder: "e.g. 123456789" }],
   },
   pinterest: {
     name: "Pinterest Tag",
