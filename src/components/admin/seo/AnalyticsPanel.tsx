@@ -3,6 +3,7 @@ import { DecayPanel } from "@/components/admin/DecayPanel";
 import { OpportunitiesPanel } from "@/components/admin/OpportunitiesPanel";
 import { SpeedPanel } from "@/components/admin/SpeedPanel";
 import { IndexingPanel } from "@/components/admin/IndexingPanel";
+import { TrafficPanel } from "@/components/admin/seo/TrafficPanel";
 import { useState } from "react";
 
 const subTabs = [

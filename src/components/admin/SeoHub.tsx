@@ -21,7 +21,7 @@ const tabs: { id: Tab; label: string; icon: typeof Gauge; desc: string }[] = [
   { id: "keywords", label: "Keywords & Ideas", icon: KeyRound, desc: "Target-keyword tracker per page" },
   { id: "ai", label: "AI Content", icon: Sparkles, desc: "Generate blog drafts with AI" },
   { id: "internal", label: "Internal Links", icon: Link2, desc: "Suggest related pages to link" },
-  { id: "analytics", label: "Analytics", icon: BarChart3, desc: "GSC clicks, impressions, ranking decay" },
+  { id: "analytics", label: "Analytics & Traffic", icon: BarChart3, desc: "GA4 Traffic, GSC clicks, impressions, ranking decay" },
 ];
 
 export function SeoHub() {
