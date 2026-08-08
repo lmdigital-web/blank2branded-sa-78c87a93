@@ -68,7 +68,7 @@ export function TrafficPanel() {
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" /> GA4 Real-time Traffic (Last 30 Days)
           </h3>
-          <p className="text-sm text-muted-foreground">Live data from Google Analytics property G-H7C4L2X9PQ.</p>
+          <p className="text-sm text-muted-foreground">Live data from your connected Google Analytics property.</p>
         </div>
         <Button variant="outline" size="sm" onClick={load}>
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
