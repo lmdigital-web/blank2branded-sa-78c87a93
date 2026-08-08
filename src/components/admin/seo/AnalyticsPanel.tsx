@@ -7,6 +7,7 @@ import { TrafficPanel } from "@/components/admin/seo/TrafficPanel";
 import { useState } from "react";
 
 const subTabs = [
+  { id: "traffic", label: "Traffic (GA4)" },
   { id: "gsc", label: "Search Console" },
   { id: "opportunities", label: "Opportunities" },
   { id: "decay", label: "Rankings at Risk" },
@@ -15,7 +16,7 @@ const subTabs = [
 ] as const;
 
 export function AnalyticsPanel() {
-  const [tab, setTab] = useState<(typeof subTabs)[number]["id"]>("gsc");
+  const [tab, setTab] = useState<(typeof subTabs)[number]["id"]>("traffic");
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-card p-2">
@@ -32,6 +33,7 @@ export function AnalyticsPanel() {
         ))}
       </div>
       <div>
+        {tab === "traffic" && <TrafficPanel />}
         {tab === "gsc" && <SearchConsolePanel />}
         {tab === "opportunities" && <OpportunitiesPanel />}
         {tab === "decay" && <DecayPanel />}
