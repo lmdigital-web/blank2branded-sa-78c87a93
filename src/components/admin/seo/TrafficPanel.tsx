@@ -29,7 +29,7 @@ export function TrafficPanel() {
         .eq("enabled", true)
         .single();
 
-      const ga4Id = pixels?.extra?.ga4_id;
+      const ga4Id = (pixels?.extra as any)?.ga4_id;
 
       if (!ga4Id) {
         throw new Error("GA4 Measurement ID not found. Please add it in the Ads Manager tab.");
