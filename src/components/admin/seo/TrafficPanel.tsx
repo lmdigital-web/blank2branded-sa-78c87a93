@@ -29,10 +29,16 @@ export function TrafficPanel() {
         .eq("enabled", true)
         .single();
 
-      const ga4Id = (pixels?.extra as any)?.ga4_id;
+      let ga4Id = (pixels?.extra as any)?.ga4_id;
 
       if (!ga4Id) {
-        throw new Error("GA4 Measurement ID not found. Please add it in the Ads Manager tab.");
+        throw new Error("GA4 Property ID not found. Please add it in the Ads Manager tab.");
+      }
+
+      // If they provided a Measurement ID (G-XXXX), it won't work with the Data API.
+      // We'll show a helpful hint if it looks like a Measurement ID.
+      if (ga4Id.startsWith("G-")) {
+        throw new Error("You provided a Measurement ID (G-XXXXXX), but the dashboard needs your numeric GA4 Property ID. Find it in Google Analytics Admin → Property Settings.");
       }
 
       const { data: res, error: err } = await supabase.functions.invoke("ga4-stats", {
