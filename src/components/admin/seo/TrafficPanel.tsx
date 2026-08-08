@@ -22,8 +22,21 @@ export function TrafficPanel() {
     setLoading(true);
     setError(null);
     try {
+      const { data: pixels } = await supabase
+        .from("ad_pixels")
+        .select("extra")
+        .eq("network", "google")
+        .eq("enabled", true)
+        .single();
+
+      const ga4Id = (pixels?.extra as any)?.ga4_id;
+
+      if (!ga4Id) {
+        throw new Error("GA4 Measurement ID not found. Please add it in the Ads Manager tab.");
+      }
+
       const { data: res, error: err } = await supabase.functions.invoke("ga4-stats", {
-        body: { days: 30 },
+        body: { days: 30, property_id: ga4Id },
       });
       if (err) throw err;
       setData(res as TrafficData);
@@ -52,7 +65,7 @@ export function TrafficPanel() {
       <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-center">
         <p className="text-sm text-destructive">{error}</p>
         <p className="mt-2 text-xs text-muted-foreground">
-          Note: Real-time traffic data requires the GA4 API integration to be fully configured in your backend.
+          To fix this: Sign up for Google Analytics, get your <strong>Measurement ID (G-XXXXXXX)</strong>, and paste it into the <strong>Ads Manager</strong> tab under Google settings.
         </p>
         <Button variant="outline" size="sm" onClick={load} className="mt-4">
           <RefreshCw className="mr-2 h-4 w-4" /> Try again
@@ -68,7 +81,7 @@ export function TrafficPanel() {
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" /> GA4 Real-time Traffic (Last 30 Days)
           </h3>
-          <p className="text-sm text-muted-foreground">Live data from Google Analytics property G-H7C4L2X9PQ.</p>
+          <p className="text-sm text-muted-foreground">Live data from your connected Google Analytics property.</p>
         </div>
         <Button variant="outline" size="sm" onClick={load}>
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
