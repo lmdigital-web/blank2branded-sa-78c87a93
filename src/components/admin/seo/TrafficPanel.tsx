@@ -71,7 +71,7 @@ export function TrafficPanel() {
       <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-center">
         <p className="text-sm text-destructive">{error}</p>
         <p className="mt-2 text-xs text-muted-foreground">
-          To fix this: Sign up for Google Analytics, get your <strong>Measurement ID (G-XXXXXXX)</strong>, and paste it into the <strong>Ads Manager</strong> tab under Google settings.
+          To fix this: Copy your <strong>numeric Property ID</strong> from Google Analytics Admin → Property Settings, and paste it into the <strong>GA4 Property ID</strong> field in the <strong>Ads Manager</strong> tab.
         </p>
         <Button variant="outline" size="sm" onClick={load} className="mt-4">
           <RefreshCw className="mr-2 h-4 w-4" /> Try again
