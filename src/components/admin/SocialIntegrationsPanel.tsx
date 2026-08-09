@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Share2, Save, Loader2, Send } from "lucide-react";
+import { Share2, Save, Loader2, Send, Globe } from "lucide-react";
 
 export function SocialIntegrationsPanel() {
   const [url, setUrl] = useState("");
@@ -123,6 +123,35 @@ export function SocialIntegrationsPanel() {
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save settings
             </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Globe className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">Zoho Social Integration</h2>
+        </div>
+        <p className="mb-6 text-sm text-muted-foreground">
+          Link your Zoho Social account to automatically create and schedule social media posts from your blog content.
+        </p>
+
+        <div className="space-y-5">
+          <div className="rounded-md border border-blue-100 bg-blue-50/50 p-4 text-sm text-blue-800">
+            <p className="font-semibold">Setup Instructions:</p>
+            <ol className="mt-2 list-decimal space-y-1 pl-4">
+              <li>Open your <strong>Zoho Social</strong> dashboard.</li>
+              <li>Go to <strong>Settings</strong> &gt; <strong>Integrations</strong>.</li>
+              <li>Look for <strong>Custom RSS/Webhook</strong> or <strong>Automation</strong> options.</li>
+              <li>Copy your unique <strong>Webhook URL</strong> and paste it above into the "Outgoing Blog Webhook URL" field.</li>
+              <li>Enable "Auto-Post" to ensure Zoho Social receives your blog updates in real-time.</li>
+            </ol>
+          </div>
+          
+          <div className="mt-4 flex items-center justify-between gap-4 rounded-md border border-border bg-muted/40 p-4">
+            <p className="text-xs text-muted-foreground">
+              Note: The "Outgoing Blog Webhook URL" works with Zoho Social, Make.com, and Zapier to sync your blog content with your social media profiles.
+            </p>
           </div>
         </div>
       </div>
