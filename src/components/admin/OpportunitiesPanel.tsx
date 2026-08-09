@@ -50,6 +50,11 @@ export function OpportunitiesPanel() {
   async function generateDraft(keyword: string) {
     setCreating(keyword);
     const { data: u } = await supabase.auth.getUser();
+    
+    // Fetch the default author to avoid foreign key violation
+    const { data: authors } = await supabase.from("authors").select("id").limit(1);
+    const author_id = authors?.[0]?.id;
+
     const title = keyword.replace(/\b\w/g, (c) => c.toUpperCase());
     const payload = {
       title,
@@ -60,7 +65,8 @@ export function OpportunitiesPanel() {
       meta_title: `${title} | Blank2Branded SA`,
       meta_description: `Everything you need to know about ${keyword} in South Africa — pricing, options, and how to order.`,
       keywords: keyword,
-      author_id: u.user?.id,
+      author_id: author_id,
+      created_by: u.user?.id,
     };
     const { data, error } = await supabase.from("posts").insert(payload).select("id").single();
     setCreating(null);
