@@ -174,6 +174,23 @@ export function PostEditorPage() {
     // E-E-A-T Quality Gate — required to publish or schedule
     if (action !== "draft") {
       if (!form.author_id) return toast.error("Assign an Author before publishing (E-E-A-T)");
+      
+      const text = form.content.replace(/<[^>]+>/g, " ");
+      const words = text.trim().split(/\s+/).filter(Boolean).length;
+      if (words < 900) return toast.error(`Content is only ${words} words. Aim for 900+ words to pass the E-E-A-T quality gate.`);
+
+      const focus = (form.keywords.split(",")[0] || "").trim().toLowerCase();
+      if (focus && words > 0) {
+        const escaped = focus.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const matches = text.toLowerCase().match(new RegExp(`\\b${escaped}\\b`, "g")) || [];
+        const density = (matches.length / words) * 100;
+        if (density > 2.5) return toast.error(`Keyword density is ${density.toFixed(2)}%. Reduce keyword usage to under 2.5% for E-E-A-T compliance.`);
+      }
+
+      if (!form.cover_image_url) return toast.error("Add a featured/cover image before publishing");
+      if (!form.content.includes("<img")) return toast.error("Add at least one image inside the article content");
+      if (!form.content.includes("href=\"http")) return toast.error("Cite an authoritative external source (external link) before publishing");
+
       if ((form.experience_notes || "").trim().length < 80) {
         return toast.error("Add Information Gain / First-Hand Experience notes (≥80 chars) before publishing");
       }

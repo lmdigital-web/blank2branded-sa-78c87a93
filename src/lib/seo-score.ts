@@ -70,7 +70,7 @@ export function computeSeoScore(input: SeoInput) {
     const matches = lower(text).match(new RegExp(`\\b${escaped}\\b`, "g")) || [];
     density = (matches.length / words) * 100;
   }
-  const densityOk = density >= 0.4 && density <= 2.8;
+  const densityOk = density >= 0.5 && density <= 2.5;
 
   const checks: SeoCheck[] = [
     { id: "focus", label: "Focus keyword set", pass: !!focus, weight: 5, hint: "Add at least one focus keyword in the SEO panel." },
