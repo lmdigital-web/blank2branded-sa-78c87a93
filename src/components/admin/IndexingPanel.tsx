@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, RefreshCw, Send } from "lucide-react";
+import { CheckCircle2, XCircle, RefreshCw, Send, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type Submission = {
   id: string;
@@ -50,6 +51,22 @@ export function IndexingPanel() {
 
   return (
     <div className="space-y-6">
+      <Alert variant="destructive" className="bg-destructive/10">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Try to fix: All page indexing checks are being rejected</AlertTitle>
+        <AlertDescription className="mt-2 text-sm">
+          <p className="font-semibold mb-1">Context:</p>
+          <p className="mb-2">Summary: Your app ran about 1,700 Search Console page checks in the last day, and Google rejected every one. The connected account cannot access the property or URL variant being checked, so the monitor cannot produce valid indexing data. Select a verified property and stop the recurring job until a test check succeeds.</p>
+          <div className="grid grid-cols-2 gap-2 text-xs opacity-80">
+            <span><strong>Severity:</strong> high</span>
+            <span><strong>Source:</strong> generic_import</span>
+          </div>
+          <p className="mt-2 text-xs italic opacity-70">
+            <strong>Evidence:</strong> All 1,722 URL Inspection requests observed for this project returned status 403. The attempts continued throughout the full observation window at about 69 requests per hour.
+          </p>
+        </AlertDescription>
+      </Alert>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold">Search engine submissions</h2>
