@@ -124,7 +124,7 @@ export function CataloguesPage() {
       <section className="bg-muted/30 py-12">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-2xl font-bold text-charcoal">Found something you like?</h2>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-charcoal/85">
             WhatsApp us the product code(s) from the catalogue and we'll send you a quote with branding options.
           </p>
           <a
