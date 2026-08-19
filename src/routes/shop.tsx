@@ -112,7 +112,7 @@ export function ShopPage() {
 
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
       <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
         <div className="pointer-events-none absolute inset-0">

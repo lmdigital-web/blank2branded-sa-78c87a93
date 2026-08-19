@@ -166,7 +166,7 @@ function SectionBlock({ section, index }: { section: Section; index: number }) {
 
 export function BlanksPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}

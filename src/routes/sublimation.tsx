@@ -259,7 +259,7 @@ function ProductCard({ p }: { p: SublimationProduct }) {
 
 export function SublimationPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
