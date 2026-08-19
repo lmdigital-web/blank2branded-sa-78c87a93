@@ -69,7 +69,7 @@ export function DtfPage() {
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">A6 to 10 metres.</span> We print anything you like.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Full-colour, photo-quality DTF prints — from tiny chest logos up to 10-metre roll runs. 20 cm wide rolls. Soft hand-feel, wash-tested, ready to press.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -123,7 +123,7 @@ export function DtfPage() {
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 text-xl font-black text-charcoal">{f.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal/85">{f.body}</p>
                 </div>
               );
             })}
@@ -235,7 +235,7 @@ export function DtfPage() {
                     </div>
                   </div>
                   <h3 className="mt-6 text-2xl font-black text-charcoal">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal/85">{s.body}</p>
                 </div>
               );
             })}

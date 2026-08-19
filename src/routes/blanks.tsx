@@ -136,7 +136,7 @@ function SectionBlock({ section, index }: { section: Section; index: number }) {
           <h2 className="mt-5 text-3xl font-black tracking-tight text-charcoal md:text-4xl">
             {section.title}
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
+          <p className="mt-5 text-base leading-relaxed text-charcoal/85 md:text-lg">
             {section.body}
           </p>
           <ul className="mt-6 space-y-3">
@@ -193,7 +193,7 @@ export function BlanksPage() {
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">Blank</span> Apparel SA.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Premium t-shirts, golf shirts and hoodies — ready for DTF, screen print or embroidery. Nationwide shipping from Mbombela.
           </p>
 

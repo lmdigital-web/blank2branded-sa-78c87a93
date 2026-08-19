@@ -124,7 +124,7 @@ export function SportsKitsPage() {
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             Sublimated Sports Kits <span className="text-gradient-dtf">South Africa</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Full-colour custom kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics — team
             names, numbers and sponsor logos dyed into the fabric. Delivered nationwide from Mbombela in 10–15 working
             days.
@@ -201,7 +201,7 @@ export function SportsKitsPage() {
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="text-lg font-black text-charcoal">{s.sport} Kits</h3>
-                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{s.blurb}</p>
+                  <p className="mt-2 flex-1 text-sm text-charcoal/85">{s.blurb}</p>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
                     Get {s.sport.toLowerCase()} quote <ArrowRight className="h-4 w-4" />
                   </span>
@@ -303,7 +303,7 @@ export function SportsKitsPage() {
                   <h3 className="text-base font-black text-charcoal md:text-lg">{f.q}</h3>
                   <span className="mt-1 text-primary transition-transform group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-sm text-muted-foreground md:text-base">{f.a}</p>
+                <p className="mt-3 text-sm text-charcoal/85 md:text-base">{f.a}</p>
               </details>
             ))}
           </div>

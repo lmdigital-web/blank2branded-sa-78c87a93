@@ -243,7 +243,7 @@ function ProductCard({ p }: { p: SublimationProduct }) {
       </div>
       <div className="flex flex-1 flex-col p-6">
         <h3 className="text-lg font-black leading-tight text-charcoal">{p.title}</h3>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/85">{p.description}</p>
         <a
           href={quoteLink(p.title)}
           target="_blank"
@@ -318,7 +318,7 @@ export function SublimationPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-primary">Category</p>
                 <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">{cat.label}</h2>
-                <p className="mt-2 text-base text-muted-foreground">{cat.tagline}</p>
+                <p className="mt-2 text-base text-charcoal/85">{cat.tagline}</p>
               </div>
               <p className="text-sm font-semibold text-muted-foreground">
                 {cat.products.length} product{cat.products.length === 1 ? "" : "s"}
