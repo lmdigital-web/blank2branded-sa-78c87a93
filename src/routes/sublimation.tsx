@@ -316,7 +316,7 @@ export function SublimationPage() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-magenta">Category</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary">Category</p>
                 <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">{cat.label}</h2>
                 <p className="mt-2 text-base text-muted-foreground">{cat.tagline}</p>
               </div>

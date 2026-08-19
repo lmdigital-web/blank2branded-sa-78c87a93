@@ -68,7 +68,7 @@ export function Home() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground font-medium md:text-xl">
               Blank2Branded supplies clothing brands & businesses with premium
               DTF transfers and blank apparel. Print, press, or supply — we're
               your backend.
@@ -370,7 +370,7 @@ export function Home() {
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
               Why <span className="text-gradient-dtf">Blank2Branded</span>?
             </h2>
-            <p className="mt-6 text-lg text-muted-foreground">
+            <p className="mt-6 text-lg text-muted-foreground font-medium">
               We built this for the brands, businesses and individuals we wish
               had a supplier like this when we started. Honest pricing, no gatekeeping.
             </p>

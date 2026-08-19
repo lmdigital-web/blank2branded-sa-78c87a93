@@ -171,7 +171,7 @@ export function SportsKitsPage() {
       <section id="sports" className="border-b border-border py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">Kits by Sport</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Kits by Sport</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               Custom kits for every code
             </h2>
@@ -234,7 +234,7 @@ export function SportsKitsPage() {
       <section className="border-b border-border bg-muted/30 py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">How Sublimation Works</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">How Sublimation Works</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               From artwork to finished kit
             </h2>
@@ -260,7 +260,7 @@ export function SportsKitsPage() {
       <section className="border-b border-border py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">Pricing & MOQ</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Pricing & MOQ</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">Volume tiers</h2>
             <p className="mt-3 text-base text-muted-foreground">
               Minimum 10 kits per style. The more you order, the lower the per-kit price. Request a quote for exact
@@ -291,7 +291,7 @@ export function SportsKitsPage() {
       <section className="border-b border-border bg-muted/30 py-16 md:py-20">
         <div className="mx-auto max-w-4xl px-6">
           <div className="mb-10">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">FAQ</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">FAQ</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               Sublimated sports kits — your questions
             </h2>

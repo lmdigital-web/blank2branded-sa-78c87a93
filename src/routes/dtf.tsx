@@ -101,7 +101,7 @@ export function DtfPage() {
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-cyan">Why DTF</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">Why DTF</p>
             <h2 className="mt-4 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               One process. <span className="text-gradient-dtf">Endless designs.</span>
             </h2>
@@ -145,7 +145,7 @@ export function DtfPage() {
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="grid items-start gap-12 lg:grid-cols-[1fr_1.2fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
                 Print Sizes
               </p>
               <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
@@ -206,7 +206,7 @@ export function DtfPage() {
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-magenta">How it works</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">How it works</p>
             <h2 className="mt-4 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               Three steps. <span className="text-gradient-dtf">Done.</span>
             </h2>
