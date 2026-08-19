@@ -42,7 +42,7 @@ export function ContactPage() {
   const labelCls = "text-xs font-semibold uppercase tracking-wider text-charcoal";
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       <section className="relative overflow-hidden border-b border-border pt-40 pb-20 md:pt-48 md:pb-24">
@@ -62,7 +62,7 @@ export function ContactPage() {
           <div className="absolute right-1/3 bottom-0 h-72 w-72 rounded-full bg-primary blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-cyan">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             Contact
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
@@ -225,6 +225,6 @@ export function ContactPage() {
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }

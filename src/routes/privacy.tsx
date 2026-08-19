@@ -3,11 +3,11 @@ import { Footer } from "@/components/Footer";
 
 export function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
       <section className="pt-32 pb-16 md:pt-40">
         <div className="mx-auto max-w-3xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Legal</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Legal</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
             Privacy Policy
           </h1>
@@ -120,6 +120,6 @@ export function PrivacyPage() {
         </div>
       </section>
       <Footer />
-    </div>
+    </main>
   );
 }

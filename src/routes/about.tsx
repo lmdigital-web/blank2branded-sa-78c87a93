@@ -6,7 +6,7 @@ import aboutHeroBg from "@/assets/about-hero-bg.jpg";
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       <section className="relative overflow-hidden border-b border-border pt-40 pb-24 md:pt-48 md:pb-32">
@@ -22,7 +22,7 @@ export function AboutPage() {
         </div>
 
         <div className="relative mx-auto max-w-4xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             About Us
           </p>
           <h1 className="mt-4 text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
@@ -155,6 +155,6 @@ export function AboutPage() {
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }
