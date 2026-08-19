@@ -13,7 +13,7 @@ export function TermsPage() {
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">Last updated: 24 June 2026</p>
 
-          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/80">
+          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/85">
             <p>
               These terms govern your use of the Blank2Branded website and the purchase of DTF
               transfers, blank apparel and related services from us. By placing an order or using

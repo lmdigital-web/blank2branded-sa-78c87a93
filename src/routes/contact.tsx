@@ -194,7 +194,7 @@ export function ContactPage() {
                       <item.icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-background/50">{item.label}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-background/80">{item.label}</p>
                       {item.href ? (
                         <a href={item.href} className="mt-1 block text-base font-semibold hover:text-primary">
                           {item.value}
@@ -202,7 +202,7 @@ export function ContactPage() {
                       ) : (
                         <p className="mt-1 text-base font-semibold">{item.value}</p>
                       )}
-                      {item.sub && <p className="text-sm text-background/60">{item.sub}</p>}
+                      {item.sub && <p className="text-sm text-background/80">{item.sub}</p>}
                     </div>
                   </li>
                 ))}

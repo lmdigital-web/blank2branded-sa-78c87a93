@@ -28,7 +28,7 @@ export function AboutPage() {
           <h1 className="mt-4 text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             The Backend for SA's <span className="text-gradient-dtf">Clothing Brands.</span>
           </h1>
-          <div className="mt-10 space-y-6 text-lg leading-relaxed text-charcoal/80">
+          <div className="mt-10 space-y-6 text-lg leading-relaxed text-charcoal/85">
             <p>
               Blank2Branded started to solve the gap between expensive retail
               blanks and unreliable print suppliers. We're printers and brand
@@ -64,7 +64,7 @@ export function AboutPage() {
                 <span className="text-gradient-dtf">stand for.</span>
               </h2>
             </div>
-            <p className="max-w-md text-base leading-relaxed text-background/70 md:justify-self-end md:text-right">
+            <p className="max-w-md text-base leading-relaxed text-background/85 md:justify-self-end md:text-right">
               Three values that shape how we quote, print, pack and ship —
               every single order, no exceptions.
             </p>
@@ -126,7 +126,7 @@ export function AboutPage() {
                     className="mt-4 h-px w-10 transition-all duration-300 group-hover:w-20"
                     style={{ backgroundColor: `var(--${p.color})` }}
                   />
-                  <p className="mt-5 text-sm leading-relaxed text-background/65">
+                  <p className="mt-5 text-sm leading-relaxed text-background/85">
                     {p.desc}
                   </p>
                 </div>

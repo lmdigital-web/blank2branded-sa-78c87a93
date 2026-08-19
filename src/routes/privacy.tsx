@@ -13,7 +13,7 @@ export function PrivacyPage() {
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">Last updated: 24 June 2026</p>
 
-          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/80">
+          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/85">
             <p>
               Blank2Branded ("we", "us", "our") respects your privacy and is committed to protecting
               your personal information in line with the Protection of Personal Information Act, 2013
