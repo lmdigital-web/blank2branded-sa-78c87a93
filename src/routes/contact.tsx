@@ -68,7 +68,7 @@ export function ContactPage() {
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             Get a <span className="text-gradient-dtf">Quote.</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Open to brands, businesses and individuals. We reply to all enquiries within 4 business hours.
           </p>
         </div>
@@ -86,7 +86,7 @@ export function ContactPage() {
                 <h2 className="mt-6 text-2xl font-bold text-charcoal">
                   Thanks — we've got it.
                 </h2>
-                <p className="mt-3 text-muted-foreground">
+                <p className="mt-3 text-charcoal/85">
                   We'll reply within 4 business hours.
                 </p>
               </div>

@@ -284,7 +284,7 @@ export function SublimationPage() {
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">Edge-to-edge</span> custom kits.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Full-colour sublimation printed apparel for Mens, Ladies and Kids — golf shirts, jerseys, tees, vests, shorts and sets. Your design, baked into the fabric. Request a quote on any item and we'll come back within 4 business hours.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
