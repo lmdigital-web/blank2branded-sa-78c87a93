@@ -151,7 +151,7 @@ export function DtfPage() {
               <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
                 From a coin to a <span className="text-gradient-dtf">10-metre roll.</span>
               </h2>
-              <p className="mt-6 text-lg text-background/70">
+              <p className="mt-6 text-lg text-background/85">
                 Our printer runs 20 cm wide rolls up to 10 metres long. Whether you need 50 small chest logos ganged on one roll or a long continuous run — same machine, same colours, one quote.
               </p>
 
@@ -193,7 +193,7 @@ export function DtfPage() {
                         <Ruler className="h-4 w-4" />
                       </span>
                     </div>
-                    <p className="mt-4 text-sm text-background/70">{s.dim}</p>
+                    <p className="mt-4 text-sm text-background/85">{s.dim}</p>
                   </div>
                 );
               })}
@@ -255,7 +255,7 @@ export function DtfPage() {
           <h2 className="text-3xl font-black tracking-tight md:text-4xl">
             Got artwork? <span className="text-gradient-dtf">Let's print it.</span>
           </h2>
-          <p className="mt-4 text-lg text-background/70">
+          <p className="mt-4 text-lg text-background/85">
             Upload your design and we'll come back with a quote within 4 business hours.
           </p>
           <Link

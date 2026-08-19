@@ -234,7 +234,7 @@ export function BlanksPage() {
           <h2 className="text-3xl font-black tracking-tight md:text-4xl">
             Ready to <span className="text-gradient-dtf">brand</span> your blanks?
           </h2>
-          <p className="mt-4 text-lg text-background/70">
+          <p className="mt-4 text-lg text-background/85">
             Tell us what you need and we'll quote you fast.
           </p>
 

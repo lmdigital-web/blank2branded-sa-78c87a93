@@ -424,7 +424,7 @@ export function Home() {
             Ready to go from{" "}
             <span className="text-gradient-dtf">Blank to Branded?</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-background/70">
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-background/85">
             Order from 5 pieces and up — DTF prints and blank apparel, shipped nationwide.
           </p>
           <Link
