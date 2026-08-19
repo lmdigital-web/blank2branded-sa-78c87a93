@@ -72,7 +72,7 @@ export function CataloguesPage() {
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">Browse</span> our full ranges.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Open any catalogue below to view the full digital flipbook, then WhatsApp us the product codes you like and we'll come back with a quote within 4 business hours.
           </p>
           <div className="mt-8">
@@ -105,7 +105,7 @@ export function CataloguesPage() {
                   {cat.tag}
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-charcoal">{cat.title}</h2>
-                <p className="mt-2 flex-1 text-sm text-muted-foreground">{cat.description}</p>
+                <p className="mt-2 flex-1 text-sm text-charcoal/85">{cat.description}</p>
                 <a
                   href={cat.url}
                   target="_blank"
