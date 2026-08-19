@@ -63,7 +63,7 @@ export function DtfPage() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             DTF Transfers
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
@@ -264,7 +264,7 @@ export function DtfPage() {
           >
             Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
-        </div>
+    </main>
       </section>
 
       <Footer />

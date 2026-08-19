@@ -120,7 +120,7 @@ export function SportsKitsPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Sublimated Sports Kits</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Sublimated Sports Kits</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             Sublimated Sports Kits <span className="text-gradient-dtf">South Africa</span>
           </h1>
@@ -306,7 +306,7 @@ export function SportsKitsPage() {
                 <p className="mt-3 text-sm text-muted-foreground md:text-base">{f.a}</p>
               </details>
             ))}
-          </div>
+    </main>
         </div>
       </section>
 
