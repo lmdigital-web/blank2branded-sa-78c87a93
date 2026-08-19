@@ -134,7 +134,7 @@ export function CheckoutPage() {
       });
       if (error) throw error;
       trackEvent("purchase", { value: total, currency, reference: orderRef });
-      navigate(`/checkout/success/?ref=${encodeURIComponent(orderRef)}`);
+      navigate(`/checkout/success/?ref=${encodeURIComponent(orderRef)}&email=${encodeURIComponent(customer.email)}`);
     } catch (err) {
       console.error("Order submission failed:", err);
       toast.error("Couldn't submit your order — please try again or WhatsApp us on +27 69 838 4045.");

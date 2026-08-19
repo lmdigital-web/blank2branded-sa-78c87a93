@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, MessageCircle } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -6,15 +6,70 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/static-router";
 import { useCartStore } from "@/stores/cartStore";
 
+declare global {
+  interface Window {
+    renderOptIn?: () => void;
+    gapi?: any;
+  }
+}
+
 export function CheckoutSuccessPage() {
   const { clearCart } = useCartStore();
-  const ref = typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search).get("ref") ?? ""
-    : "";
+  const [orderDetails, setOrderDetails] = useState<{
+    ref: string;
+    email: string;
+    items: any[];
+  } | null>(null);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const ref = searchParams.get("ref") ?? "";
+    const email = searchParams.get("email") ?? "";
+    
+    // We try to get items from store before clearing it
+    // In a real production app, we might fetch order details from the backend via the ref
+    const cart = useCartStore.getState();
+    const items = [...cart.items];
+
+    setOrderDetails({ ref, email, items });
+
+    // Load Google Customer Reviews script
+    const script = document.createElement("script");
+    script.src = "https://apis.google.com/js/platform.js?onload=renderOptIn";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    window.renderOptIn = function() {
+      if (window.gapi && window.gapi.load) {
+        window.gapi.load('surveyoptin', function() {
+          const estimatedDate = new Date();
+          estimatedDate.setDate(estimatedDate.getDate() + 14); // 7-14 working days lead time
+          const dateStr = estimatedDate.toISOString().split('T')[0];
+
+          window.gapi.surveyoptin.render({
+            "merchant_id": 5830554688,
+            "order_id": ref || `B2B-${Date.now()}`,
+            "email": email || "customer@example.com",
+            "delivery_country": "ZA",
+            "estimated_delivery_date": dateStr,
+            "products": items.map(i => ({ gtin: i.variantId }))
+          });
+        });
+      }
+    };
+
     clearCart();
+
+    return () => {
+      // Cleanup
+      const existingScript = document.querySelector('script[src*="platform.js"]');
+      if (existingScript) existingScript.remove();
+      delete window.renderOptIn;
+    };
   }, [clearCart]);
+
+  const ref = orderDetails?.ref ?? "";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
