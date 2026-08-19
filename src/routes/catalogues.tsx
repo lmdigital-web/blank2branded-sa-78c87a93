@@ -45,7 +45,7 @@ const CATALOGUES: Catalogue[] = [
 
 export function CataloguesPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
@@ -66,7 +66,7 @@ export function CataloguesPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             Supplier Catalogues
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
@@ -101,7 +101,7 @@ export function CataloguesPage() {
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <BookOpen className="h-6 w-6" />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-magenta">
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                   {cat.tag}
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-charcoal">{cat.title}</h2>
@@ -140,6 +140,6 @@ export function CataloguesPage() {
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }
