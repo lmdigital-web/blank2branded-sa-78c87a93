@@ -244,10 +244,10 @@ export function BlanksPage() {
           >
             Shop Now <ArrowRight className="h-4 w-4" />
           </Link>
-    </main>
+        </div>
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }

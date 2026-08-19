@@ -306,7 +306,7 @@ export function SportsKitsPage() {
                 <p className="mt-3 text-sm text-muted-foreground md:text-base">{f.a}</p>
               </details>
             ))}
-    </main>
+          </div>
         </div>
       </section>
 
@@ -355,6 +355,6 @@ export function SportsKitsPage() {
 
 
       <Footer />
-    </div>
+    </main>
   );
 }
