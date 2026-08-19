@@ -18,7 +18,7 @@ import {
 
 export function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
@@ -129,7 +129,7 @@ export function Home() {
         </div>
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
               What We Do
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -202,7 +202,7 @@ export function Home() {
       {/* HOW IT WORKS */}
       <section className="relative overflow-hidden border-b border-border bg-charcoal py-28 text-background">
         {/* ink-splash colour field */}
-        <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="pointer-events-none absolute inset-0 opacity-40">
           <div className="animate-float-blob absolute -left-32 top-10 h-96 w-96 rounded-full bg-magenta opacity-30 blur-3xl" />
           <div className="animate-float-blob absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-cyan opacity-25 blur-3xl [animation-delay:-6s]" />
           <div className="animate-float-blob absolute left-1/2 bottom-0 h-80 w-80 -translate-x-1/2 rounded-full bg-lime opacity-25 blur-3xl [animation-delay:-3s]" />
@@ -222,7 +222,7 @@ export function Home() {
 
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-background/60">
+            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-background/80">
               <span className="h-px w-8 bg-gradient-dtf" />
               Process
             </p>
@@ -230,7 +230,7 @@ export function Home() {
               From DM to{" "}
               <span className="text-gradient-dtf">doorstep</span> in 4 steps.
             </h2>
-            <p className="mt-5 max-w-xl text-base text-background/70 md:text-lg">
+            <p className="mt-5 max-w-xl text-base text-background/85 md:text-lg">
               No middlemen, no guesswork. Here's exactly how your order moves
               through the workshop.
             </p>
@@ -278,7 +278,7 @@ export function Home() {
                     <h3 className="mt-5 text-2xl font-bold text-background">
                       {step.title}
                     </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-background/65">
+                    <p className="mt-3 text-sm leading-relaxed text-background/85">
                       {step.desc}
                     </p>
                   </div>
@@ -294,7 +294,7 @@ export function Home() {
       <section className="border-b border-border py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-cyan">
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
               Inside the Operation
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -315,7 +315,7 @@ export function Home() {
                 />
               </div>
               <div className="p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-magenta">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
                   DTF Production
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
@@ -341,7 +341,7 @@ export function Home() {
                 />
               </div>
               <div className="p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-lime">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
                   Blank Apparel
                 </p>
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
@@ -364,7 +364,7 @@ export function Home() {
         <div className="pointer-events-none absolute -left-32 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-purple/15 blur-3xl" />
         <div className="mx-auto grid max-w-7xl gap-16 px-6 md:grid-cols-2">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-purple">
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
               The Difference
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
@@ -439,7 +439,7 @@ export function Home() {
       <Testimonials />
 
       <Footer />
-    </div>
+    </main>
   );
 }
 

@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <img src={logo} width={480} height={319} loading="lazy" decoding="async" alt="Blank2Branded" className="h-16 w-auto rounded bg-background/5 p-2" />
-            <p className="mt-4 max-w-sm text-sm text-background/60">
+            <p className="mt-4 max-w-sm text-sm text-background/85">
               From Blank to Branded. Nationwide. Supplier of DTF transfers
               & blank apparel for South African brands, businesses and individuals. Minimum 5 pieces per order.
             </p>
@@ -31,7 +31,7 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-background">Navigate</h4>
-            <ul className="mt-4 space-y-2 text-sm text-background/60">
+            <ul className="mt-4 space-y-2 text-sm text-background/85">
               <li><Link to="/" className="hover:text-primary">Home</Link></li>
               <li><Link to="/about" className="hover:text-primary">About</Link></li>
               <li><Link to="/blanks" className="hover:text-primary">Blanks</Link></li>
