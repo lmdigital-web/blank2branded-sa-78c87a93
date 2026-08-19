@@ -97,7 +97,7 @@ export function SportsKitsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
       <Header />
@@ -120,11 +120,11 @@ export function SportsKitsPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Sublimated Sports Kits</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Sublimated Sports Kits</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             Sublimated Sports Kits <span className="text-gradient-dtf">South Africa</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Full-colour custom kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics — team
             names, numbers and sponsor logos dyed into the fabric. Delivered nationwide from Mbombela in 10–15 working
             days.
@@ -171,7 +171,7 @@ export function SportsKitsPage() {
       <section id="sports" className="border-b border-border py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">Kits by Sport</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Kits by Sport</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               Custom kits for every code
             </h2>
@@ -201,7 +201,7 @@ export function SportsKitsPage() {
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="text-lg font-black text-charcoal">{s.sport} Kits</h3>
-                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{s.blurb}</p>
+                  <p className="mt-2 flex-1 text-sm text-charcoal/85">{s.blurb}</p>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
                     Get {s.sport.toLowerCase()} quote <ArrowRight className="h-4 w-4" />
                   </span>
@@ -234,7 +234,7 @@ export function SportsKitsPage() {
       <section className="border-b border-border bg-muted/30 py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">How Sublimation Works</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">How Sublimation Works</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               From artwork to finished kit
             </h2>
@@ -260,7 +260,7 @@ export function SportsKitsPage() {
       <section className="border-b border-border py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">Pricing & MOQ</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Pricing & MOQ</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">Volume tiers</h2>
             <p className="mt-3 text-base text-muted-foreground">
               Minimum 10 kits per style. The more you order, the lower the per-kit price. Request a quote for exact
@@ -291,7 +291,7 @@ export function SportsKitsPage() {
       <section className="border-b border-border bg-muted/30 py-16 md:py-20">
         <div className="mx-auto max-w-4xl px-6">
           <div className="mb-10">
-            <p className="text-xs font-semibold uppercase tracking-wider text-magenta">FAQ</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">FAQ</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               Sublimated sports kits — your questions
             </h2>
@@ -303,7 +303,7 @@ export function SportsKitsPage() {
                   <h3 className="text-base font-black text-charcoal md:text-lg">{f.q}</h3>
                   <span className="mt-1 text-primary transition-transform group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-sm text-muted-foreground md:text-base">{f.a}</p>
+                <p className="mt-3 text-sm text-charcoal/85 md:text-base">{f.a}</p>
               </details>
             ))}
           </div>
@@ -355,6 +355,6 @@ export function SportsKitsPage() {
 
 
       <Footer />
-    </div>
+    </main>
   );
 }

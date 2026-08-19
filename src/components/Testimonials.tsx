@@ -37,7 +37,7 @@ export function Testimonials() {
   return (
     <section className="relative overflow-hidden border-b border-border bg-muted/30 py-20 md:py-24">
       <div className="mx-auto max-w-7xl px-6 text-center">
-        <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+        <p className="text-sm font-semibold uppercase tracking-wider text-primary">
           Customer Love
         </p>
         <h2 className="mt-4 text-3xl font-black tracking-tight text-charcoal md:text-4xl">

@@ -112,7 +112,7 @@ export function ShopPage() {
 
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
       <section className="relative overflow-hidden border-b border-border pt-40 pb-16 md:pt-48 md:pb-20">
         <div className="pointer-events-none absolute inset-0">
@@ -125,7 +125,7 @@ export function ShopPage() {
           <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-cyan blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Shop</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Shop</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             Blanks, prints & branded merch.
           </h1>
@@ -316,6 +316,6 @@ export function ShopPage() {
         </div>
       </section>
       <Footer />
-    </div>
+    </main>
   );
 }

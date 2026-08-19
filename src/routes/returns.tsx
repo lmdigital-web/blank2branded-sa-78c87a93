@@ -3,17 +3,17 @@ import { Footer } from "@/components/Footer";
 
 export function ReturnsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
       <section className="pt-32 pb-16 md:pt-40">
         <div className="mx-auto max-w-3xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Legal</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Legal</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
             Return &amp; Refund Policy
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">Last updated: 28 July 2026</p>
 
-          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/80">
+          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/85">
             <p>
               We want you to be happy with every order. This policy explains when items can be
               returned, how to report a problem, and what we can and cannot accept back.
@@ -111,6 +111,6 @@ export function ReturnsPage() {
         </div>
       </section>
       <Footer />
-    </div>
+    </main>
   );
 }

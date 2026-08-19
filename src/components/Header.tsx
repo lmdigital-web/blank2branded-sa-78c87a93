@@ -23,7 +23,7 @@ export function Header({ variant = "overlay" }: HeaderProps) {
   }, []);
 
   const linkCls =
-    "text-sm font-medium text-charcoal hover:text-primary transition-colors";
+    "text-sm font-medium text-charcoal hover:text-primary transition-colors focus-visible:ring-primary";
 
   return (
     <header

@@ -46,7 +46,7 @@ export function BlogIndexPage() {
             <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               Blank2Branded Blog
             </h1>
-            <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground">
+            <p className="mx-auto mt-3 max-w-2xl text-base text-charcoal/85">
               DTF printing tips, blank apparel guides, and news from South Africa's
               go-to print &amp; press team.
             </p>
@@ -89,7 +89,7 @@ export function BlogIndexPage() {
                       {p.title}
                     </h2>
                     {(p.excerpt || p.meta_description) && (
-                      <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
+                      <p className="mt-2 line-clamp-3 text-sm text-charcoal/85">
                         {p.excerpt || p.meta_description}
                       </p>
                     )}

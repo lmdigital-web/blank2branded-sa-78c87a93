@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <img src={logo} width={480} height={319} loading="lazy" decoding="async" alt="Blank2Branded" className="h-16 w-auto rounded bg-background/5 p-2" />
-            <p className="mt-4 max-w-sm text-sm text-background/60">
+            <p className="mt-4 max-w-sm text-sm text-background/85">
               From Blank to Branded. Nationwide. Supplier of DTF transfers
               & blank apparel for South African brands, businesses and individuals. Minimum 5 pieces per order.
             </p>
@@ -31,7 +31,7 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-background">Navigate</h4>
-            <ul className="mt-4 space-y-2 text-sm text-background/60">
+            <ul className="mt-4 space-y-2 text-sm text-background/85">
               <li><Link to="/" className="hover:text-primary">Home</Link></li>
               <li><Link to="/about" className="hover:text-primary">About</Link></li>
               <li><Link to="/blanks" className="hover:text-primary">Blanks</Link></li>
@@ -43,7 +43,7 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-background">Contact</h4>
-            <ul className="mt-4 space-y-2 text-sm text-background/60">
+            <ul className="mt-4 space-y-2 text-sm text-background/85">
               <li>hello@blank2branded.co.za</li>
               <li>Mon–Fri 8am–4pm</li>
               <li>Mbombela, South Africa</li>
@@ -52,7 +52,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-background/10 pt-6 text-xs text-background/50">
+        <div className="mt-12 border-t border-background/20 pt-6 text-xs text-background/80">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p>© 2026 Blank2Branded. Supplier of DTF + apparel. Minimum 5 pieces per order. Separate from Lifestyle Apparel (retail streetwear).</p>
             <div className="flex gap-4">
@@ -61,7 +61,7 @@ export function Footer() {
               <Link to="/returns" className="hover:text-primary">Returns</Link>
             </div>
           </div>
-          <p className="mt-3 text-background/40">
+          <p className="mt-3 text-background/70">
             Sister brand: Lifestyle Apparel — retail streetwear.
           </p>
         </div>

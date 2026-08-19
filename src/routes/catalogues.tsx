@@ -45,7 +45,7 @@ const CATALOGUES: Catalogue[] = [
 
 export function CataloguesPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
@@ -66,13 +66,13 @@ export function CataloguesPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             Supplier Catalogues
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">Browse</span> our full ranges.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Open any catalogue below to view the full digital flipbook, then WhatsApp us the product codes you like and we'll come back with a quote within 4 business hours.
           </p>
           <div className="mt-8">
@@ -101,11 +101,11 @@ export function CataloguesPage() {
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <BookOpen className="h-6 w-6" />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-magenta">
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                   {cat.tag}
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-charcoal">{cat.title}</h2>
-                <p className="mt-2 flex-1 text-sm text-muted-foreground">{cat.description}</p>
+                <p className="mt-2 flex-1 text-sm text-charcoal/85">{cat.description}</p>
                 <a
                   href={cat.url}
                   target="_blank"
@@ -124,7 +124,7 @@ export function CataloguesPage() {
       <section className="bg-muted/30 py-12">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-2xl font-bold text-charcoal">Found something you like?</h2>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-charcoal/85">
             WhatsApp us the product code(s) from the catalogue and we'll send you a quote with branding options.
           </p>
           <a
@@ -140,6 +140,6 @@ export function CataloguesPage() {
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }

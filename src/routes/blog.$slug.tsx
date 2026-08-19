@@ -150,7 +150,7 @@ export function BlogPostPage() {
               <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
                 {post.title}
               </h1>
-              <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-charcoal/85">
                 {post.published_at && (
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />

@@ -41,7 +41,7 @@ const STEPS = [
 
 export function DtfPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
@@ -63,13 +63,13 @@ export function DtfPage() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             DTF Transfers
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">A6 to 10 metres.</span> We print anything you like.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Full-colour, photo-quality DTF prints — from tiny chest logos up to 10-metre roll runs. 20 cm wide rolls. Soft hand-feel, wash-tested, ready to press.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -101,7 +101,7 @@ export function DtfPage() {
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-cyan">Why DTF</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">Why DTF</p>
             <h2 className="mt-4 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               One process. <span className="text-gradient-dtf">Endless designs.</span>
             </h2>
@@ -123,7 +123,7 @@ export function DtfPage() {
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 text-xl font-black text-charcoal">{f.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal/85">{f.body}</p>
                 </div>
               );
             })}
@@ -145,13 +145,13 @@ export function DtfPage() {
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="grid items-start gap-12 lg:grid-cols-[1fr_1.2fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
                 Print Sizes
               </p>
               <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
                 From a coin to a <span className="text-gradient-dtf">10-metre roll.</span>
               </h2>
-              <p className="mt-6 text-lg text-background/70">
+              <p className="mt-6 text-lg text-background/85">
                 Our printer runs 20 cm wide rolls up to 10 metres long. Whether you need 50 small chest logos ganged on one roll or a long continuous run — same machine, same colours, one quote.
               </p>
 
@@ -193,7 +193,7 @@ export function DtfPage() {
                         <Ruler className="h-4 w-4" />
                       </span>
                     </div>
-                    <p className="mt-4 text-sm text-background/70">{s.dim}</p>
+                    <p className="mt-4 text-sm text-background/85">{s.dim}</p>
                   </div>
                 );
               })}
@@ -206,7 +206,7 @@ export function DtfPage() {
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-magenta">How it works</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">How it works</p>
             <h2 className="mt-4 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
               Three steps. <span className="text-gradient-dtf">Done.</span>
             </h2>
@@ -235,7 +235,7 @@ export function DtfPage() {
                     </div>
                   </div>
                   <h3 className="mt-6 text-2xl font-black text-charcoal">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal/85">{s.body}</p>
                 </div>
               );
             })}
@@ -255,7 +255,7 @@ export function DtfPage() {
           <h2 className="text-3xl font-black tracking-tight md:text-4xl">
             Got artwork? <span className="text-gradient-dtf">Let's print it.</span>
           </h2>
-          <p className="mt-4 text-lg text-background/70">
+          <p className="mt-4 text-lg text-background/85">
             Upload your design and we'll come back with a quote within 4 business hours.
           </p>
           <Link
@@ -268,6 +268,6 @@ export function DtfPage() {
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }

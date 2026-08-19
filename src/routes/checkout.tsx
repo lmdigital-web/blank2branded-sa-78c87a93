@@ -176,7 +176,7 @@ export function CheckoutPage() {
           </button>
 
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Checkout</h1>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-charcoal/85 mb-8">
             Enter your details below and place your order — we'll be in touch shortly to confirm and arrange payment.
           </p>
 

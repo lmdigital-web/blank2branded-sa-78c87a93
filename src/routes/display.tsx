@@ -127,7 +127,7 @@ function quoteLink(title: string) {
 
 export function DisplayPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
@@ -148,13 +148,13 @@ export function DisplayPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             Display & Signage
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">Stand out</span> at every event.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Gazebos, banner walls, flags, table covers and more — branded display solutions for events, expos, dealerships and storefronts. Request a quote on any product below and we'll come back within 4 business hours.
           </p>
           <div className="mt-8">
@@ -192,7 +192,7 @@ export function DisplayPage() {
                 </div>
                 <div className="flex flex-1 flex-col p-6">
                   <h2 className="text-xl font-black text-charcoal">{p.title}</h2>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/85">
                     {p.description}
                   </p>
                   <a
@@ -211,6 +211,6 @@ export function DisplayPage() {
       </section>
 
       <Footer />
-    </div>
+    </main>
   );
 }

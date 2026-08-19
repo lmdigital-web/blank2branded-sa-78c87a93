@@ -243,7 +243,7 @@ function ProductCard({ p }: { p: SublimationProduct }) {
       </div>
       <div className="flex flex-1 flex-col p-6">
         <h3 className="text-lg font-black leading-tight text-charcoal">{p.title}</h3>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/85">{p.description}</p>
         <a
           href={quoteLink(p.title)}
           target="_blank"
@@ -259,7 +259,7 @@ function ProductCard({ p }: { p: SublimationProduct }) {
 
 export function SublimationPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* HERO */}
@@ -280,11 +280,11 @@ export function SublimationPage() {
           <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-lime blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Sublimation Apparel</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Sublimation Apparel</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
             <span className="text-gradient-dtf">Edge-to-edge</span> custom kits.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Full-colour sublimation printed apparel for Mens, Ladies and Kids — golf shirts, jerseys, tees, vests, shorts and sets. Your design, baked into the fabric. Request a quote on any item and we'll come back within 4 business hours.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -316,9 +316,9 @@ export function SublimationPage() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-magenta">Category</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary">Category</p>
                 <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">{cat.label}</h2>
-                <p className="mt-2 text-base text-muted-foreground">{cat.tagline}</p>
+                <p className="mt-2 text-base text-charcoal/85">{cat.tagline}</p>
               </div>
               <p className="text-sm font-semibold text-muted-foreground">
                 {cat.products.length} product{cat.products.length === 1 ? "" : "s"}
@@ -335,6 +335,6 @@ export function SublimationPage() {
       ))}
 
       <Footer />
-    </div>
+    </main>
   );
 }

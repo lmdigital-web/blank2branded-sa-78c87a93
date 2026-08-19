@@ -3,17 +3,17 @@ import { Footer } from "@/components/Footer";
 
 export function TermsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
       <section className="pt-32 pb-16 md:pt-40">
         <div className="mx-auto max-w-3xl px-6">
-          <p className="text-sm font-semibold uppercase tracking-wider text-magenta">Legal</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Legal</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
             Terms &amp; Conditions
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">Last updated: 24 June 2026</p>
 
-          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/80">
+          <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-charcoal/85">
             <p>
               These terms govern your use of the Blank2Branded website and the purchase of DTF
               transfers, blank apparel and related services from us. By placing an order or using
@@ -142,6 +142,6 @@ export function TermsPage() {
         </div>
       </section>
       <Footer />
-    </div>
+    </main>
   );
 }
