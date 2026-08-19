@@ -68,7 +68,7 @@ export function Home() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg text-muted-foreground font-medium md:text-xl">
+            <p className="mt-6 max-w-2xl text-lg text-charcoal/85 font-medium md:text-xl">
               Blank2Branded supplies clothing brands & businesses with premium
               DTF transfers and blank apparel. Print, press, or supply — we're
               your backend.
@@ -89,7 +89,7 @@ export function Home() {
               </a>
             </div>
 
-            <p className="mt-5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-primary">
               Open to brands, businesses & individuals
             </p>
 
@@ -189,7 +189,7 @@ export function Home() {
                   <h3 className="mt-6 text-xl font-bold text-charcoal">
                     {s.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal/85">
                     {s.desc}
                   </p>
                 </div>
@@ -321,7 +321,7 @@ export function Home() {
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
                   Vibrant prints, pressed to last.
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-charcoal/85">
                   High-density DTF transfers with rich colour, soft hand-feel,
                   and durable wash performance — printed in-house and dispatched
                   within 48 hours.
@@ -347,7 +347,7 @@ export function Home() {
                 <h3 className="mt-3 text-2xl font-bold text-charcoal">
                   Stocked, sorted, ready to ship.
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-charcoal/85">
                   Premium tees, polos, hoodies and more — held in stock at our
                   Mbombela facility and couriered nationwide.
                 </p>
@@ -370,7 +370,7 @@ export function Home() {
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
               Why <span className="text-gradient-dtf">Blank2Branded</span>?
             </h2>
-            <p className="mt-6 text-lg text-muted-foreground font-medium">
+            <p className="mt-6 text-lg text-charcoal/85 font-medium">
               We built this for the brands, businesses and individuals we wish
               had a supplier like this when we started. Honest pricing, no gatekeeping.
             </p>
@@ -477,7 +477,7 @@ function TeeTransform() {
     <div className="relative mx-auto flex max-w-lg items-center justify-between gap-4">
       <div className="relative h-56 w-44 opacity-70">
         <Tee />
-        <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em] text-charcoal/70">
           Blank
         </span>
       </div>
