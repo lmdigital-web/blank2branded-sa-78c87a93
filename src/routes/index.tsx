@@ -83,7 +83,7 @@ export function Home() {
               </Link>
               <a
                 href="#services"
-                className="inline-flex items-center gap-2 rounded-md border-2 border-charcoal px-7 py-4 text-sm font-semibold text-charcoal transition-colors hover:bg-charcoal hover:text-background"
+                className="inline-flex items-center gap-2 rounded-md border-2 border-charcoal px-7 py-4 text-sm font-semibold text-charcoal transition-colors hover:bg-charcoal hover:text-background focus-visible:ring-primary"
               >
                 View Services
               </a>
