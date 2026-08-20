@@ -13,6 +13,7 @@ type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
 };
 
 function getCurrentPath() {
+  if (typeof window === "undefined") return "/";
   return window.location.pathname;
 }
 
@@ -63,7 +64,7 @@ export function navigate(to: string) {
 }
 
 export function useCurrentPath() {
-  const [path, setPath] = useState(getCurrentPath);
+  const [path, setPath] = useState(getCurrentPath());
 
   useEffect(() => {
     const onChange = () => setPath(getCurrentPath());
