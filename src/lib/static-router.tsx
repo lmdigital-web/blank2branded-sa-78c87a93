@@ -13,6 +13,7 @@ type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
 };
 
 function getCurrentPath() {
+  if (typeof window === "undefined") return "/";
   return window.location.pathname;
 }
 
