@@ -64,7 +64,7 @@ export function navigate(to: string) {
 }
 
 export function useCurrentPath() {
-  const [path, setPath] = useState(() => getCurrentPath());
+  const [path, setPath] = useState(getCurrentPath);
 
   useEffect(() => {
     const onChange = () => setPath(getCurrentPath());
