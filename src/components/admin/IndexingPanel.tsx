@@ -53,7 +53,7 @@ export function IndexingPanel() {
     <div className="space-y-6">
       <Alert variant="destructive" className="bg-destructive/10">
         <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Try to fix: All page indexing checks are being rejected</AlertTitle>
+        <AlertTitle>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Enable Supabase for this project.</AlertTitle>
         <AlertDescription className="mt-2 text-sm">
           <p className="font-semibold mb-1">Context:</p>
           <p className="mb-2">Summary: Your app ran about 1,700 Search Console page checks in the last day, and Google rejected every one. The connected account cannot access the property or URL variant being checked, so the monitor cannot produce valid indexing data. Select a verified property and stop the recurring job until a test check succeeds.</p>
