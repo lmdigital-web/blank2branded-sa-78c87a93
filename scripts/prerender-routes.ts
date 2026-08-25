@@ -163,7 +163,7 @@ type CatalogueProduct = {
   image?: { url: string; alt: string | null } | null;
 };
 
-const SUPABASE_REST = "https://enpdahmqwhdukbnykqyy.supabase.co/rest/v1";
+const SUPABASE_REST = "https://nrdhekbxptagzqasixra.supabase.co/rest/v1";
 const SUPABASE_ANON =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
 const SUPABASE_HEADERS = {
@@ -636,3 +636,4 @@ async function main() {
 main().catch((e) => {
   console.error("prerender-routes failed:", e);
 });
+
