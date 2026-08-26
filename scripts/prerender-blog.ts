@@ -7,12 +7,15 @@
 // real users, so nothing about the live experience changes.
 
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "fs";
+import { loadEnv } from "vite";
 import { resolve, dirname } from "path";
 
 const BASE_URL = "https://blank2branded.co.za";
-const SUPABASE_URL = "https://enpdahmqwhdukbnykqyy.supabase.co";
-const ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+const env = loadEnv("production", process.cwd(), "");
+const SUPABASE_URL = env.VITE_SUPABASE_URL;
+const ANON = env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || !ANON) throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY");
 
 type Post = {
   slug: string;
@@ -341,3 +344,6 @@ async function main() {
 main().catch((e) => {
   console.error("prerender-blog failed:", e);
 });
+
+
+

@@ -3,6 +3,15 @@
 
 import { writeFileSync } from "fs";
 import { resolve } from "path";
+import { loadEnv } from "vite";
+
+const env = loadEnv("production", process.cwd(), "");
+const SUPABASE_URL = env.VITE_SUPABASE_URL;
+const ANON = env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || !ANON) {
+  throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY");
+}
 
 const BASE_URL = "https://blank2branded.co.za";
 
@@ -30,8 +39,7 @@ const staticEntries: SitemapEntry[] = [
 ];
 
 async function fetchBlogPosts(): Promise<SitemapEntry[]> {
-  const SUPABASE_URL = "https://enpdahmqwhdukbnykqyy.supabase.co";
-  const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/posts?select=slug,updated_at&status=eq.published&order=published_at.desc`,
@@ -58,8 +66,7 @@ async function fetchBlogPosts(): Promise<SitemapEntry[]> {
 }
 
 async function fetchBofuPages(): Promise<SitemapEntry[]> {
-  const SUPABASE_URL = "https://enpdahmqwhdukbnykqyy.supabase.co";
-  const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/bofu_pages?select=slug,template,city,updated_at&status=eq.published`,
@@ -99,9 +106,7 @@ async function fetchBofuPages(): Promise<SitemapEntry[]> {
 }
 
 async function fetchCatalogueProducts(): Promise<SitemapEntry[]> {
-  const SUPABASE_URL = "https://enpdahmqwhdukbnykqyy.supabase.co";
-  const ANON =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+
   const out: SitemapEntry[] = [];
   try {
     // Page through so large catalogues aren't truncated by PostgREST's row cap.
@@ -173,3 +178,6 @@ async function main() {
 }
 
 main();
+
+
+

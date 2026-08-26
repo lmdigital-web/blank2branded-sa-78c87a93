@@ -11,6 +11,15 @@
 
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
+import { loadEnv } from "vite";
+
+const env = loadEnv("production", process.cwd(), "");
+const SUPABASE_URL = env.VITE_SUPABASE_URL;
+const SUPABASE_ANON = env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON) {
+  throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY");
+}
 
 const BASE_URL = "https://blank2branded.co.za";
 
@@ -163,9 +172,7 @@ type CatalogueProduct = {
   image?: { url: string; alt: string | null } | null;
 };
 
-const SUPABASE_REST = "https://nrdhekbxptagzqasixra.supabase.co/rest/v1";
-const SUPABASE_ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVucGRhaG1xd2hkdWtibnlrcXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE3MzgsImV4cCI6MjA5NTI4NzczOH0.hJlNSoKU1-wS_sL2JF_AKXaLkw2Zvp8a_YzzAt0kVak";
+const SUPABASE_REST = `${SUPABASE_URL}/rest/v1`;
 const SUPABASE_HEADERS = {
   apikey: SUPABASE_ANON,
   Authorization: `Bearer ${SUPABASE_ANON}`,
@@ -443,8 +450,8 @@ type OverrideRow = {
 };
 
 async function fetchRouteOverrides(): Promise<Record<string, OverrideRow>> {
-  const url = process.env.VITE_SUPABASE_URL;
-  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const url = SUPABASE_URL;
+  const key = SUPABASE_ANON;
   if (!url || !key) {
     console.warn("prerender-routes: Supabase env not set; skipping route_meta overrides");
     return {};
@@ -494,8 +501,8 @@ type BofuPage = {
 };
 
 async function fetchBofuPages(): Promise<BofuPage[]> {
-  const url = process.env.VITE_SUPABASE_URL;
-  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const url = SUPABASE_URL;
+  const key = SUPABASE_ANON;
   if (!url || !key) return [];
   try {
     const res = await fetch(`${url}/rest/v1/bofu_pages?select=slug,template,title,meta_description,h1,intro,body_html,video_embed_html,video_url,faq_json,city&status=eq.published`, {
