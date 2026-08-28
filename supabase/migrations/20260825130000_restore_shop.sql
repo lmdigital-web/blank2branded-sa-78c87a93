@@ -117,16 +117,19 @@ GRANT ALL ON public.shop_product_variants TO service_role;
 GRANT ALL ON public.shop_product_images TO service_role;
 GRANT ALL ON public.shop_product_branding_options TO service_role;
 
+DROP POLICY IF EXISTS "Public can read shop categories" ON public.shop_categories;
 CREATE POLICY "Public can read shop categories"
   ON public.shop_categories FOR SELECT
   TO anon, authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Public can read published products" ON public.shop_products;
 CREATE POLICY "Public can read published products"
   ON public.shop_products FOR SELECT
   TO anon, authenticated
   USING (status = 'published');
 
+DROP POLICY IF EXISTS "Public can read product variants" ON public.shop_product_variants;
 CREATE POLICY "Public can read product variants"
   ON public.shop_product_variants FOR SELECT
   TO anon, authenticated
@@ -138,6 +141,7 @@ CREATE POLICY "Public can read product variants"
     )
   );
 
+DROP POLICY IF EXISTS "Public can read product images" ON public.shop_product_images;
 CREATE POLICY "Public can read product images"
   ON public.shop_product_images FOR SELECT
   TO anon, authenticated
@@ -149,6 +153,7 @@ CREATE POLICY "Public can read product images"
     )
   );
 
+DROP POLICY IF EXISTS "Public can read branding options" ON public.shop_product_branding_options;
 CREATE POLICY "Public can read branding options"
   ON public.shop_product_branding_options FOR SELECT
   TO anon, authenticated
@@ -160,48 +165,57 @@ CREATE POLICY "Public can read branding options"
     )
   );
 
+DROP POLICY IF EXISTS "Admins manage shop categories" ON public.shop_categories;
 CREATE POLICY "Admins manage shop categories"
   ON public.shop_categories FOR ALL
   TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins manage shop products" ON public.shop_products;
 CREATE POLICY "Admins manage shop products"
   ON public.shop_products FOR ALL
   TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins manage shop variants" ON public.shop_product_variants;
 CREATE POLICY "Admins manage shop variants"
   ON public.shop_product_variants FOR ALL
   TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins manage shop images" ON public.shop_product_images;
 CREATE POLICY "Admins manage shop images"
   ON public.shop_product_images FOR ALL
   TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins manage branding options" ON public.shop_product_branding_options;
 CREATE POLICY "Admins manage branding options"
   ON public.shop_product_branding_options FOR ALL
   TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+DROP TRIGGER IF EXISTS trg_shop_categories_updated_at ON public.shop_categories;
 CREATE TRIGGER trg_shop_categories_updated_at
   BEFORE UPDATE ON public.shop_categories
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_shop_products_updated_at ON public.shop_products;
 CREATE TRIGGER trg_shop_products_updated_at
   BEFORE UPDATE ON public.shop_products
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_shop_product_variants_updated_at ON public.shop_product_variants;
 CREATE TRIGGER trg_shop_product_variants_updated_at
   BEFORE UPDATE ON public.shop_product_variants
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_shop_branding_options_updated ON public.shop_product_branding_options;
 CREATE TRIGGER trg_shop_branding_options_updated
   BEFORE UPDATE ON public.shop_product_branding_options
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

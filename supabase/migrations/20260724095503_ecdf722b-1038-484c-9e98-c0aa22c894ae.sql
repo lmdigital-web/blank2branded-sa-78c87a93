@@ -1,4 +1,3 @@
-
 -- Add stock column to variants
 ALTER TABLE public.shop_product_variants
   ADD COLUMN IF NOT EXISTS stock integer NOT NULL DEFAULT 0,
@@ -10,7 +9,9 @@ ALTER TABLE public.shop_products
   ADD COLUMN IF NOT EXISTS supplier_item_number text,
   ADD COLUMN IF NOT EXISTS brand text,
   ADD COLUMN IF NOT EXISTS product_features text;
-CREATE INDEX IF NOT EXISTS shop_products_supplier_item_idx ON public.shop_products(supplier_item_number);
+
+CREATE INDEX IF NOT EXISTS shop_products_supplier_item_idx
+  ON public.shop_products(supplier_item_number);
 
 -- Missing categories
 INSERT INTO public.shop_categories (name, slug, position) VALUES
@@ -39,15 +40,41 @@ CREATE TABLE IF NOT EXISTS public.shop_product_branding_options (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS shop_product_branding_options_product_idx ON public.shop_product_branding_options(product_id);
+
+CREATE INDEX IF NOT EXISTS shop_product_branding_options_product_idx
+  ON public.shop_product_branding_options(product_id);
 
 GRANT SELECT ON public.shop_product_branding_options TO anon;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.shop_product_branding_options TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE
+  ON public.shop_product_branding_options TO authenticated;
 GRANT ALL ON public.shop_product_branding_options TO service_role;
 
 ALTER TABLE public.shop_product_branding_options ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Branding options viewable by everyone" ON public.shop_product_branding_options FOR SELECT USING (true);
-CREATE POLICY "Admins manage branding options" ON public.shop_product_branding_options FOR ALL TO authenticated USING (has_role(auth.uid(),'admin')) WITH CHECK (has_role(auth.uid(),'admin'));
+
+-- Make policies idempotent because this table may already exist
+-- from the recovery process.
+DROP POLICY IF EXISTS "Branding options viewable by everyone"
+  ON public.shop_product_branding_options;
+
+CREATE POLICY "Branding options viewable by everyone"
+  ON public.shop_product_branding_options
+  FOR SELECT
+  USING (true);
+
+DROP POLICY IF EXISTS "Admins manage branding options"
+  ON public.shop_product_branding_options;
+
+CREATE POLICY "Admins manage branding options"
+  ON public.shop_product_branding_options
+  FOR ALL
+  TO authenticated
+  USING (has_role(auth.uid(), 'admin'))
+  WITH CHECK (has_role(auth.uid(), 'admin'));
+
+-- Make trigger idempotent because the table may already exist
+-- from the recovery process.
+DROP TRIGGER IF EXISTS trg_shop_branding_options_updated
+  ON public.shop_product_branding_options;
 
 CREATE TRIGGER trg_shop_branding_options_updated
   BEFORE UPDATE ON public.shop_product_branding_options

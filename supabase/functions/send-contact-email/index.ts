@@ -1,5 +1,10 @@
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
-import { z } from 'npm:zod@3.23.8';
+import { z } from "npm:zod@3.23.8";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "https://blank2branded.co.za",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 const BodySchema = z.object({
   name: z.string().trim().min(1).max(100),
@@ -11,28 +16,71 @@ const BodySchema = z.object({
   message: z.string().trim().min(1).max(5000),
 });
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const TO = 'hello@blank2branded.co.za';
-// Sender domain blank2branded.co.za is verified in Resend.
-const FROM = 'Blank2Branded <hello@blank2branded.co.za>';
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
-function escape(s: string) {
-  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+const TO = "hello@blank2branded.co.za";
+const FROM = "Blank2Branded <hello@blank2branded.co.za>";
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
+
+    return entities[char];
+  });
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  // Handle browser CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders,
+    });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method not allowed" }),
+      {
+        status: 405,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
 
   try {
-    if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY not configured');
-
-    const parsed = BodySchema.safeParse(await req.json());
-    if (!parsed.success) {
-      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY not configured");
     }
+
+    const body = await req.json();
+    const parsed = BodySchema.safeParse(body);
+
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid form data",
+          fields: parsed.error.flatten().fieldErrors,
+        }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
     const d = parsed.data;
 
     const subjectLine = d.subject?.trim()
@@ -40,50 +88,97 @@ Deno.serve(async (req) => {
       : `New enquiry from ${d.business}`;
 
     const html = `
-      <h2>New enquiry from the website</h2>
-      <p><strong>Name:</strong> ${escape(d.name)}</p>
-      <p><strong>Business:</strong> ${escape(d.business)}</p>
-      <p><strong>Email:</strong> ${escape(d.email)}</p>
-      <p><strong>Phone:</strong> ${escape(d.phone)}</p>
-      <p><strong>Order type:</strong> ${escape(d.orderType)}</p>
-      ${d.subject ? `<p><strong>Subject:</strong> ${escape(d.subject)}</p>` : ''}
+      <h2>New enquiry from the Blank2Branded website</h2>
+
+      <p><strong>Name:</strong> ${escapeHtml(d.name)}</p>
+      <p><strong>Business:</strong> ${escapeHtml(d.business)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(d.email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(d.phone)}</p>
+      <p><strong>Order type:</strong> ${escapeHtml(d.orderType)}</p>
+
+      ${
+        d.subject
+          ? `<p><strong>Subject:</strong> ${escapeHtml(d.subject)}</p>`
+          : ""
+      }
+
       <p><strong>Message:</strong></p>
-      <pre style="white-space:pre-wrap;font-family:inherit">${escape(d.message)}</pre>
+
+      <pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(
+        d.message
+      )}</pre>
     `;
 
-    const resp = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: FROM,
-        to: [TO],
-        reply_to: d.email,
-        subject: subjectLine,
-        html,
-      }),
-    });
+    const resendResponse = await fetch(
+      "https://api.resend.com/emails",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: FROM,
+          to: [TO],
+          reply_to: d.email,
+          subject: subjectLine,
+          html,
+        }),
+      }
+    );
 
-    if (!resp.ok) {
-      const details = await resp.text();
-      console.error('Resend error', resp.status, details);
-      return new Response(JSON.stringify({ error: 'Email send failed', status: resp.status, details }), {
-        status: resp.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!resendResponse.ok) {
+      const details = await resendResponse.text();
+
+      console.error(
+        "Resend error:",
+        resendResponse.status,
+        details
+      );
+
+      return new Response(
+        JSON.stringify({
+          error: "Email send failed",
+          status: resendResponse.status,
+          details,
+        }),
+        {
+          status: resendResponse.status,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
 
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (e) {
-    console.error(e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ ok: true }),
+      {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Contact email error:", error);
+
+    return new Response(
+      JSON.stringify({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unexpected server error",
+      }),
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 });

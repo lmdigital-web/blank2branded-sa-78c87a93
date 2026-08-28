@@ -15,6 +15,7 @@ import { BofuHub } from "@/components/admin/bofu/BofuHub";
 import { BacklinksPanel } from "@/components/admin/BacklinksPanel";
 import { AdsHub } from "@/components/admin/ads/AdsHub";
 import { CatalogueHub } from "@/components/admin/CatalogueHub";
+import { AiGeneratorPanel } from "@/components/admin/seo/AiGeneratorPanel";
 import { computeSeoScore, seoBadge } from "@/lib/seo-score";
 
 type Post = {
@@ -49,7 +50,7 @@ export function AdminPage() {
   const [views, setViews] = useState<View[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [range, setRange] = useState<Range>("30");
-  const [section, setSection] = useState<"blog" | "catalogue" | "seo" | "bofu" | "backlinks" | "authors" | "shopify" | "social" | "ads">("blog");
+  const [section, setSection] = useState<"blog" | "ai-blog" | "catalogue" | "seo" | "bofu" | "backlinks" | "authors" | "shopify" | "social" | "ads">("blog");
   const [blogTab, setBlogTab] = useState<"published" | "scheduled" | "draft">("published");
 
   useEffect(() => {
@@ -183,6 +184,7 @@ export function AdminPage() {
 
   const navItems = [
     { id: "blog" as const, label: "Blog", icon: FileText },
+    { id: "ai-blog" as const, label: "AI Blog Studio", icon: Sparkles },
     { id: "catalogue" as const, label: "Catalogue", icon: Package },
     { id: "seo" as const, label: "SEO", icon: Search },
     { id: "bofu" as const, label: "BOFU Ranker", icon: Rocket },
@@ -429,6 +431,12 @@ export function AdminPage() {
                   </div>
                 </div>
               </>
+            )}
+
+            {section === "ai-blog" && (
+              <div className="mt-8">
+                <AiGeneratorPanel />
+              </div>
             )}
 
             {section === "seo" && (
