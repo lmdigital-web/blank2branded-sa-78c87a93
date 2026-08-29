@@ -26,10 +26,8 @@ import {
   Megaphone,
   Package,
   Sparkles,
-  ShoppingBag,
 } from "lucide-react";
 import { toast } from "sonner";
-import { ShopifySyncPanel } from "@/components/admin/ShopifySyncPanel";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
 import { SocialIntegrationsPanel } from "@/components/admin/SocialIntegrationsPanel";
 import { SeoHub } from "@/components/admin/SeoHub";
@@ -74,7 +72,6 @@ type Section =
   | "bofu"
   | "backlinks"
   | "authors"
-  | "shopify"
   | "social"
   | "ads";
 
@@ -333,11 +330,6 @@ export function AdminPage() {
       id: "authors" as const,
       label: "Authors",
       icon: Users,
-    },
-    {
-      id: "shopify" as const,
-      label: "Shopify",
-      icon: ShoppingBag,
     },
     {
       id: "social" as const,
@@ -821,13 +813,6 @@ export function AdminPage() {
               <BacklinksPanel />
             )}
 
-            {/* SHOPIFY */}
-            {section === "shopify" && (
-              <div className="mt-8">
-                <ShopifySyncPanel />
-              </div>
-            )}
-
             {/* AUTHORS */}
             {section === "authors" && (
               <div className="mt-8">
@@ -986,3 +971,4 @@ function SocialPingBadge({
     </span>
   );
 }
+
