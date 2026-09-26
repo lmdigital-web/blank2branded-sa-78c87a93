@@ -127,13 +127,22 @@ Deno.serve(async (req: Request) => {
     const auth = req.headers.get("Authorization") ?? "";
     if (!auth.startsWith("Bearer ")) return Response.json({error:"Authorization required"},{status:401,headers:corsHeaders});
     for (const n of SECRET_NAMES) secret(n);
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey) throw new Error("Supabase service credentials unavailable in Edge Function.");
+    const db = createClient(supabaseUrl,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
+    const token = auth.slice("Bearer ".length);
+    const {data: authData,error: authError} = await db.auth.getUser(token);
+    if (authError || !authData.user) return Response.json({error:"Valid user session required"},{status:401,headers:corsHeaders});
+    const {data: roleRows,error: roleError} = await db.from("user_roles").select("role").eq("user_id",authData.user.id);
+    if (roleError || !roleRows?.some((row:any)=>row.role==="admin")) return Response.json({error:"Admin access required"},{status:403,headers:corsHeaders});
     const payload = await req.json().catch(()=>({}));
     const action = payload.action ?? "inspect";
     if (!["inspect","login-test","feed-preview"].includes(action)) {
       return Response.json({error:"Allowed actions: inspect, login-test, feed-preview"},{status:400,headers:corsHeaders});
     }
     if (action === "inspect") {
-      return Response.json({mode:"preview-only",secretsConfigured:SECRET_NAMES.map(name=>({name,configured:true})),pricing:{vat:0.15,markup:0.35,multiplier:1.5525},note:"No supplier request or catalogue write performed."},{headers:corsHeaders});
+      return Response.json({mode:"preview-only",secretsConfigured:SECRET_NAMES.map(name=>({name,configured:true})),pricing:{vat:0.15,markup:0.35,multiplier:1.5525},note:"Admin authenticated. No supplier request or catalogue write performed."},{headers:corsHeaders});
     }
     const cookie = await login();
     if (action === "login-test") {
@@ -147,10 +156,6 @@ Deno.serve(async (req: Request) => {
     if (callResult && callResult.toLowerCase() !== "true") throw new Error("Barron feed call failed: " + (errorMsg || "unknown supplier error"));
     const rows = parseFeed(feedXml);
     if (!rows.length) throw new Error("Barron returned an empty feed; staging was not changed.");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (!supabaseUrl || !serviceKey) throw new Error("Supabase service credentials unavailable in Edge Function.");
-    const db = createClient(supabaseUrl,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
     const {data: run,error: runErr} = await db.from("barron_sync_runs").insert({status:"running",trigger_source:"manual-preview",feed_row_count:rows.length,metadata:{mode:"feed-preview"}}).select("id").single();
     if (runErr || !run) throw new Error("Could not create sync run: " + runErr?.message);
     const mapped = rows.map((r:any)=>mapRow(r,run.id));
