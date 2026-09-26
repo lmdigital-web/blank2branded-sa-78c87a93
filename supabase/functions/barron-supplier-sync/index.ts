@@ -126,7 +126,6 @@ Deno.serve(async (req: Request) => {
   try {
     const auth = req.headers.get("Authorization") ?? "";
     if (!auth.startsWith("Bearer ")) return Response.json({error:"Authorization required"},{status:401,headers:corsHeaders});
-    for (const n of SECRET_NAMES) secret(n);
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl || !serviceKey) throw new Error("Supabase service credentials unavailable in Edge Function.");
@@ -134,8 +133,9 @@ Deno.serve(async (req: Request) => {
     const token = auth.slice("Bearer ".length);
     const {data: authData,error: authError} = await db.auth.getUser(token);
     if (authError || !authData.user) return Response.json({error:"Valid user session required"},{status:401,headers:corsHeaders});
-    const {data: roleRows,error: roleError} = await db.from("user_roles").select("role").eq("user_id",authData.user.id);
-    if (roleError || !roleRows?.some((row:any)=>row.role==="admin")) return Response.json({error:"Admin access required"},{status:403,headers:corsHeaders});
+    const {data: accessRow,error: accessError} = await db.from("supplier_sync_access").select("user_id").eq("user_id",authData.user.id).maybeSingle();
+    if (accessError || !accessRow) return Response.json({error:"Supplier sync access required"},{status:403,headers:corsHeaders});
+    for (const n of SECRET_NAMES) secret(n);
     const payload = await req.json().catch(()=>({}));
     const action = payload.action ?? "inspect";
     if (!["inspect","login-test","feed-preview"].includes(action)) {
