@@ -15,6 +15,7 @@ export function SupplierTestPage() {
   const [busy, setBusy] = useState("");
   const [result, setResult] = useState<Result>(null);
   const [error, setError] = useState("");
+  const [loginPassed, setLoginPassed] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -36,6 +37,7 @@ export function SupplierTestPage() {
     setBusy(action);
     setError("");
     setResult(null);
+    if (action === "login-test" || action === "inspect") setLoginPassed(false);
     try {
       const { data, error: invokeError } = await supabase.functions.invoke("barron-supplier-sync", { body: { action } });
       if (invokeError) {
@@ -50,6 +52,7 @@ export function SupplierTestPage() {
         throw new Error(message);
       }
       setResult(data as Result);
+      if (action === "login-test" && data?.success === true) setLoginPassed(true);
     } catch (e: any) {
       setError(e?.message || "Request failed. Please try again.");
     } finally {
@@ -81,8 +84,8 @@ export function SupplierTestPage() {
             <CardContent><Button onClick={() => runAction("login-test")} disabled={!!busy}>{busy === "login-test" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Test Barron login</Button></CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle>Step 3 — Preview the feed</CardTitle><CardDescription>Only run after the login test succeeds. This saves returned supplier rows to staging tables for review; it does not publish them to the shop.</CardDescription></CardHeader>
-            <CardContent><Button variant="secondary" onClick={() => runAction("feed-preview")} disabled={!!busy}>{busy === "feed-preview" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Fetch feed to staging</Button></CardContent>
+            <CardHeader><CardTitle>Step 3 — Preview the feed</CardTitle><CardDescription>Run the login test successfully first to unlock this step. This saves returned supplier rows to staging tables for review; it does not publish them to the shop.</CardDescription></CardHeader>
+            <CardContent><Button variant="secondary" onClick={() => runAction("feed-preview")} disabled={!!busy || !loginPassed}>{busy === "feed-preview" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Fetch feed to staging</Button></CardContent>
           </Card>
         </>
       )}
