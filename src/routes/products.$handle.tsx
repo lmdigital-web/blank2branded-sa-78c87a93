@@ -51,29 +51,22 @@ const RECENT_KEY = "recently-viewed-products";
 
 
 const COLOR_MAP: Record<string, string> = {
-  black: "#171717", jet: "#171717", white: "#ffffff", snow: "#fffafa",
-  navy: "#1e2a4a", "navy blue": "#1e2a4a", "midnight navy": "#172554",
-  blue: "#2563eb", royal: "#1d4ed8", "royal blue": "#1d4ed8", aqua: "#00ffff",
-  "aqua blue": "#00ffff", turquoise: "#40e0d0", teal: "#0f766e", cyan: "#06b6d4",
-  "light blue": "#7dd3fc", "sky blue": "#7dd3fc", sky: "#7dd3fc", ice: "#dbeafe",
+  black: "#000000", white: "#ffffff", navy: "#1e2a4a", "navy blue": "#1e2a4a",
+  blue: "#1d4ed8", royal: "#1d4ed8", "royal blue": "#1d4ed8",
+  "light blue": "#7dd3fc", "sky blue": "#7dd3fc", sky: "#7dd3fc",
   grey: "#9ca3af", gray: "#9ca3af", "light grey": "#d1d5db", "light gray": "#d1d5db",
-  "dark grey": "#4b5563", "dark gray": "#4b5563", charcoal: "#374151", steel: "#64748b",
-  green: "#15803d", "forest green": "#14532d", forest: "#14532d", bottle: "#14532d",
-  lime: "#84cc16", "lime green": "#84cc16", olive: "#737c28", khaki: "#a3a080",
-  red: "#dc2626", "bright red": "#ef4444", orange: "#f97316", yellow: "#facc15",
-  gold: "#d4a017", pink: "#ec4899", "hot pink": "#ff1493", purple: "#7c3aed",
-  brown: "#78350f", beige: "#e7d4b5", stone: "#a8a29e", sand: "#d6c4a1",
-  cream: "#f5f0e1", maroon: "#7f1d1d", burgundy: "#7f1d1d", wine: "#722f37",
-  coral: "#ff7f50", peach: "#ffcba4", lavender: "#e6e6fa", mint: "#98ff98",
+  "dark grey": "#4b5563", "dark gray": "#4b5563", charcoal: "#374151",
+  green: "#15803d", "forest green": "#14532d", forest: "#14532d",
+  lime: "#84cc16", "lime green": "#84cc16",
+  red: "#dc2626", orange: "#f97316", yellow: "#facc15",
+  pink: "#ec4899", purple: "#7c3aed", brown: "#78350f", beige: "#e7d4b5",
+  cream: "#f5f0e1", maroon: "#7f1d1d", burgundy: "#7f1d1d",
 };
 
 function colorToHex(value: string): string {
-  const key = value.toLowerCase().trim().replace(/[_-]+/g, " ").replace(/\\s+/g, " ");
+  const key = value.toLowerCase().trim();
   if (COLOR_MAP[key]) return COLOR_MAP[key];
-  // Accept actual CSS hex/RGB values; unknown supplier names use a neutral
-  // patterned fallback rather than accidentally rendering white/invisible.
-  if (/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(key) || /^rgba?\\(/i.test(key)) return key;
-  return "#d6d3d1";
+  return key;
 }
 
 export function ProductPage() {
