@@ -1,10 +1,25 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": Deno.env.get("ALLOWED_ORIGIN") ?? "https://www.blank2branded.co.za",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") ?? "";
+  const allowed = new Set([
+    "https://blank2branded.co.za",
+    "https://www.blank2branded.co.za",
+    "https://blank2branded-sa.pages.dev",
+  ]);
+  // Allow only this Cloudflare Pages project's branch-preview subdomains.
+  const isProjectPreview = /^https:\/\/[a-z0-9-]+\\.blank2branded-sa\\.pages\\.dev$/i.test(origin);
+  const allowOrigin = origin && (allowed.has(origin) || origin === allowedOrigin || isProjectPreview)
+    ? origin
+    : "https://www.blank2branded.co.za";
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
 const SECRET_NAMES = ["KEVRO_BASIC_USERNAME","KEVRO_BASIC_PASSWORD","KEVRO_USERNAME","KEVRO_PASSWORD","KEVRO_TOKEN_KEY","KEVRO_ENTITY_NAME","KEVRO_ENTITY_ID"] as const;
 const endpoint = "https://wslive.kevro.co.za/StockFeed.asmx";
@@ -121,7 +136,7 @@ function mapRow(row: any, runId: string) {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", {headers:corsHeaders});
+  if (req.method === "OPTIONS") return new Response("ok", {headers:corsHeaders(req)});
   if (req.method !== "POST") return Response.json({error:"POST required"},{status:405,headers:corsHeaders});
   try {
     const auth = req.headers.get("Authorization") ?? "";
@@ -142,11 +157,11 @@ Deno.serve(async (req: Request) => {
       return Response.json({error:"Allowed actions: inspect, login-test, feed-preview"},{status:400,headers:corsHeaders});
     }
     if (action === "inspect") {
-      return Response.json({mode:"preview-only",secretsConfigured:SECRET_NAMES.map(name=>({name,configured:true})),pricing:{vat:0.15,markup:0.35,multiplier:1.5525},note:"Admin authenticated. No supplier request or catalogue write performed."},{headers:corsHeaders});
+      return Response.json({mode:"preview-only",secretsConfigured:SECRET_NAMES.map(name=>({name,configured:true})),pricing:{vat:0.15,markup:0.35,multiplier:1.5525},note:"Admin authenticated. No supplier request or catalogue write performed."},{headers:corsHeaders(req)});
     }
     const cookie = await login();
     if (action === "login-test") {
-      return Response.json({success:true,sessionCookieReceived:Boolean(cookie),message:"Barron login returned success. No catalogue records changed."},{headers:corsHeaders});
+      return Response.json({success:true,sessionCookieReceived:Boolean(cookie),message:"Barron login returned success. No catalogue records changed."},{headers:corsHeaders(req)});
     }
     const entityID = secret("KEVRO_ENTITY_ID");
     const params = {entityID,username:secret("KEVRO_USERNAME"),psw:secret("KEVRO_PASSWORD"),ReturnType:"JSON"};
@@ -168,7 +183,7 @@ Deno.serve(async (req: Request) => {
     }
     const distinct = new Set(mapped.map(r=>r.supplier_stock_header_id).filter(Boolean)).size;
     await db.from("barron_sync_runs").update({status:"preview",completed_at:new Date().toISOString(),distinct_item_count:distinct,metadata:{mode:"feed-preview",rowsStaged:mapped.length}}).eq("id",run.id);
-    return Response.json({success:true,mode:"feed-preview-staged",runId:run.id,feedRows:mapped.length,distinctStockHeaderIds:distinct,stagedRows:mapped.length,priceRule:"supplier cost * 1.15 * 1.35",sample:mapped.slice(0,8).map(r=>({stockCode:r.supplier_stock_code,headerId:r.supplier_stock_header_id,stockId:r.supplier_stock_id,description:r.description,colour:r.colour,size:r.size,supplierCost:r.supplier_discount_base_price??r.supplier_base_price,qty:r.qty_available,retailPreview:r.supplier_discount_base_price!=null?Number((r.supplier_discount_base_price*1.5525).toFixed(2)):r.supplier_base_price!=null?Number((r.supplier_base_price*1.5525).toFixed(2)):null})),note:"Only staging tables were written. Existing storefront products, quantities and retail prices were not changed."},{headers:corsHeaders});
+    return Response.json({success:true,mode:"feed-preview-staged",runId:run.id,feedRows:mapped.length,distinctStockHeaderIds:distinct,stagedRows:mapped.length,priceRule:"supplier cost * 1.15 * 1.35",sample:mapped.slice(0,8).map(r=>({stockCode:r.supplier_stock_code,headerId:r.supplier_stock_header_id,stockId:r.supplier_stock_id,description:r.description,colour:r.colour,size:r.size,supplierCost:r.supplier_discount_base_price??r.supplier_base_price,qty:r.qty_available,retailPreview:r.supplier_discount_base_price!=null?Number((r.supplier_discount_base_price*1.5525).toFixed(2)):r.supplier_base_price!=null?Number((r.supplier_base_price*1.5525).toFixed(2)):null})),note:"Only staging tables were written. Existing storefront products, quantities and retail prices were not changed."},{headers:corsHeaders(req)});
   } catch (e) {
     return Response.json({error:e instanceof Error?e.message:"Unexpected Barron integration error"},{status:500,headers:corsHeaders});
   }
