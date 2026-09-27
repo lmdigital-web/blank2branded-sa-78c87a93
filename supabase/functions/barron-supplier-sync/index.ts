@@ -9,7 +9,7 @@ function corsHeaders(req: Request) {
     "https://blank2branded-sa.pages.dev",
   ]);
   // Allow only this Cloudflare Pages project's branch-preview subdomains.
-  const isProjectPreview = /^https:\/\/[a-z0-9-]+\\.blank2branded-sa\\.pages\\.dev$/i.test(origin);
+  const isProjectPreview = /^https:\/\/[a-z0-9-]+\.blank2branded-sa\.pages\.dev$/i.test(origin);
   const allowOrigin = origin && (allowed.has(origin) || origin === allowedOrigin || isProjectPreview)
     ? origin
     : "https://www.blank2branded.co.za";
