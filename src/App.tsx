@@ -31,6 +31,8 @@ const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ defau
 const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.success").then((m) => ({ default: m.CheckoutSuccessPage })));
 const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.cancelled").then((m) => ({ default: m.CheckoutCancelledPage })));
 const OAuthConsentPage = lazy(() => import("@/routes/oauth.consent").then((m) => ({ default: m.OAuthConsentPage })));
+const SupplierTestPage = lazy(() => import("@/routes/supplier-test").then((m) => ({ default: m.SupplierTestPage })));
+
 
 const queryClient = new QueryClient();
 
@@ -241,6 +243,7 @@ function AppContent() {
   else if (cleanPath === "/blog") page = <BlogIndexPage />;
   else if (/^\/blog\/[^/]+$/.test(cleanPath)) page = <BlogPostPage />;
   else if (cleanPath === "/login") page = <LoginPage />;
+  else if (cleanPath === "/supplier-test") page = <SupplierTestPage />;
   else if (cleanPath === "/.lovable/oauth/consent") page = <OAuthConsentPage />;
   else if (cleanPath === "/admin") page = <AdminPage />;
   else if (cleanPath === "/admin/posts/new") page = <PostEditorPage />;
