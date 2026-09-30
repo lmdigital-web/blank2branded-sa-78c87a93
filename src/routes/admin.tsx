@@ -53,7 +53,11 @@ type Post = {
   keywords: string | null;
   social_ping_status: string | null;
   social_ping_error: string | null;
+  author_id: string | null;
+  experience_notes: string | null;
 };
+
+type AuthorLite = { id: string; name: string | null; credentials: string | null };
 
 type View = {
   post_id: string;
@@ -80,6 +84,7 @@ export function AdminPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [views, setViews] = useState<View[]>([]);
+  const [authors, setAuthors] = useState<AuthorLite[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
   const [range, setRange] = useState<Range>("30");
@@ -121,11 +126,11 @@ export function AdminPage() {
       });
     }
 
-    const [postsRes, viewsRes] = await Promise.all([
+    const [postsRes, viewsRes, authorsRes] = await Promise.all([
       supabase
         .from("posts")
         .select(
-          "id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords,social_ping_status,social_ping_error",
+          "id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords,social_ping_status,social_ping_error,author_id,experience_notes",
         )
         .order("updated_at", { ascending: false }),
 
@@ -134,6 +139,8 @@ export function AdminPage() {
         .select("post_id,viewed_at,referrer,country")
         .order("viewed_at", { ascending: false })
         .limit(10000),
+
+      supabase.from("authors").select("id,name,credentials"),
     ]);
 
     if (postsRes.error) {
@@ -146,6 +153,7 @@ export function AdminPage() {
 
     setPosts((postsRes.data as Post[]) ?? []);
     setViews((viewsRes.data as View[]) ?? []);
+    setAuthors((authorsRes.data as AuthorLite[]) ?? []);
     setLoadingData(false);
   }
 
@@ -635,6 +643,10 @@ export function AdminPage() {
                             const count =
                               viewsByPost.get(p.id) ?? 0;
 
+                            const author = p.author_id
+                              ? authors.find((a) => a.id === p.author_id)
+                              : undefined;
+
                             const seo = computeSeoScore({
                               title: p.title || "",
                               slug: p.slug || "",
@@ -647,6 +659,11 @@ export function AdminPage() {
                               meta_description:
                                 p.meta_description || "",
                               keywords: p.keywords || "",
+                              author_name: author?.name || "",
+                              author_credentials:
+                                author?.credentials || "",
+                              experience_notes:
+                                p.experience_notes || "",
                             });
 
                             const badge = seoBadge(seo.score);

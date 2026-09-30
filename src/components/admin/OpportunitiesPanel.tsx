@@ -9,28 +9,6 @@ import { slugify } from "@/lib/slugify";
 type Item = { keyword: string; clicks: number; impressions: number; ctr: number; position: number };
 type Cluster = { topic: string; total_impressions: number; items: Item[] };
 
-function outlineFor(keyword: string): string {
-  const k = keyword.trim();
-  const t = (s: string) => s.replace(/\b\w/g, (c) => c.toUpperCase());
-  return `<h2>${t(`Introduction to ${k}`)}</h2>
-<p>Write a 2-3 sentence intro that names <strong>${k}</strong> in the first sentence and explains who this guide is for.</p>
-<h2>${t(`What is ${k}?`)}</h2>
-<p>Define the term, who searches for it, and the South African context.</p>
-<h3>Key benefits</h3>
-<ul><li>Benefit one</li><li>Benefit two</li><li>Benefit three</li></ul>
-<h2>${t(`How to choose ${k}`)}</h2>
-<p>Buyer criteria, pricing tiers, common mistakes.</p>
-<h3>Pricing in ZAR</h3>
-<p>Include a price range.</p>
-<h2>${t(`${k} from Blank2Branded`)}</h2>
-<p>Internal link to relevant <a href="/shop">shop</a> or <a href="/blanks">blanks</a> page.</p>
-<h2>FAQ</h2>
-<h3>Question one?</h3><p>Answer.</p>
-<h3>Question two?</h3><p>Answer.</p>
-<h2>Conclusion</h2>
-<p>Recap and CTA — link to <a href="/contact">contact</a> or quote request.</p>`;
-}
-
 export function OpportunitiesPanel() {
   const [loading, setLoading] = useState(true);
   const [clusters, setClusters] = useState<Cluster[]>([]);
@@ -49,30 +27,83 @@ export function OpportunitiesPanel() {
 
   async function generateDraft(keyword: string) {
     setCreating(keyword);
-    const { data: u } = await supabase.auth.getUser();
-    
-    // Fetch the default author to avoid foreign key violation
-    const { data: authors } = await supabase.from("authors").select("id").limit(1);
-    const author_id = authors?.[0]?.id;
+    try {
+      // 1. Generate the article with AI (title, meta, content, FAQs, experience notes)
+      const { data: draft, error: aiErr } = await supabase.functions.invoke("generate-blog-draft", {
+        body: {
+          topic: keyword,
+          keyword,
+          tone: "Friendly",
+          wordCount: 1500,
+          audience: "South African resellers, print shops and small business owners",
+          intent: "Informational",
+          includeFaq: true,
+          includeInternalLinks: true,
+        },
+      });
+      if (aiErr) throw new Error(aiErr.message);
+      const d = draft as {
+        title: string;
+        meta_title: string;
+        meta_description: string;
+        slug: string;
+        excerpt: string;
+        content: string;
+        experience_notes?: string;
+        suggested_tags?: string[];
+        featured_image_prompt?: string;
+        featured_image_alt?: string;
+        error?: string;
+      };
+      if (d?.error) throw new Error(d.error);
+      if (!d?.content) throw new Error("AI returned an empty draft");
 
-    const title = keyword.replace(/\b\w/g, (c) => c.toUpperCase());
-    const payload = {
-      title,
-      slug: slugify(title),
-      excerpt: `A practical guide to ${keyword} for South African buyers.`,
-      content: outlineFor(keyword),
-      status: "draft",
-      meta_title: `${title} | Blank2Branded SA`,
-      meta_description: `Everything you need to know about ${keyword} in South Africa — pricing, options, and how to order.`,
-      keywords: keyword,
-      author_id: author_id,
-      created_by: u.user?.id,
-    };
-    const { data, error } = await supabase.from("posts").insert(payload).select("id").single();
-    setCreating(null);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Draft created — opening editor");
-    navigate(`/admin/posts/${data.id}`);
+      // 2. Fetch the default author to avoid foreign key violation
+      const { data: authors } = await supabase.from("authors").select("id").limit(1);
+      const author_id = authors?.[0]?.id;
+
+      // 3. Generate a featured image (best effort — don't fail the draft if it errors)
+      let cover_image_url = "";
+      const { data: img } = await supabase.functions.invoke("generate-blog-image", {
+        body: { prompt: d.featured_image_prompt || `Professional South African business photo illustrating ${keyword}` },
+      });
+      if (img?.url) cover_image_url = img.url;
+
+      // 4. Embed the image inside the article body AFTER the first paragraph
+      // (so the first paragraph still leads with the focus keyword for SEO scoring)
+      const alt = d.featured_image_alt || keyword;
+      const imgHtml = cover_image_url
+        ? `<p><img src="${cover_image_url}" alt="${alt.replace(/"/g, "&quot;")}" loading="lazy" /></p>`
+        : "";
+      const contentWithImage = imgHtml
+        ? d.content.replace(/(<p[^>]*>[\s\S]*?<\/p>)/i, `$1${imgHtml}`)
+        : d.content;
+
+      // 5. Insert the full post
+      const { data: u } = await supabase.auth.getUser();
+      const payload = {
+        title: d.title || keyword,
+        slug: d.slug || slugify(d.title || keyword),
+        excerpt: d.excerpt || `A practical guide to ${keyword} for South African buyers.`,
+        content: contentWithImage,
+        status: "draft",
+        meta_title: d.meta_title || d.title || keyword,
+        meta_description: d.meta_description || "",
+        keywords: keyword,
+        cover_image_url,
+        author_id,
+        created_by: u.user?.id,
+        ...(d.experience_notes ? { experience_notes: d.experience_notes } : {}),
+      };
+      const { data, error } = await supabase.from("posts").insert(payload).select("id").single();
+      if (error) throw error;
+      toast.success(cover_image_url ? "AI draft + image created — opening editor" : "AI draft created — opening editor");
+      navigate(`/admin/posts/${data.id}`);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to generate draft");
+    } finally {
+      setCreating(null);
+    }
   }
 
   return (
@@ -125,9 +156,17 @@ export function OpportunitiesPanel() {
                     size="sm"
                     variant="secondary"
                     onClick={() => generateDraft(it.keyword)}
-                    disabled={creating === it.keyword}
+                    disabled={creating !== null}
+                    title="Generates a full AI-written, SEO-optimised article (~30-60s)"
                   >
-                    {creating === it.keyword ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Generate Draft"}
+                    {creating === it.keyword ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <span className="ml-1">Writing article…</span>
+                      </>
+                    ) : (
+                      "Generate Draft"
+                    )}
                   </Button>
                 </li>
               ))}
