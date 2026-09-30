@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getGoogleAccessToken, GA4_READONLY_SCOPE } from "../_shared/gsc-auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,16 +7,14 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const GATEWAY = "https://connector-gateway.lovable.dev/google_analytics";
-
 async function ga4Query(propertyId: string, body: Record<string, unknown>) {
+  const token = await getGoogleAccessToken(GA4_READONLY_SCOPE);
   const r = await fetch(
-    `${GATEWAY}/v1beta/properties/${propertyId}:runReport`,
+    `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
-        "X-Connection-Api-Key": Deno.env.get("GOOGLE_ANALYTICS_API_KEY") ?? "",
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),

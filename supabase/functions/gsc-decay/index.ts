@@ -1,6 +1,7 @@
 // GSC Content Decay Monitor:
 // Compare last 30 days vs prior 30 days for top 50 URLs and return % deltas.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getGoogleAccessToken } from "../_shared/gsc-auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,7 +10,6 @@ const corsHeaders = {
 };
 
 const SITE = "sc-domain:blank2branded.co.za";
-const GATEWAY = "https://connector-gateway.lovable.dev/google_search_console";
 
 function daysAgo(n: number) {
   const d = new Date();
@@ -18,13 +18,13 @@ function daysAgo(n: number) {
 }
 
 async function gscQuery(body: Record<string, unknown>) {
+  const token = await getGoogleAccessToken();
   const r = await fetch(
-    `${GATEWAY}/webmasters/v3/sites/${encodeURIComponent(SITE)}/searchAnalytics/query`,
+    `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(SITE)}/searchAnalytics/query`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
-        "X-Connection-Api-Key": Deno.env.get("GOOGLE_SEARCH_CONSOLE_API_KEY") ?? "",
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),

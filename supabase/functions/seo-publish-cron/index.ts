@@ -4,9 +4,10 @@
 // 3) Check indexing status via GSC URL Inspection for submissions awaiting verification
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { getGoogleAccessToken } from "../_shared/gsc-auth.ts";
 
 const SITE_BASE = "https://blank2branded.co.za";
-const GSC_SITE = `${SITE_BASE}/`;
+const GSC_SITE = "sc-domain:blank2branded.co.za";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -90,41 +91,47 @@ Deno.serve(async (req) => {
     .order("submitted_at", { ascending: false })
     .limit(20);
 
-  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
-  const gscKey = Deno.env.get("GOOGLE_SEARCH_CONSOLE_API_KEY");
+  const hasGsc = !!Deno.env.get("GOOGLE_SERVICE_ACCOUNT_JSON");
   const checked: string[] = [];
-  if (lovableKey && gscKey && pending) {
-    for (const sub of pending) {
-      try {
-        const r = await fetch(
-          "https://connector-gateway.lovable.dev/google_search_console/v1/urlInspection/index:inspect",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${lovableKey}`,
-              "X-Connection-Api-Key": gscKey,
-              "Content-Type": "application/json",
+  if (hasGsc && pending) {
+    let token: string | null = null;
+    try {
+      token = await getGoogleAccessToken();
+    } catch (e) {
+      console.error("gsc token failed", e);
+    }
+    if (token) {
+      for (const sub of pending) {
+        try {
+          const r = await fetch(
+            "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ inspectionUrl: sub.url, siteUrl: GSC_SITE }),
             },
-            body: JSON.stringify({ inspectionUrl: sub.url, siteUrl: GSC_SITE }),
-          },
-        );
-        if (!r.ok) continue;
-        const data = await r.json();
-        const verdict: string | null =
-          data?.inspectionResult?.indexStatusResult?.verdict ?? null;
-        const coverageState: string | null =
-          data?.inspectionResult?.indexStatusResult?.coverageState ?? null;
-        await admin
-          .from("seo_submissions")
-          .update({
-            indexing_state: verdict,
-            indexing_coverage: coverageState,
-            indexing_checked_at: new Date().toISOString(),
-          })
-          .eq("id", sub.id);
-        checked.push(sub.url);
-      } catch (e) {
-        console.error("inspect failed", sub.url, e);
+          );
+          if (!r.ok) continue;
+          const data = await r.json();
+          const verdict: string | null =
+            data?.inspectionResult?.indexStatusResult?.verdict ?? null;
+          const coverageState: string | null =
+            data?.inspectionResult?.indexStatusResult?.coverageState ?? null;
+          await admin
+            .from("seo_submissions")
+            .update({
+              indexing_state: verdict,
+              indexing_coverage: coverageState,
+              indexing_checked_at: new Date().toISOString(),
+            })
+            .eq("id", sub.id);
+          checked.push(sub.url);
+        } catch (e) {
+          console.error("inspect failed", sub.url, e);
+        }
       }
     }
   }
