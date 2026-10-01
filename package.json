@@ -4,8 +4,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "predev": "bunx tsx scripts/generate-sitemap.ts",
-    "prebuild": "bunx tsx scripts/generate-sitemap.ts",
+    "predev": "bunx tsx scripts/generate-sitemap.ts && bunx tsx scripts/generate-rss.ts",
+    "prebuild": "bunx tsx scripts/generate-sitemap.ts && bunx tsx scripts/generate-rss.ts",
     "dev": "vite dev",
     "build": "vite build && bunx tsx scripts/prerender-routes.ts && bunx tsx scripts/prerender-blog.ts",
     "build:dev": "vite build --mode development && bunx tsx scripts/prerender-routes.ts && bunx tsx scripts/prerender-blog.ts",

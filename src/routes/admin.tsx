@@ -26,6 +26,7 @@ import {
   Megaphone,
   Package,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
@@ -94,6 +95,10 @@ export function AdminPage() {
   const [blogTab, setBlogTab] = useState<
     "published" | "scheduled" | "draft"
   >("published");
+
+  const [sharingPostId, setSharingPostId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     if (loading) return;
@@ -249,6 +254,52 @@ export function AdminPage() {
       toast.error(error.message);
     } else {
       toast.success("Post deleted");
+      void loadData();
+    }
+  }
+
+  async function onShare(p: Post) {
+    if (p.status !== "published") {
+      toast.error("Only published posts can be shared");
+      return;
+    }
+
+    setSharingPostId(p.id);
+
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "social-webhook-dispatch",
+        {
+          body: { post_id: p.id, force: true },
+        },
+      );
+
+      if (error) {
+        toast.error(`Social share failed: ${error.message}`);
+        return;
+      }
+
+      const d = data as {
+        status?: string;
+        skipped?: boolean;
+        error?: string | null;
+      } | null;
+
+      if (d?.status === "sent") {
+        toast.success(
+          "Shared to your social channels (Facebook, Pinterest…)",
+        );
+      } else if (d?.status === "failed") {
+        toast.error(
+          `Social share failed: ${d.error ?? "unknown"}`,
+        );
+      } else if (d?.skipped) {
+        toast.message(
+          "Auto-posting is off — enable it under Social Integrations",
+        );
+      }
+    } finally {
+      setSharingPostId(null);
       void loadData();
     }
   }
@@ -775,6 +826,26 @@ export function AdminPage() {
                                           <ExternalLink className="h-4 w-4" />
                                         </Button>
                                       </Link>
+                                    )}
+
+                                    {p.status === "published" && (
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        title="Share now to your social channels"
+                                        onClick={() =>
+                                          void onShare(p)
+                                        }
+                                        disabled={
+                                          sharingPostId === p.id
+                                        }
+                                      >
+                                        {sharingPostId === p.id ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <Share2 className="h-4 w-4" />
+                                        )}
+                                      </Button>
                                     )}
 
                                     <Link

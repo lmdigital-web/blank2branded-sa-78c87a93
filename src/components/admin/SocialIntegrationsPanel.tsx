@@ -80,8 +80,12 @@ export function SocialIntegrationsPanel() {
           <h2 className="text-lg font-semibold">Social Media Integrations</h2>
         </div>
         <p className="mb-6 text-sm text-muted-foreground">
-          Connect an automation platform like Make.com or Zapier to auto-post new
-          blogs to Facebook and other channels when they go live.
+          Your blog publishes an RSS feed at
+          <code className="mx-1">https://blank2branded.co.za/rss.xml</code>
+          — link it to a Metricool Autolist and every new post is queued for
+          your Facebook Page and Pinterest automatically. Need to re-share an
+          older post? Hit the <Share2 className="inline h-3.5 w-3.5" /> Share
+          button next to it in the Blog list.
         </p>
 
         <div className="space-y-5">
@@ -98,6 +102,36 @@ export function SocialIntegrationsPanel() {
             <p className="mt-2 text-xs text-muted-foreground">
               Receives a JSON POST with <code>title</code>, <code>url</code>,
               <code> excerpt</code>, and <code>featured_image</code>.
+            </p>
+          </div>
+
+          <div className="rounded-md border border-blue-100 bg-blue-50/50 p-4 text-sm text-blue-800">
+            <p className="font-semibold">One-time Metricool setup (~10 min):</p>
+            <ol className="mt-2 list-decimal space-y-1 pl-4">
+              <li>
+                In Metricool, connect your <strong>Facebook Page</strong> and{' '}
+                <strong>Pinterest</strong> account under{' '}
+                <strong>Settings → Connections</strong> (you likely have this
+                already from your other sites).
+              </li>
+              <li>
+                Go to <strong>Planning → Autolists → New Autolist</strong>,
+                select <strong>Facebook</strong> + <strong>Pinterest</strong>,
+                and set your weekly posting days and times.
+              </li>
+              <li>
+                Click <strong>Add content → Linked RSS feed</strong> and paste{' '}
+                <code>https://blank2branded.co.za/rss.xml</code>.
+              </li>
+              <li>
+                Done — Metricool periodically checks the feed and queues every
+                new post on your schedule. Images come from each post's
+                cover image (og:image), so pins look right automatically.
+              </li>
+            </ol>
+            <p className="mt-2 text-xs text-blue-700">
+              The feed always carries your latest 30 posts, so older posts can
+              be recycled too. No API keys or extra subscriptions needed.
             </p>
           </div>
 
@@ -130,30 +164,14 @@ export function SocialIntegrationsPanel() {
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="mb-4 flex items-center gap-2">
           <Globe className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">Zoho Social Integration</h2>
+          <h2 className="text-lg font-semibold">Add other channels</h2>
         </div>
         <p className="mb-6 text-sm text-muted-foreground">
-          Link your Zoho Social account to automatically create and schedule social media posts from your blog content.
+          The same RSS feed works with any RSS reader or scheduler — Zapier,
+          Buffer, Feedly and more. Prefer an instant push instead of polling?
+          Paste a webhook URL from Make/Zapier above and the Share button and
+          publish flow will ping it directly.
         </p>
-
-        <div className="space-y-5">
-          <div className="rounded-md border border-blue-100 bg-blue-50/50 p-4 text-sm text-blue-800">
-            <p className="font-semibold">Setup Instructions:</p>
-            <ol className="mt-2 list-decimal space-y-1 pl-4">
-              <li>Open your <strong>Zoho Social</strong> dashboard.</li>
-              <li>Go to <strong>Settings</strong> &gt; <strong>Integrations</strong>.</li>
-              <li>Look for <strong>Custom RSS/Webhook</strong> or <strong>Automation</strong> options.</li>
-              <li>Copy your unique <strong>Webhook URL</strong> and paste it above into the "Outgoing Blog Webhook URL" field.</li>
-              <li>Enable "Auto-Post" to ensure Zoho Social receives your blog updates in real-time.</li>
-            </ol>
-          </div>
-          
-          <div className="mt-4 flex items-center justify-between gap-4 rounded-md border border-border bg-muted/40 p-4">
-            <p className="text-xs text-muted-foreground">
-              Note: The "Outgoing Blog Webhook URL" works with Zoho Social, Make.com, and Zapier to sync your blog content with your social media profiles.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
