@@ -1,4 +1,13 @@
-name: Deploy static site to Cloudflare Pages
+# Deploy static site to Cloudflare Pages
+#
+# Deploys happen automatically via the Cloudflare Pages Git integration (the
+# project blank2branded-sa is connected to this repo's main branch — its
+# "Cloudflare Pages" check-run posts "Deployed successfully" on every commit).
+#
+# This workflow does NOT run `wrangler pages deploy`: Cloudflare refuses
+# direct-upload deploys to a Git-integrated project (wrangler exits 1, which
+# painted every run red even though the site deployed fine). Here we build as
+# a CI gate; the asset upload itself is Cloudflare's job.
 
 on:
   push:
@@ -10,10 +19,9 @@ env:
 
 permissions:
   contents: read
-  deployments: write
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -29,9 +37,13 @@ jobs:
       - name: Build static site
         run: bun run build
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name blank2branded-sa
+      - name: Sanity-check build output
+        run: |
+          test -f dist/index.html
+          test -f dist/og-default.png
+          test -f dist/sitemap.xml
+          test -f dist/blog/index.html
+          test -f dist/_routes.json
+          build_pages=$(find dist/blog -name index.html | wc -l)
+          echo "blog pages prerendered: $build_pages"
+          test "$build_pages" -gt 1
