@@ -12,6 +12,18 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { loadEnv } from "vite";
+// Shared with the runtime route + template so the prerendered body and the
+// React render can never drift apart.
+import {
+  DEFAULT_PROCESS_STEPS,
+  buildServiceJsonLd,
+  resolveBlogHref,
+  resolveRelatedHref,
+  toServicePage,
+  type ServicePage,
+  type ServiceBenefit,
+  type ServiceProcessStep,
+} from "../src/lib/service-pages";
 
 const env = loadEnv("production", process.cwd(), "");
 const SUPABASE_URL = env.VITE_SUPABASE_URL;
@@ -51,6 +63,9 @@ type RouteMeta = {
   image?: string;
   ogType?: "website" | "article" | "product";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  // Attribute stamped on the emitted <script> tags so the runtime route can
+  // clear them and re-inject identical markup instead of duplicating schema.
+  jsonLdAttr?: string;
 };
 
 // ---- Static routes -----------------------------------------------------------
@@ -153,6 +168,32 @@ const staticRoutes: RouteMeta[] = [
       "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
     keywords:
       "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
+  },
+  {
+    // /returns is linked from the site-wide footer, so without a prerendered page
+    // it answered 200 with the homepage canonical — a soft-404.
+    path: "/returns",
+    title: "Return & Refund Policy | Blank2Branded South Africa",
+    description:
+      "Blank2Branded return policy: 7 days for defective or damaged goods, with delivery damage reported the same day. Refunds, replacements and return shipping explained.",
+    keywords:
+      "returns policy South Africa, refund policy, damaged delivery claim, defective goods return, Blank2Branded returns",
+  },
+  {
+    path: "/shop/apparel",
+    title: "Shop Blank T-Shirts, Hoodies & Sweaters | DTF Prints | Blank2Branded",
+    description:
+      "Browse blank t-shirts, hoodies and sweaters plus A4–1m DTF transfers. Wholesale pricing and nationwide courier from Mbombela.",
+    keywords:
+      "blank t-shirts South Africa, blank hoodies, blank sweaters, DTF prints South Africa, wholesale blanks, buy blanks online",
+  },
+  {
+    path: "/shop/corporate",
+    title: "Corporate Gifts, Clothing & Branding Shop | Blank2Branded South Africa",
+    description:
+      "Shop corporate gifts, workwear, headwear, bags, drinkware, chef wear, display and more — with embroidery, DTF, screen print or heat press branding.",
+    keywords:
+      "corporate gifts South Africa, branded corporate clothing, corporate workwear, promotional gifts South Africa, branded bags, branded drinkware, corporate branding South Africa",
   },
 ];
 
@@ -293,7 +334,10 @@ function productRoute(p: CatalogueProduct): RouteMeta {
 
 function rewriteHead(template: string, r: RouteMeta): string {
   const url = canonicalUrlForPath(r.path);
-  const image = absolutize(r.image) || `${BASE_URL}/og-default.jpg`;
+  const image = absolutize(r.image) || `${BASE_URL}/og-default.png`;
+  // Only the generated fallback is a known 1200x630 asset; real product and blog
+  // images vary, so declaring dimensions for them would be misleading.
+  const usesDefaultImage = image.endsWith("/og-default.png");
   const ogType = r.ogType || "website";
 
   let html = template;
@@ -331,6 +375,13 @@ function rewriteHead(template: string, r: RouteMeta): string {
     `<meta property="og:url" content="${esc(url)}" />`,
     `<meta property="og:image" content="${esc(image)}" />`,
     `<meta property="og:image:secure_url" content="${esc(image)}" />`,
+    `<meta property="og:image:alt" content="${esc(r.title)}" />`,
+    ...(usesDefaultImage
+      ? [
+          `<meta property="og:image:width" content="1200" />`,
+          `<meta property="og:image:height" content="630" />`,
+        ]
+      : []),
     `<meta property="og:site_name" content="Blank2Branded" />`,
     `<meta property="og:locale" content="en_ZA" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
@@ -349,7 +400,7 @@ function rewriteHead(template: string, r: RouteMeta): string {
     const scripts = arr
       .map(
         (obj) =>
-          `<script type="application/ld+json">${JSON.stringify(obj)}</script>`,
+          `<script type="application/ld+json"${r.jsonLdAttr ? " " + r.jsonLdAttr : ""}>${JSON.stringify(obj)}</script>`,
       )
       .join("\n    ");
     html = html.replace(/<\/head>/i, `    ${scripts}\n  </head>`);
@@ -559,6 +610,123 @@ function buildBofuJsonLd(b: BofuPage, path: string): Record<string, unknown>[] {
   return out;
 }
 
+// ---- Service pages ------------------------------------------------------------
+// /services/:slug/ — rendered by src/components/ServicePageTemplate.tsx. The
+// whole point of prerendering these is that the FAQPage schema, the benefits
+// and the quote CTA are in the static HTML for crawlers, not injected by JS.
+
+async function fetchServicePages(): Promise<ServicePage[]> {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/service_pages?select=slug,title,meta_description,keyword,h1,short_title,intro,body_html,benefits_json,process_json,faq_json,related_json,blog_json,hero_image,status&status=eq.published&order=sort_order.asc`,
+    { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } },
+  );
+  if (!res.ok) {
+    console.warn("prerender-routes: service_pages fetch failed", res.status);
+    return [];
+  }
+  try {
+    const rows = (await res.json()) as Record<string, unknown>[];
+    return rows.map(toServicePage);
+  } catch (err) {
+    console.warn("prerender-routes: service_pages parse error", err);
+    return [];
+  }
+}
+
+function renderServiceBody(s: ServicePage): string {
+  const h1 = s.h1 || s.title;
+  const label = s.short_title || s.title;
+  const benefits = (Array.isArray(s.benefits_json) ? s.benefits_json : []) as ServiceBenefit[];
+  const steps = (
+    Array.isArray(s.process_json) && s.process_json.length > 0
+      ? s.process_json
+      : DEFAULT_PROCESS_STEPS
+  ) as ServiceProcessStep[];
+  const faq = Array.isArray(s.faq_json) ? s.faq_json : [];
+  const related = Array.isArray(s.related_json) ? s.related_json : [];
+  const blog = Array.isArray(s.blog_json) ? s.blog_json : [];
+  const wa = `https://wa.me/27698384045?text=${encodeURIComponent(
+    `Hi Blank2Branded, I'd like a quote for ${label}.`,
+  )}`;
+  // Bots must see a real form, not just a button.
+  const quoteForm = `
+        <form action="https://wa.me/27698384045" method="get">
+          <p><label for="sp-name">Name</label><input id="sp-name" name="text" type="text" required placeholder="Your name" /></p>
+          <p><label for="sp-message">What do you need?</label><textarea id="sp-message" name="text" required rows="4" placeholder="Quantity, sizes, deadline"></textarea></p>
+          <p><button type="submit">Request a Quote</button></p>
+        </form>`;
+
+  return `
+    <main>
+      <section>
+        <p>Our Services</p>
+        <h1>${esc(h1)}</h1>
+        ${s.intro ? `<p>${esc(s.intro)}</p>` : ""}
+        <p><a href="#quote">Request a Quote</a> · <a href="${wa}" rel="noopener noreferrer">WhatsApp us</a></p>
+        <p>Call +27 69 838 4045 · Courier nationwide · Quotes in 4 business hours</p>
+        <div id="quote">${quoteForm}</div>
+      </section>
+
+      ${s.body_html || ""}
+
+      ${
+        benefits.length > 0
+          ? `<section><h2>Why choose ${esc(label)}</h2><ul>${benefits
+              .map((b) => `<li><h3>${esc(b.title)}</h3><p>${esc(b.description)}</p></li>`)
+              .join("")}</ul></section>`
+          : ""
+      }
+
+      <section>
+        <h2>How it works</h2>
+        <p>Four steps from enquiry to delivery. You approve a design proof before anything goes into production.</p>
+        <ol>${steps
+          .map(
+            (st) =>
+              `<li><h3>Step ${st.step}: ${esc(st.title)}</h3><p>${esc(st.description)}</p></li>`,
+          )
+          .join("")}</ol>
+      </section>
+
+      ${
+        faq.length > 0
+          ? `<section><h2>Frequently asked questions</h2>${faq
+              .map(
+                (f) =>
+                  `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`,
+              )
+              .join("")}</section>`
+          : ""
+      }
+
+      <section>
+        <h2>Ready to start your ${esc(label.toLowerCase())} order?</h2>
+        <p>Send your artwork or brief, and we'll come back with a quote within 4 business hours.</p>
+        <p><a href="${wa}" rel="noopener noreferrer">WhatsApp us</a> · <a href="tel:+27698384045">+27 69 838 4045</a> · Mon–Fri 8am–4pm · Mbombela, Mpumalanga</p>
+        ${quoteForm}
+      </section>
+
+      ${
+        related.length > 0
+          ? `<section><h2>Related services</h2><ul>${related
+              .map(
+                (r) =>
+                  `<li><a href="${esc(resolveRelatedHref(r.slug))}"><h3>${esc(r.title)}</h3></a>${r.description ? `<p>${esc(r.description)}</p>` : ""}</li>`,
+              )
+              .join("")}</ul></section>`
+          : ""
+      }
+
+      ${
+        blog.length > 0
+          ? `<section><h2>${esc(label)} guides &amp; tips</h2><ul>${blog
+              .map((b) => `<li><a href="${esc(resolveBlogHref(b.slug))}">${esc(b.title)}</a></li>`)
+              .join("")}</ul><p><a href="/blog/">Read all articles</a></p></section>`
+          : ""
+      }
+    </main>`;
+}
+
 // ---- Main --------------------------------------------------------------------
 
 async function main() {
@@ -635,8 +803,29 @@ async function main() {
     written++;
   }
 
+  // Service pages (/services/:slug/)
+  const servicePages = await fetchServicePages();
+  for (const s of servicePages) {
+    const path = `/services/${s.slug}`;
+    const r: RouteMeta = {
+      path,
+      title: s.title,
+      description: s.meta_description || "",
+      keywords: s.keyword || undefined,
+      jsonLd: buildServiceJsonLd(s, BASE_URL),
+      // Same marker the runtime route clears before injecting, so hydration
+      // replaces the prerendered schema instead of duplicating it.
+      jsonLdAttr: "data-service-ld",
+    };
+    const html = injectBody(rewriteHead(template, r), renderServiceBody(s));
+    const out = resolve(distDir, "services", s.slug, "index.html");
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, html);
+    written++;
+  }
+
   console.log(
-    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + ${bofuPages.length} BOFU + root); ${Object.keys(overrides).length} route_meta overrides applied`,
+    `prerender-routes: wrote ${written} prerendered pages (${staticRoutes.length} static + ${products.length} products + ${bofuPages.length} BOFU + ${servicePages.length} service + root); ${Object.keys(overrides).length} route_meta overrides applied`,
   );
 }
 

@@ -27,6 +27,7 @@ const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ d
 const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
 const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
 const SportsKitsPage = lazy(() => import("@/routes/sports-kits").then((m) => ({ default: m.SportsKitsPage })));
+const ServicePage = lazy(() => import("@/routes/services.$slug").then((m) => ({ default: m.ServicePageRoute })));
 const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
 const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.success").then((m) => ({ default: m.CheckoutSuccessPage })));
 const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.cancelled").then((m) => ({ default: m.CheckoutCancelledPage })));
@@ -192,6 +193,10 @@ function ensureMeta(attr: "name" | "property", key: string): HTMLMetaElement {
   return el;
 }
 
+// Routes whose SEO is owned by the route component itself.
+const SELF_MANAGED_SEO =
+  /^\/(services|vs|alternatives|best)\/[^/]+$|^\/local\/[^/]+\/[^/]+$|^\/sublimated-[a-z0-9-]+$/;
+
 function applySeo(title: string, description: string, keywords: string, path: string) {
   const cleanPath = path === "/" ? "/" : path.replace(/\/$/, "");
   const url = `${SITE_URL}${cleanPath === "/" ? "/" : `${cleanPath}/`}`;
@@ -224,7 +229,10 @@ function AppContent() {
       applySeo(title, description, keywords, cleanPath);
     } else if (meta) {
       applySeo(meta.title, meta.description, meta.keywords, cleanPath);
-    } else {
+    } else if (!SELF_MANAGED_SEO.test(cleanPath)) {
+      // Routes that write their own head at runtime (BOFU comparison pages and
+      // /services/:slug/) must NOT be stamped with the homepage canonical — that
+      // is what previously collapsed them into the home page in Google.
       applySeo(pageMeta["/"].title, pageMeta["/"].description, pageMeta["/"].keywords, "/");
     }
   }, [cleanPath, meta, productMatch]);
@@ -258,6 +266,7 @@ function AppContent() {
   else if (cleanPath === "/checkout/success") page = <CheckoutSuccessPage />;
   else if (cleanPath === "/checkout/cancelled") page = <CheckoutCancelledPage />;
   else if (/^\/r\/blog\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BlogRedirectPage />;
+  else if (/^\/services\/[^/]+$/.test(cleanPath)) page = <ServicePage />;
   else if (/^\/(vs|alternatives|best)\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
   else if (/^\/local\/[^/]+\/[^/]+$/.test(cleanPath)) page = <BofuPagePublic />;
   else if (/^\/sublimated-[a-z0-9-]+$/.test(cleanPath)) page = <BofuPagePublic />;

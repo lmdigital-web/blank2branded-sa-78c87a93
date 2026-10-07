@@ -10,6 +10,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { Loader2, ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { normalizeHex } from "@/lib/catalog";
 import { DtfUpsellDialog } from "@/components/DtfUpsellDialog";
 import { productSchema, breadcrumbSchema, injectJsonLd, removeJsonLd, SITE_URL } from "@/lib/schema-builder";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,23 +51,83 @@ const RECENT_KEY = "recently-viewed-products";
 
 
 
+/**
+ * Fallback palette, used only when a variant has no hex_code in the DB.
+ * The database is the source of truth — 160+ of these names ship with a real
+ * hex. Kept as a safety net so a colour never renders as a blank white dot.
+ */
 const COLOR_MAP: Record<string, string> = {
-  black: "#000000", white: "#ffffff", navy: "#1e2a4a", "navy blue": "#1e2a4a",
-  blue: "#1d4ed8", royal: "#1d4ed8", "royal blue": "#1d4ed8",
-  "light blue": "#7dd3fc", "sky blue": "#7dd3fc", sky: "#7dd3fc",
-  grey: "#9ca3af", gray: "#9ca3af", "light grey": "#d1d5db", "light gray": "#d1d5db",
-  "dark grey": "#4b5563", "dark gray": "#4b5563", charcoal: "#374151",
-  green: "#15803d", "forest green": "#14532d", forest: "#14532d",
-  lime: "#84cc16", "lime green": "#84cc16",
-  red: "#dc2626", orange: "#f97316", yellow: "#facc15",
-  pink: "#ec4899", purple: "#7c3aed", brown: "#78350f", beige: "#e7d4b5",
-  cream: "#f5f0e1", maroon: "#7f1d1d", burgundy: "#7f1d1d",
+  black: "#000000", white: "#ffffff", navy: "#0A163D", "navy blue": "#0A163D",
+  blue: "#0033FF", royal: "#06038D", "royal blue": "#06038D",
+  "light blue": "#d5e8f1", "sky blue": "#bad8ee", sky: "#b8d7ed",
+  grey: "#707372", gray: "#707372", "light grey": "#BFB8AF", "light gray": "#BFB8AF",
+  "dark grey": "#9EA2A2", "dark gray": "#9EA2A2", charcoal: "#25282A",
+  "charcoal melange": "#515153", "ice melange": "#D6D2C4", melange: "#B2A8A2",
+  green: "#009933", "forest green": "#1a4536", forest: "#1a4536",
+  bottle: "#003300", "bottle green": "#003300",
+  lime: "#97D700", "lime green": "#97D700", emerald: "#286b52",
+  red: "#C8102E", "true red": "#d01324", orange: "#FF6600",
+  "safety orange": "#FF5E00", yellow: "#F0B323", "safety yellow": "#FFE900",
+  pink: "#FF3399", "bright pink": "#C5299B", purple: "#72246C",
+  "deep purple": "#3D2691", brown: "#674230", beige: "#D9C89E",
+  camel: "#D9C89E", khaki: "#B9975B", sand: "#C5B783", stone: "#C5B783",
+  cream: "#F5F0e1", "off white": "#E4D5D3", maroon: "#7C2529",
+  burgundy: "#7C2529", "wine red": "#740d26", silver: "#B2B4B2",
+  "steel grey": "#373A36", "dove grey": "#B2A8A2", turquoise: "#044B7A",
+  sapphire: "#0072CE", "sapphire blue": "#0f52ba", "ice blue": "#0097d7",
+  aqua: "#5ea7a4", "dusty aqua": "#00A09B", aquamarine: "#24a1ac",
+  cobalt: "#004f93", indigo: "#0D3B69", "dark indigo": "#151f29",
+  olive: "#4c543b", "dark olive": "#4d553b", "military green": "#353e2a",
+  safari: "#5C462B", kalahari: "#8f7661", mocha: "#a47864", peach: "#febe98",
+  papaya: "#FF9D6E", apple: "#DAF7A6", jade: "#00B08B", lilac: "#C8B6E2",
+  "surf blue": "#5fa1c6", "burgundy melange": "#7C2529",
 };
 
-function colorToHex(value: string): string {
-  const key = value.toLowerCase().trim();
-  if (COLOR_MAP[key]) return COLOR_MAP[key];
-  return key;
+/** Split "Black/White" or "Navy, Blue" into its constituent colour names. */
+function splitComposite(value: string): string[] {
+  return value.split(/[/,]/).map((p) => p.trim()).filter(Boolean);
+}
+
+/**
+ * Resolve a colour option value to swatch colours.
+ *
+ * Single colours use the variant's own hex_code — the supplier value is
+ * authoritative and is what fixed the blank white swatches.
+ *
+ * Two-tone values ("Black/Grey") get a split swatch instead: a single solid
+ * dot would be indistinguishable from the plain "Black" swatch next to it,
+ * and the supplier hex only describes one of the two colours anyway.
+ *
+ * Always returns at least one valid hex, so a swatch is never blank.
+ */
+function resolveSwatchColors(value: string, dbHex: string | undefined): string[] {
+  const hex = normalizeHex(dbHex);
+  const parts = splitComposite(value);
+
+  if (parts.length <= 1) return [hex || COLOR_MAP[value.toLowerCase().trim()] || guessHex(value)];
+
+  // Composite: resolve each colour in the name, backfilling with the supplier
+  // hex when a part isn't in the palette.
+  const resolved = parts.map((part) => COLOR_MAP[part.toLowerCase()] ?? guessHex(part));
+  return resolved.map((c) => c || hex).filter(Boolean);
+}
+
+/** Best-effort hex for an unrecognised name: try the last two words, then any word. */
+function guessHex(part: string): string {
+  const words = part.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return "";
+  const two = words.slice(-2).join(" ");
+  return COLOR_MAP[two] ?? COLOR_MAP[words[words.length - 1]] ?? words.map((w) => COLOR_MAP[w]).find(Boolean) ?? "";
+}
+
+/** Relative luminance, used to pick a readable check icon colour. */
+function isLightHex(hex: string): boolean {
+  const h = normalizeHex(hex).replace("#", "");
+  if (h.length !== 6) return false;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return L > 0.45;
 }
 
 export function ProductPage() {
@@ -431,8 +492,8 @@ export function ProductPage() {
                             {opt.values.map((value) => {
                               const selected = currentSelections[opt.name] === value;
                               const available = isOptionAvailable(opt.name, value);
-                              const hex = colorToHex(value);
-                              const isLight = ["#ffffff", "#f5f0e1", "#e7d4b5", "#d1d5db", "#facc15", "#84cc16", "#7dd3fc"].includes(hex);
+                              const hexes = resolveSwatchColors(value, opt.valueHex?.[value]);
+                              const isLight = isLightHex(hexes[0]);
                               return (
                                 <button
                                   key={value}
@@ -440,17 +501,49 @@ export function ProductPage() {
                                   onClick={() => selectOption(opt.name, value)}
                                   disabled={!available}
                                   title={value + (available ? "" : " (unavailable)")}
+                                  aria-label={value}
+                                  aria-pressed={selected}
                                   className={cn(
-                                    "relative h-10 w-10 rounded-full border-2 transition-all flex items-center justify-center",
+                                    "relative h-10 w-10 rounded-full border-2 transition-all flex items-center justify-center overflow-hidden",
                                     selected ? "border-primary ring-2 ring-primary/30 ring-offset-2 ring-offset-background scale-110" : "border-border hover:border-foreground/40",
-                                    !available && "opacity-40 cursor-not-allowed"
+                                    // Out-of-stock colours stay legible: the strike-through below
+                                    // already signals "unavailable", so fading the swatch to
+                                    // opacity-40 made every colour look like it had vanished.
+                                    !available && "opacity-80 cursor-not-allowed"
                                   )}
-                                  style={{ backgroundColor: hex }}
                                 >
-                                  {selected && <Check className={cn("h-4 w-4", isLight ? "text-black" : "text-white")} strokeWidth={3} />}
+                                  {/* Single colour, or diagonal split for combos like Black/White. */}
+                                  {hexes.length === 1 ? (
+                                    <span className="absolute inset-0" style={{ backgroundColor: hexes[0] }} />
+                                  ) : (
+                                    <>
+                                      <span
+                                        className="absolute inset-0"
+                                        style={{
+                                          background: `linear-gradient(135deg, ${hexes[0]} 0 50%, ${hexes[1] ?? hexes[0]} 50% 100%)`,
+                                        }}
+                                      />
+                                      {hexes.length > 2 && (
+                                        <span
+                                          className="absolute inset-0"
+                                          style={{
+                                            background: `linear-gradient(45deg, transparent 0 66%, ${hexes[2]} 66% 100%)`,
+                                          }}
+                                        />
+                                      )}
+                                    </>
+                                  )}
+                                  {selected && (
+                                    <span className="relative">
+                                      <Check
+                                        className={cn("h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]", isLight ? "text-black" : "text-white")}
+                                        strokeWidth={3}
+                                      />
+                                    </span>
+                                  )}
                                   {!available && (
                                     <span className="absolute inset-0 flex items-center justify-center">
-                                      <span className="h-[2px] w-12 bg-foreground/50 rotate-45" />
+                                      <span className="h-[2px] w-12 bg-foreground/60 rotate-45" />
                                     </span>
                                   )}
                                 </button>
@@ -473,7 +566,7 @@ export function ProductPage() {
                                     selected
                                       ? "border-primary bg-primary text-primary-foreground"
                                       : "border-border bg-background text-foreground hover:border-foreground/40",
-                                    !available && "opacity-40 cursor-not-allowed line-through"
+                                    !available && "opacity-70 cursor-not-allowed line-through"
                                   )}
                                 >
                                   {value}

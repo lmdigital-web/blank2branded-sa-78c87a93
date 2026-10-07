@@ -57,7 +57,7 @@ export function SocialIntegrationsPanel() {
           title: "Test ping from Blank2Branded",
           url: "https://blank2branded.co.za/blog/test-ping",
           excerpt: "This is a test payload to verify your Make.com scenario receives data.",
-          featured_image: "https://blank2branded.co.za/og-image.jpg",
+          featured_image: "https://blank2branded.co.za/og-image.png",
           test: true,
         }),
       });

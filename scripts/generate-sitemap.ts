@@ -36,6 +36,13 @@ const staticEntries: SitemapEntry[] = [
   { path: "/sports-kits/", changefreq: "weekly", priority: "0.9" },
   { path: "/display/", changefreq: "monthly", priority: "0.7" },
   { path: "/catalogues/", changefreq: "monthly", priority: "0.6" },
+  // Prerendered but previously missing from the sitemap.
+  { path: "/privacy/", changefreq: "yearly", priority: "0.2" },
+  { path: "/terms/", changefreq: "yearly", priority: "0.2" },
+  { path: "/returns/", changefreq: "yearly", priority: "0.2" },
+  // Collection views of /shop, each with its own title and description.
+  { path: "/shop/apparel/", changefreq: "weekly", priority: "0.8" },
+  { path: "/shop/corporate/", changefreq: "weekly", priority: "0.8" },
 ];
 
 async function fetchBlogPosts(): Promise<SitemapEntry[]> {
@@ -105,6 +112,29 @@ async function fetchBofuPages(): Promise<SitemapEntry[]> {
   }
 }
 
+async function fetchServicePages(): Promise<SitemapEntry[]> {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/service_pages?select=slug,updated_at&status=eq.published&order=sort_order.asc`,
+      { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` } },
+    );
+    if (!res.ok) {
+      console.warn("Failed to fetch service pages for sitemap:", res.status);
+      return [];
+    }
+    const rows: { slug: string; updated_at: string }[] = await res.json();
+    return rows.map((r) => ({
+      path: `/services/${r.slug}/`,
+      lastmod: r.updated_at?.split("T")[0],
+      changefreq: "monthly",
+      priority: "0.8",
+    }));
+  } catch (err) {
+    console.warn("Error fetching service pages for sitemap:", err);
+    return [];
+  }
+}
+
 async function fetchCatalogueProducts(): Promise<SitemapEntry[]> {
 
   const out: SitemapEntry[] = [];
@@ -162,18 +192,25 @@ function generateSitemap(entries: SitemapEntry[]) {
 }
 
 async function main() {
-  console.log("Fetching catalogue products, blog posts, and BOFU pages for sitemap...");
-  const [productEntries, postEntries, bofuEntries] = await Promise.all([
+  console.log("Fetching catalogue products, blog posts, BOFU and service pages for sitemap...");
+  const [productEntries, postEntries, bofuEntries, serviceEntries] = await Promise.all([
     fetchCatalogueProducts(),
     fetchBlogPosts(),
     fetchBofuPages(),
+    fetchServicePages(),
   ]);
-  const allEntries = [...staticEntries, ...productEntries, ...postEntries, ...bofuEntries];
+  const allEntries = [
+    ...staticEntries,
+    ...productEntries,
+    ...postEntries,
+    ...bofuEntries,
+    ...serviceEntries,
+  ];
 
   const sitemap = generateSitemap(allEntries);
   writeFileSync(resolve("public/sitemap.xml"), sitemap);
   console.log(
-    `sitemap.xml written with ${allEntries.length} entries (${productEntries.length} products, ${postEntries.length} blog posts, ${bofuEntries.length} BOFU pages)`,
+    `sitemap.xml written with ${allEntries.length} entries (${productEntries.length} products, ${postEntries.length} blog posts, ${bofuEntries.length} BOFU pages, ${serviceEntries.length} service pages)`,
   );
 }
 
