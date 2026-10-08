@@ -16,6 +16,11 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # These two are public-by-design client values (the publishable key ships in
+  # the JS bundle to every visitor). They used to come from a committed .env;
+  # .env is now untracked because it holds a secret, so we set them here.
+  VITE_SUPABASE_URL: https://nrdhekbxptagzqasixra.supabase.co
+  VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_2B6o5QhrpPZODEfJdc9Syg_Z3Zb3ahe
 
 permissions:
   contents: read
