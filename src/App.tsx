@@ -148,10 +148,10 @@ const pageMeta: Record<
       "branded gazebos South Africa, pull up banners South Africa, harp banners, banner walls, branded table cloths, fence wrap, corporate flags, A-frame banners, pop up banners, branded umbrellas, pennant flags, display products South Africa",
   },
   "/sublimation": {
-    focusKeyword: "sublimation printing South Africa",
-    title: "Sublimation Printing South Africa | Custom Golf Shirts, Jerseys, Tees | Blank2Branded",
+    focusKeyword: "custom sublimated clothing",
+    title: "Custom Sublimated Clothing & Sportswear | Blank2Branded",
     description:
-      "All-over sublimation printed apparel for Mens, Ladies and Kids — custom golf shirts, rugby jerseys, t-shirts, vests, skirts and sets. Edge-to-edge full-colour print. Request a quote.",
+      "Custom sublimated clothing, sportswear and team kits in South Africa. Explore your options with Blank2Branded in Mbombela and enquire about your next order.",
     keywords:
       "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
   },
@@ -164,12 +164,12 @@ const pageMeta: Record<
       "branded gifts catalogue South Africa, corporate gifts catalogue, branded bags catalogue, conference bags South Africa, promotional products catalogue, Blank2Branded catalogues",
   },
   "/sports-kits": {
-    focusKeyword: "sublimated sports kits",
-    title: "Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded",
+    focusKeyword: "custom sports kits",
+    title: "Custom Sports Kits & Teamwear South Africa | Blank2Branded",
     description:
-      "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
+      "Custom sports kits and teamwear for schools, clubs and teams across South Africa — colours, sponsor logos, names and numbers dyed into the fabric. Request a quote.",
     keywords:
-      "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
+      "custom sports kits, sublimated sports kits, sublimated sports kits South Africa, teamwear South Africa, custom team kits, sublimated jerseys, personalised sportswear, custom sports uniforms, school sports kits South Africa, club teamwear South Africa",
   },
 };
 

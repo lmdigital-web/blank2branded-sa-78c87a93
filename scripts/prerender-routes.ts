@@ -25,6 +25,7 @@ import {
   type ServiceProcessStep,
 } from "../src/lib/service-pages";
 
+
 const env = loadEnv("production", process.cwd(), "");
 const SUPABASE_URL = env.VITE_SUPABASE_URL;
 const SUPABASE_ANON = env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -131,12 +132,11 @@ const staticRoutes: RouteMeta[] = [
   },
   {
     path: "/sublimation",
-    title:
-      "Sublimation Printing South Africa | Custom Golf Shirts, Jerseys, Tees | Blank2Branded",
+    title: "Custom Sublimated Clothing & Sportswear | Blank2Branded",
     description:
-      "All-over sublimation printed apparel for Mens, Ladies and Kids — custom golf shirts, rugby jerseys, t-shirts, vests, skirts and sets. Edge-to-edge full-colour print. Request a quote.",
+      "Custom sublimated clothing, sportswear and team kits in South Africa. Explore your options with Blank2Branded in Mbombela and enquire about your next order.",
     keywords:
-      "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
+      "custom sublimated clothing, branded sublimation apparel, sublimation clothing South Africa, sublimated golf shirts, sublimated t-shirts, sublimated sports kits, sublimated soccer kits, sublimation printing South Africa, custom sportswear South Africa, sublimation Mbombela",
   },
   {
     path: "/catalogues",
@@ -163,11 +163,11 @@ const staticRoutes: RouteMeta[] = [
   },
   {
     path: "/sports-kits",
-    title: "Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded",
+    title: "Custom Sports Kits & Teamwear South Africa | Blank2Branded",
     description:
-      "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
+      "Custom sports kits and teamwear for schools, clubs and teams across South Africa — colours, sponsor logos, names and numbers dyed into the fabric. Request a quote.",
     keywords:
-      "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
+      "custom sports kits, sublimated sports kits, sublimated sports kits South Africa, teamwear South Africa, custom team kits, sublimated jerseys, personalised sportswear, custom sports uniforms, school sports kits South Africa, club teamwear South Africa",
   },
   {
     // /returns is linked from the site-wide footer, so without a prerendered page
@@ -446,6 +446,8 @@ function renderNav(currentPath: string): string {
 }
 
 function renderStaticBody(r: RouteMeta): string {
+  if (r.path === "/sublimation") return renderSublimationBody(r);
+  if (r.path === "/sports-kits") return renderSportsKitsBody(r);
   const h1 = r.title.split("|")[0].trim();
   return `
     <main>
@@ -464,6 +466,122 @@ function renderStaticBody(r: RouteMeta): string {
           <a href="/shop/">online shop</a>.
         </p>
       </article>
+      ${renderNav(r.path)}
+    </main>`;
+}
+
+// /sublimation/ — crawler-visible body matching the React page sections.
+// The React page owns the full catalogue grid; the prerendered body covers the
+// informational sections so the content is indexable without JS.
+const SUBLIMATION_FAQ = [
+  {
+    q: "What is sublimation printing?",
+    a: "Sublimation printing uses heat to turn specialised ink into a gas that bonds with polyester fibres. The design becomes part of the fabric rather than sitting on top of it, so it cannot crack, peel or fade through repeated washing.",
+  },
+  {
+    q: "What clothing can be sublimated?",
+    a: "Polyester-rich garments print best. The range includes golf shirts, T-shirts, hooded tees, tank tops, rugby jerseys and shorts, skirts, skorts, tights, sports dresses, vests and accessories like arm sleeves. If a style is in the catalogue, it can be produced in your custom design.",
+  },
+  {
+    q: "Can I order a single shirt, or do I need a full team order?",
+    a: "Sublimation is priced per production run, so larger orders are more cost-effective than single items. The best next step is to tell us what you need and enquire about your quantity — we will confirm what is possible for your run size.",
+  },
+  {
+    q: "How do I get a quote?",
+    a: "Use the WhatsApp quote buttons on the sublimation page, or get in touch through our contact page with the catalogue style, quantity and deadline. Send the catalogue page or product name and we can take it from there.",
+  },
+  {
+    q: "Where are the garments made and delivered from?",
+    a: "Blank2Branded is based in Mbombela (Nelspruit) in Mpumalanga, and we arrange courier delivery across South Africa. Ask us about delivery options when you enquire.",
+  },
+];
+
+function renderSublimationBody(r: RouteMeta): string {
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SUBLIMATION_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+  const faqHtml = SUBLIMATION_FAQ.map(
+    (f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`,
+  ).join("");
+  return `
+    <main>
+      <article>
+        <h1>Custom Sublimated Clothing and Sportswear</h1>
+        <p>${esc(r.description)}</p>
+        <section>
+          <h2>Custom sublimated golf shirts and T-shirts</h2>
+          <p>
+            The range includes sublimated golfers for men and ladies in fitted, raglan and
+            ringer sleeve styles, plus crew-neck and V-neck sublimated T-shirts. Hooded
+            T-shirts — including a full dye-sublimation hooded style and designs with a neck
+            warmer — round out the tops.
+          </p>
+          <p>
+            Golf shirts and tees are popular for corporate days, matches, events and everyday
+            branded apparel, because the full-colour design carries sponsor logos, mottos and
+            artwork edge-to-edge without a heavy printed layer on top.
+          </p>
+        </section>
+        <section>
+          <h2>Custom sublimated sports kits and teamwear</h2>
+          <p>
+            Beyond shirts, the range covers teamwear: rugby jerseys in scoop-neck and
+            insert-collar styles, rugby shorts in 4-panel and 9-panel cuts, netball and sports
+            dresses, skorts, running tops, cycling-ready styles, arm sleeves, athletic shorts
+            and cricket pants.
+          </p>
+          <p>
+            Schools, clubs and touring teams use these pieces to build a complete look —
+            jersey, shorts and accessories all carrying the same colours, names and sponsor
+            branding, dyed into the fabric so it survives season after season of washing and
+            wear.
+          </p>
+          <p>
+            Kitting out a whole side? See our
+            <a href="/sports-kits/">sublimated sports kits for every major code</a> — soccer,
+            rugby, netball, hockey, cricket and more.
+          </p>
+        </section>
+        <section>
+          <h2>How the sublimation printing process works</h2>
+          <ol>
+            <li><h3>Choose your style</h3><p>Browse the catalogue pages on the live page and pick the garment that suits your team or brand — golfers, tees, hoodies, jerseys, bottoms and accessories are all listed with their catalogue page.</p></li>
+            <li><h3>Share your design</h3><p>Send us your artwork, logos, colours and any names or numbers. Garments are produced using client-approved designs, so nothing goes to production until you have approved the layout.</p></li>
+            <li><h3>Sublimation printing</h3><p>The design is dyed deep into the polyester fabric using heat and pressure. Instead of an ink layer sitting on top, the colour bonds with the fibres — so the design never cracks, peels or fades the way surface prints can.</p></li>
+            <li><h3>Cut, sew and finish</h3><p>Printed fabric panels are cut and sewn into finished garments, then prepared for collection or courier. Every panel is printed before assembly, which is what allows edge-to-edge, all-over coverage.</p></li>
+          </ol>
+        </section>
+        <section>
+          <h2>Ordering custom sportswear in South Africa</h2>
+          <p>
+            Every garment is made to your design, so an order normally starts with the style,
+            the colour way and your artwork — then the quantity and size split. Enquire with
+            the style, quantity and deadline, and we will confirm options for your run. Design
+            work is produced only once you have approved the final design.
+          </p>
+          <p>
+            Courier delivery is arranged across South Africa from Mbombela (Nelspruit) in
+            Mpumalanga. For plain cotton garments, see our
+            <a href="/blanks/">blank apparel range</a> or our
+            <a href="/dtf/">DTF transfers</a>.
+          </p>
+        </section>
+        <section>
+          <h2>Sublimation clothing — questions we hear often</h2>
+          ${faqHtml}
+        </section>
+        <p>
+          <a href="/contact/">Request a quote</a> for custom sublimated clothing, or browse the
+          <a href="/shop/">online shop</a>.
+        </p>
+      </article>
+      <script type="application/ld+json">${JSON.stringify(faqLd)}</script>
       ${renderNav(r.path)}
     </main>`;
 }
@@ -487,6 +605,124 @@ function renderProductBody(p: CatalogueProduct, r: RouteMeta): string {
         <p><a href="/shop/">← Back to the shop</a></p>
       </article>
       ${renderNav("/shop")}
+    </main>`;
+}
+
+// /sports-kits/ — crawler-visible body matching the React page sections.
+const SPORTS_KITS_FAQ = [
+  {
+    q: "What is a sublimated sports kit?",
+    a: "A sublimated sports kit is apparel where the design, team colours, sponsor logos, names and numbers are dyed directly into the polyester fabric using heat and pressure. Unlike vinyl or screen print, the design becomes part of the fabric — it never cracks, peels or fades.",
+  },
+  {
+    q: "How long does it take to make a custom sports kit?",
+    a: "Standard turnaround for sublimated sports kits is 10 – 15 working days from artwork approval, plus courier delivery. Rush production is possible on request — get in touch for lead times on tight deadlines.",
+  },
+  {
+    q: "What is the minimum order for sublimated kits?",
+    a: "Our minimum order is 10 units per kit type. There's no maximum — we regularly produce full club sides, school teams and multi-sport orders for 100+ athletes.",
+  },
+  {
+    q: "Do you deliver sports kits nationwide in South Africa?",
+    a: "Yes. We're based in Mbombela (Mpumalanga) and courier finished kits nationwide — Johannesburg, Pretoria, Cape Town, Durban, Port Elizabeth, Bloemfontein and everywhere in between.",
+  },
+  {
+    q: "Can I supply my own artwork or logo?",
+    a: "Yes — print-ready artwork must be supplied by the client (vector or 300dpi files preferred). If you need design or layout work, we offer it as a paid service — contact us for a design fee quote before production starts.",
+  },
+  {
+    q: "What sports do you make kits for?",
+    a: "Rugby, soccer, netball, hockey, cricket, basketball, cycling, athletics and general team apparel. If you need something we haven't listed, ask — if it can be sewn from polyester, we can sublimate it.",
+  },
+  {
+    q: "How much does a sublimated sports kit cost in South Africa?",
+    a: "Pricing depends on the item (jersey vs full set), fabric weight, quantity and whether shorts/socks are included. Request a quote via WhatsApp with your quantity and we'll price it same-day.",
+  },
+  {
+    q: "Are the kits durable and colour-fast?",
+    a: "Yes. Because the ink is bonded into the polyester fibres, sublimated kits retain their colour through hundreds of wash cycles. There's no printed layer to crack, so the design lasts as long as the fabric.",
+  },
+];
+
+function renderSportsKitsBody(r: RouteMeta): string {
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SPORTS_KITS_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+  const faqHtml = SPORTS_KITS_FAQ.map(
+    (f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`,
+  ).join("");
+  return `
+    <main>
+      <article>
+        <h1>Custom Sports Kits &amp; Teamwear South Africa</h1>
+        <p>${esc(r.description)}</p>
+        <section>
+          <h2>Custom kits for every code</h2>
+          <p>
+            Full-colour custom kits for rugby, soccer, netball, hockey, cricket, basketball,
+            cycling and athletics — team names, numbers and sponsor logos dyed into the fabric.
+            Mens, ladies and juniors. Full sets — jerseys, shorts, socks and tracksuits — or
+            individual pieces, ordered per player or in bulk for the whole club.
+          </p>
+        </section>
+        <section>
+          <h2>Making the kit yours</h2>
+          <ul>
+            <li><h3>Team colours &amp; layouts</h3><p>Your exact colours across stripes, hoops, panels, fades or full-bleed designs — unlimited colours with no per-colour setup fees.</p></li>
+            <li><h3>Names &amp; numbers</h3><p>Player names and numbers on every garment — each shirt in the order can be personalised at no extra design cost.</p></li>
+            <li><h3>Sponsors &amp; logos</h3><p>Club crests and sponsor logos placed where you want them — front, back, sleeves or shorts. Print-ready artwork should be supplied by you.</p></li>
+          </ul>
+          <p>
+            For every garment the sublimation process can carry — golf shirts, tees, hooded
+            styles, skirts and accessories beyond team kits —
+            see <a href="/sublimation/">the full sublimation range</a>.
+          </p>
+          <p>
+            Junior and school sizing runs across the range, so one design can cover a whole
+            school squad — see<a href="/blog/why-schools-sublimated-uniforms-athletics-rugby/">why schools are switching to sublimated uniforms</a>.
+          </p>
+        </section>
+        <section>
+          <h2>Enquiring for your club, school or team</h2>
+          <p>The more you tell us up front, the faster and more accurate the quote. Include:</p>
+          <ul>
+            <li>The sport and the pieces you need — jersey only, or full set with shorts and socks</li>
+            <li>Mens, ladies or junior sizes — and a rough size split for the squad</li>
+            <li>Team colours and any existing crest or logo files</li>
+            <li>Player names and number assignments, if you want personalisation</li>
+            <li>Quantity per style, and when you need the kit by</li>
+          </ul>
+          <p>
+            Print-ready artwork (vector or high-resolution files preferred) should be supplied
+            with the order — design help is offered as a paid service, quoted before production.
+            Use the WhatsApp quote buttons on the live page, or send everything through the
+            <a href="/contact/">contact page</a>. We'll confirm pricing, artwork and the production
+            schedule with you before anything goes to print — you approve the design proof first.
+          </p>
+          <p>
+            Planning your first order? Our<a href="/blog/design-order-sublimated-soccer-kits-nelspruit/">soccer kit ordering guide</a> and
+            <a href="/blog/ultimate-guide-sublimated-netball-uniforms-mbombela/">netball uniform guide</a>
+            walk through fabrics, fits and layouts.
+          </p>
+        </section>
+        <section>
+          <h2>Frequently asked questions</h2>
+          ${faqHtml}
+        </section>
+        <p>
+          Request a quote for custom sports kits, or explore
+          <a href="/sublimation/">sublimation clothing</a> and our
+          <a href="/dtf/">DTF transfer service</a>.
+        </p>
+      </article>
+      <script type="application/ld+json">${JSON.stringify(faqLd)}</script>
+      ${renderNav(r.path)}
     </main>`;
 }
 
