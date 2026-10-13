@@ -115,6 +115,12 @@ const RANGE_SECTIONS = [
       "The range includes sublimated golfers for men and ladies in fitted, raglan and ringer sleeve styles, plus crew-neck and V-neck sublimated T-shirts. Hooded T-shirts — including a full dye-sublimation hooded style and designs with a neck warmer — round out the tops.",
       "Golf shirts and tees are popular for corporate days, matches, events and everyday branded apparel, because the full-colour design carries sponsor logos, mottos and artwork edge-to-edge without a heavy printed layer on top.",
     ],
+    items: [
+      {
+        h3: "All-over print hoodies and hooded tees",
+        text: "Hooded styles take the same edge-to-edge treatment: sleeves, hood and body are printed as full fabric panels, so there is no blank seam or faded shoulder the way panel printing leaves behind.",
+      },
+    ],
   },
   {
     id: "sports-kits-teamwear",
@@ -123,6 +129,16 @@ const RANGE_SECTIONS = [
     copy: [
       "Beyond shirts, the range covers teamwear: rugby jerseys in scoop-neck and insert-collar styles, rugby shorts in 4-panel and 9-panel cuts, netball and sports dresses, skorts, running tops, cycling-ready styles, arm sleeves, athletic shorts and cricket pants.",
       "Schools, clubs and touring teams use these pieces to build a complete look — jersey, shorts and accessories all carrying the same colours, names and sponsor branding, dyed into the fabric so it survives season after season of washing and wear.",
+    ],
+    items: [
+      {
+        h3: "Sublimated soccer and rugby jerseys",
+        text: "Jerseys are where the sublimation process earns its keep — sponsor logos on the chest and sleeves, names and numbers on the back, and club colours straight through the fabric in dry-fit polyester that stays breathable under match conditions.",
+      },
+      {
+        h3: "Netball dresses, skorts and athletics kit",
+        text: "Netball and sports dresses are cut and sewn from printed panels, so the design follows the garment shape rather than sitting on a flat chest print. Skorts, running tops and athletic shorts carry the same design across the full kit.",
+      },
     ],
   },
 ] as const;
@@ -138,7 +154,7 @@ const PROCESS_STEPS = [
   },
   {
     title: "Sublimation printing",
-    copy: "The design is dyed deep into the polyester fabric using heat and pressure. Instead of an ink layer sitting on top, the colour bonds with the fibres — so the design never cracks, peels or fades the way surface prints can.",
+    copy: "The design is dyed deep into the dry-fit polyester and other polyester-rich fabrics using heat and pressure. Instead of an ink layer sitting on top, the colour bonds with the fibres — so the design never cracks, peels or fades the way surface prints can.",
   },
   {
     title: "Cut, sew and finish",
@@ -156,8 +172,16 @@ const FAQ = [
     a: "Polyester-rich garments print best. The range includes golf shirts, T-shirts, hooded tees, tank tops, rugby jerseys and shorts, skirts, skorts, tights, sports dresses, vests and accessories like arm sleeves. If a style is in the catalogue, it can be produced in your custom design.",
   },
   {
-    q: "Can I order a single shirt, or do I need a full team order?",
-    a: "Sublimation is priced per production run, so larger orders are more cost-effective than single items. The best next step is to tell us what you need and enquire about your quantity — we will confirm what is possible for your run size.",
+    q: "What is the minimum order quantity for custom sublimation?",
+    a: "There is no single fixed minimum across the catalogue — sublimation is priced per production run, so the per-item cost drops as quantity grows. Sports kits and bulk teamwear orders work best; for smaller orders, enquire with your quantity and we will confirm what is possible and the price for your run size.",
+  },
+  {
+    q: "How long does sublimation production take?",
+    a: "Garments are made to order, so lead time depends on the style and quantity. Most custom kits are produced in 10 – 15 working days from artwork approval, plus courier time. Ask for a firm date when you enquire and we will confirm options for tight deadlines.",
+  },
+  {
+    q: "Do custom sublimation colours fade?",
+    a: "No printed layer sits on top of the garment — the dye is bonded into the polyester fibres, so the colours cannot crack, peel or fade the way surface prints do. Colour retention through repeated washing is one of the main reasons sports teams choose sublimation. Normal care applies: machine wash and avoid bleach.",
   },
   {
     q: "How do I get a quote?",
@@ -360,6 +384,12 @@ export function SublimationPage() {
                   <h3 className="mt-4 text-xl font-bold text-charcoal">{s.title}</h3>
                   {s.copy.map((para) => (
                     <p key={para.slice(0, 24)} className="mt-3 text-sm leading-6 text-muted-foreground">{para}</p>
+                  ))}
+                  {("items" in s && s.items) && s.items.map((item) => (
+                    <div key={item.h3} className="mt-4 border-l-2 border-primary/30 pl-4">
+                      <h3 className="text-base font-bold text-charcoal">{item.h3}</h3>
+                      <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{item.text}</p>
+                    </div>
                   ))}
                 </div>
               ))}

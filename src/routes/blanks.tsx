@@ -235,7 +235,11 @@ export function BlanksPage() {
             Ready to <span className="text-gradient-dtf">brand</span> your blanks?
           </h2>
           <p className="mt-4 text-lg text-background/85">
-            Tell us what you need and we'll quote you fast.
+            Tell us what you need and we'll quote you fast. Need full
+            edge-to-edge graphics on sportswear instead? That's{" "}
+            <Link to="/sublimation" className="font-semibold underline text-background hover:text-white">dye sublimation</Link> —
+            see our{" "}
+            <Link to="/sublimation" className="font-semibold underline text-background hover:text-white">custom sublimated clothing</Link>.
           </p>
 
           <Link

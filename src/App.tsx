@@ -151,9 +151,9 @@ const pageMeta: Record<
     focusKeyword: "custom sublimated clothing",
     title: "Custom Sublimated Clothing & Sportswear | Blank2Branded",
     description:
-      "Custom sublimated clothing, sportswear and team kits in South Africa. Explore your options with Blank2Branded in Mbombela and enquire about your next order.",
+      "Custom sublimated clothing and sportswear in South Africa — golfers, tees, hoodies and sport jerseys printed edge-to-edge in dry-fit polyester. Enquire now.",
     keywords:
-      "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
+      "custom sublimated clothing, sublimation printing South Africa, custom golf shirts, sublimated soccer jerseys, sublimated rugby jerseys, sublimated t-shirts, all over print hoodies, dry-fit polyester sublimation, edge-to-edge garment printing, all over print apparel, custom team kits South Africa, sublimation Mbombela, ladies golf shirts custom",
   },
   "/catalogues": {
     focusKeyword: "branded gifts catalogue South Africa",

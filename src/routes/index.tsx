@@ -349,7 +349,9 @@ export function Home() {
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-charcoal/85">
                   Premium tees, polos, hoodies and more — held in stock at our
-                  Mbombela facility and couriered nationwide.
+                  Mbombela facility and couriered nationwide. For full designs
+                  dyed edge-to-edge into sportswear and team kits, see our{" "}
+                  <Link to="/sublimation" className="font-semibold underline hover:text-primary">sublimated clothing range</Link>.
                 </p>
 
               </div>

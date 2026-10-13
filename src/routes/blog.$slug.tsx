@@ -180,6 +180,28 @@ export function BlogPostPage() {
               />
             )}
             <BlogContentRenderer html={post.content} postId={post.id} />
+            {/sublimat|sports kit|teamwear|jersey|soccer|rugby|netball|kit/i.test(post.content) && (
+              <aside className="mt-10 rounded-xl border border-border bg-muted/40 p-6">
+                <h2 className="text-lg font-bold text-foreground">Related pages</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Planning a real kit or sublimated apparel order? These are the pages to use:
+                </p>
+                <ul className="mt-3 space-y-2 text-sm">
+                  <li>
+                    <Link to="/sublimation" className="font-semibold text-primary hover:underline">
+                      Custom sublimated clothing &amp; sportswear
+                    </Link>{" "}
+                    — the full dye-sublimation range with catalogue pages
+                  </li>
+                  <li>
+                    <Link to="/sports-kits" className="font-semibold text-primary hover:underline">
+                      Custom sports kits &amp; teamwear
+                    </Link>{" "}
+                    — complete kits with numbers, names and sponsors
+                  </li>
+                </ul>
+              </aside>
+            )}
           </article>
         )}
       </main>

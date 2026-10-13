@@ -256,7 +256,10 @@ export function DtfPage() {
             Got artwork? <span className="text-gradient-dtf">Let's print it.</span>
           </h2>
           <p className="mt-4 text-lg text-background/85">
-            Upload your design and we'll come back with a quote within 4 business hours.
+            Upload your design and we'll come back with a quote within 4 business hours. For
+            polyester sportswear and all-over coverage that a DTF transfer can't give you, see
+            our{" "}
+            <Link to="/sublimation" className="font-semibold underline text-background hover:text-white">custom sublimated clothing</Link>.
           </p>
           <Link
             to="/shop"

@@ -90,6 +90,18 @@ function renderArticle(post: Post, authorName: string | null): string {
     : "";
   const excerpt = post.excerpt || "";
   const content = post.content ? absolutizeContent(post.content) : "";
+  // Posts covering sublimation/teamwear topics also funnel to the two primary
+  // landing pages so crawlers see the topical link from content to money page.
+  const relatedBlock =
+    /sublimat|sports kit|teamwear|jersey|soccer|rugby|netball\b|kit\b/i.test(content)
+      ? `
+      <p><strong>Related pages:</strong>
+        <a href="${BASE_URL}/sublimation/">custom sublimated clothing &amp; sportswear</a> —
+        the full dye-sublimation range with catalogue pages — and
+        <a href="${BASE_URL}/sports-kits/">custom sports kits &amp; teamwear</a>
+        for complete kits with numbers, names and sponsors.
+      </p>`
+      : "";
 
   return `
     <article>
@@ -98,6 +110,7 @@ function renderArticle(post: Post, authorName: string | null): string {
       ${image ? `<p><img src="${esc(image)}" alt="${esc(title)}" /></p>` : ""}
       ${excerpt ? `<p><em>${esc(excerpt)}</em></p>` : ""}
       ${content}
+      ${relatedBlock}
       <p><a href="${esc(url)}">Read the original post on Blank2Branded</a></p>
     </article>`;
 }

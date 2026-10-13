@@ -134,9 +134,9 @@ const staticRoutes: RouteMeta[] = [
     path: "/sublimation",
     title: "Custom Sublimated Clothing & Sportswear | Blank2Branded",
     description:
-      "Custom sublimated clothing, sportswear and team kits in South Africa. Explore your options with Blank2Branded in Mbombela and enquire about your next order.",
+      "Custom sublimated clothing and sportswear in South Africa — golfers, tees, hoodies and sport jerseys printed edge-to-edge in dry-fit polyester. Enquire now.",
     keywords:
-      "custom sublimated clothing, branded sublimation apparel, sublimation clothing South Africa, sublimated golf shirts, sublimated t-shirts, sublimated sports kits, sublimated soccer kits, sublimation printing South Africa, custom sportswear South Africa, sublimation Mbombela",
+      "custom sublimated clothing, sublimation printing South Africa, custom golf shirts, sublimated soccer jerseys, sublimated rugby jerseys, sublimated t-shirts, all over print hoodies, dry-fit polyester sublimation, edge-to-edge garment printing, all over print apparel, custom team kits South Africa, sublimation Mbombela, ladies golf shirts custom",
   },
   {
     path: "/catalogues",
@@ -483,8 +483,16 @@ const SUBLIMATION_FAQ = [
     a: "Polyester-rich garments print best. The range includes golf shirts, T-shirts, hooded tees, tank tops, rugby jerseys and shorts, skirts, skorts, tights, sports dresses, vests and accessories like arm sleeves. If a style is in the catalogue, it can be produced in your custom design.",
   },
   {
-    q: "Can I order a single shirt, or do I need a full team order?",
-    a: "Sublimation is priced per production run, so larger orders are more cost-effective than single items. The best next step is to tell us what you need and enquire about your quantity — we will confirm what is possible for your run size.",
+    q: "What is the minimum order quantity for custom sublimation?",
+    a: "There is no single fixed minimum across the catalogue — sublimation is priced per production run, so the per-item cost drops as quantity grows. Sports kits and bulk teamwear orders work best; for smaller orders, enquire with your quantity and we will confirm what is possible and the price for your run size.",
+  },
+  {
+    q: "How long does sublimation production take?",
+    a: "Garments are made to order, so lead time depends on the style and quantity. Most custom kits are produced in 10 – 15 working days from artwork approval, plus courier time. Ask for a firm date when you enquire and we will confirm options for tight deadlines.",
+  },
+  {
+    q: "Do custom sublimation colours fade?",
+    a: "No printed layer sits on top of the garment — the dye is bonded into the polyester fibres, so the colours cannot crack, peel or fade the way surface prints do. Colour retention through repeated washing is one of the main reasons sports teams choose sublimation. Normal care applies: machine wash and avoid bleach.",
   },
   {
     q: "How do I get a quote?",
@@ -527,6 +535,12 @@ function renderSublimationBody(r: RouteMeta): string {
             branded apparel, because the full-colour design carries sponsor logos, mottos and
             artwork edge-to-edge without a heavy printed layer on top.
           </p>
+          <h3>All-over print hoodies and hooded tees</h3>
+          <p>
+            Hooded styles take the same edge-to-edge treatment: sleeves, hood and body are
+            printed as full fabric panels, so there is no blank seam or faded shoulder the way
+            panel printing leaves behind.
+          </p>
         </section>
         <section>
           <h2>Custom sublimated sports kits and teamwear</h2>
@@ -542,6 +556,19 @@ function renderSublimationBody(r: RouteMeta): string {
             branding, dyed into the fabric so it survives season after season of washing and
             wear.
           </p>
+          <h3>Sublimated soccer and rugby jerseys</h3>
+          <p>
+            Jerseys are where the sublimation process earns its keep — sponsor logos on the
+            chest and sleeves, names and numbers on the back, and club colours straight
+            through the fabric in dry-fit polyester that stays breathable under match
+            conditions.
+          </p>
+          <h3>Netball dresses, skorts and athletics kit</h3>
+          <p>
+            Netball and sports dresses are cut and sewn from printed panels, so the design
+            follows the garment shape rather than sitting on a flat chest print. Skorts,
+            running tops and athletic shorts carry the same design across the full kit.
+          </p>
           <p>
             Kitting out a whole side? See our
             <a href="/sports-kits/">sublimated sports kits for every major code</a> — soccer,
@@ -553,7 +580,7 @@ function renderSublimationBody(r: RouteMeta): string {
           <ol>
             <li><h3>Choose your style</h3><p>Browse the catalogue pages on the live page and pick the garment that suits your team or brand — golfers, tees, hoodies, jerseys, bottoms and accessories are all listed with their catalogue page.</p></li>
             <li><h3>Share your design</h3><p>Send us your artwork, logos, colours and any names or numbers. Garments are produced using client-approved designs, so nothing goes to production until you have approved the layout.</p></li>
-            <li><h3>Sublimation printing</h3><p>The design is dyed deep into the polyester fabric using heat and pressure. Instead of an ink layer sitting on top, the colour bonds with the fibres — so the design never cracks, peels or fades the way surface prints can.</p></li>
+            <li><h3>Sublimation printing</h3><p>The design is dyed deep into the dry-fit polyester and other polyester-rich fabrics using heat and pressure. Instead of an ink layer sitting on top, the colour bonds with the fibres — so the design never cracks, peels or fades the way surface prints can.</p></li>
             <li><h3>Cut, sew and finish</h3><p>Printed fabric panels are cut and sewn into finished garments, then prepared for collection or courier. Every panel is printed before assembly, which is what allows edge-to-edge, all-over coverage.</p></li>
           </ol>
         </section>
