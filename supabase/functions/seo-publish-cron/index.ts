@@ -12,7 +12,7 @@ const GSC_SITE = "sc-domain:blank2branded.co.za";
 
 async function edgeAuthorization(req: Request): Promise<Response | null> {
   const headers = { ...corsHeaders, "Content-Type": "application/json" };
-  const token = (req.headers.get("Authorization") ?? "").match(/^Bearer\\s+(.+)$/i)?.[1];
+  const token = (req.headers.get("Authorization") ?? "").match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!serviceKey) return new Response(JSON.stringify({ error: "Authorization service unavailable" }), { status: 503, headers });
