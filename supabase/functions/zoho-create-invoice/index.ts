@@ -90,7 +90,7 @@ async function findOrCreateContact(orgId: string, c: z.infer<typeof BodySchema>[
 
 async function edgeAuthorization(req: Request): Promise<Response | null> {
   const headers = { ...corsHeaders, "Content-Type": "application/json" };
-  const token = (req.headers.get("Authorization") ?? "").match(/^Bearer\\s+(.+)$/i)?.[1];
+  const token = (req.headers.get("Authorization") ?? "").match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
