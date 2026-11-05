@@ -1,3 +1,4 @@
+import { requireAdmin } from "../_shared/admin-auth.ts";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 type Body = {
@@ -67,6 +68,11 @@ const INTERNAL_LINKS = [
 ];
 
 Deno.serve(async (req) => {
+  if (req.method !== "OPTIONS") {
+    const authError = await requireAdmin(req, corsHeaders);
+    if (authError) return authError;
+  }
+
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: corsHeaders,
