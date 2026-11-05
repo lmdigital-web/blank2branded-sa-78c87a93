@@ -4,12 +4,38 @@
 // 3) Check indexing status via GSC URL Inspection for submissions awaiting verification
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { getGoogleAccessToken } from "../_shared/gsc-auth.ts";
+import { getGoogleAccessToken } from "./_shared/gsc-auth.ts";
 
 const SITE_BASE = "https://blank2branded.co.za";
 const GSC_SITE = "sc-domain:blank2branded.co.za";
 
+
+async function edgeAuthorization(req: Request): Promise<Response | null> {
+  const headers = { ...corsHeaders, "Content-Type": "application/json" };
+  const token = (req.headers.get("Authorization") ?? "").match(/^Bearer\s+(.+)$/i)?.[1];
+  if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!serviceKey) return new Response(JSON.stringify({ error: "Authorization service unavailable" }), { status: 503, headers });
+  if (token !== serviceKey) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers });
+  return null;
+  const url = Deno.env.get("SUPABASE_URL");
+  if (!url || !serviceKey) return new Response(JSON.stringify({ error: "Authorization service unavailable" }), { status: 503, headers });
+  const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data, error } = await admin.auth.getUser(token);
+  if (error || !data.user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+  const { data: role, error: roleError } = await admin.from("user_roles")
+    .select("user_id").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
+  if (roleError) return new Response(JSON.stringify({ error: "Unable to verify administrator permissions" }), { status: 503, headers });
+  if (!role) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers });
+  return null;
+}
+
 Deno.serve(async (req) => {
+  if (req.method !== "OPTIONS") {
+    const authError = await edgeAuthorization(req);
+    if (authError) return authError;
+  }
+
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
