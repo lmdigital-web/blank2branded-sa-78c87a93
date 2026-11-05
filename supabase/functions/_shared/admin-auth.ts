@@ -10,7 +10,7 @@ function response(cors: CorsHeaders, message: string, status: number): Response 
 }
 
 function bearer(req: Request): string | null {
-  const match = (req.headers.get("Authorization") ?? "").match(/^Bearer\\s+(.+)$/i);
+  const match = (req.headers.get("Authorization") ?? "").match(/^Bearer\s+(.+)$/i);
   return match?.[1] ?? null;
 }
 
