@@ -10,32 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -298,6 +273,56 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      authors_public: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          credentials: string | null
+          expertise: string[] | null
+          id: string
+          name: string
+          slug: string
+          social: Json | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at: string
+          credentials?: string | null
+          expertise?: string[] | null
+          id: string
+          name: string
+          slug: string
+          social?: Json | null
+          updated_at: string
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          credentials?: string | null
+          expertise?: string[] | null
+          id?: string
+          name?: string
+          slug?: string
+          social?: Json | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "authors_public_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       barron_supplier_feed_staging: {
         Row: {
@@ -792,13 +817,6 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "authors"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "posts_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "authors_public"
             referencedColumns: ["id"]
           },
           {
@@ -1352,60 +1370,12 @@ export type Database = {
       }
     }
     Views: {
-      authors_public: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          credentials: string | null
-          expertise: string[] | null
-          id: string | null
-          name: string | null
-          slug: string | null
-          social: Json | null
-          updated_at: string | null
-          website: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          credentials?: string | null
-          expertise?: string[] | null
-          id?: string | null
-          name?: string | null
-          slug?: string | null
-          social?: Json | null
-          updated_at?: string | null
-          website?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          credentials?: string | null
-          expertise?: string[] | null
-          id?: string | null
-          name?: string | null
-          slug?: string | null
-          social?: Json | null
-          updated_at?: string | null
-          website?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       apply_barron_supplier_staging: {
         Args: { p_run_id: string }
         Returns: Json
-      }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
       }
     }
     Enums: {
@@ -1535,9 +1505,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       app_role: ["admin", "user"],
