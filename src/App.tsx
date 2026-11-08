@@ -8,32 +8,67 @@ import { useAdTracking } from "@/hooks/useAdTracking";
 import { Home } from "@/routes/index";
 const AboutPage = lazy(() => import("@/routes/about").then((m) => ({ default: m.AboutPage })));
 const BlanksPage = lazy(() => import("@/routes/blanks").then((m) => ({ default: m.BlanksPage })));
-const ContactPage = lazy(() => import("@/routes/contact").then((m) => ({ default: m.ContactPage })));
+const ContactPage = lazy(() =>
+  import("@/routes/contact").then((m) => ({ default: m.ContactPage })),
+);
 const DtfPage = lazy(() => import("@/routes/dtf").then((m) => ({ default: m.DtfPage })));
 const ShopPage = lazy(() => import("@/routes/shop").then((m) => ({ default: m.ShopPage })));
-const ProductPage = lazy(() => import("@/routes/products.$handle").then((m) => ({ default: m.ProductPage })));
-const BlogIndexPage = lazy(() => import("@/routes/blog").then((m) => ({ default: m.BlogIndexPage })));
-const BlogPostPage = lazy(() => import("@/routes/blog.$slug").then((m) => ({ default: m.BlogPostPage })));
+const ProductPage = lazy(() =>
+  import("@/routes/products.$handle").then((m) => ({ default: m.ProductPage })),
+);
+const BlogIndexPage = lazy(() =>
+  import("@/routes/blog").then((m) => ({ default: m.BlogIndexPage })),
+);
+const BlogPostPage = lazy(() =>
+  import("@/routes/blog.$slug").then((m) => ({ default: m.BlogPostPage })),
+);
 const LoginPage = lazy(() => import("@/routes/login").then((m) => ({ default: m.LoginPage })));
 const AdminPage = lazy(() => import("@/routes/admin").then((m) => ({ default: m.AdminPage })));
-const PostEditorPage = lazy(() => import("@/routes/admin.post-editor").then((m) => ({ default: m.PostEditorPage })));
-const PostPreviewPage = lazy(() => import("@/routes/admin.preview").then((m) => ({ default: m.PostPreviewPage })));
-const PrivacyPage = lazy(() => import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })));
+const PostEditorPage = lazy(() =>
+  import("@/routes/admin.post-editor").then((m) => ({ default: m.PostEditorPage })),
+);
+const PostPreviewPage = lazy(() =>
+  import("@/routes/admin.preview").then((m) => ({ default: m.PostPreviewPage })),
+);
+const PrivacyPage = lazy(() =>
+  import("@/routes/privacy").then((m) => ({ default: m.PrivacyPage })),
+);
 const TermsPage = lazy(() => import("@/routes/terms").then((m) => ({ default: m.TermsPage })));
-const ReturnsPage = lazy(() => import("@/routes/returns").then((m) => ({ default: m.ReturnsPage })));
-const DisplayPage = lazy(() => import("@/routes/display").then((m) => ({ default: m.DisplayPage })));
-const SublimationPage = lazy(() => import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })));
-const CataloguesPage = lazy(() => import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })));
-const BlogRedirectPage = lazy(() => import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })));
-const BofuPagePublic = lazy(() => import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })));
-const SportsKitsPage = lazy(() => import("@/routes/sports-kits").then((m) => ({ default: m.SportsKitsPage })));
-const CheckoutPage = lazy(() => import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })));
-const CheckoutSuccessPage = lazy(() => import("@/routes/checkout.success").then((m) => ({ default: m.CheckoutSuccessPage })));
-const CheckoutCancelledPage = lazy(() => import("@/routes/checkout.cancelled").then((m) => ({ default: m.CheckoutCancelledPage })));
-const OAuthConsentPage = lazy(() => import("@/routes/oauth.consent").then((m) => ({ default: m.OAuthConsentPage })));
+const ReturnsPage = lazy(() =>
+  import("@/routes/returns").then((m) => ({ default: m.ReturnsPage })),
+);
+const DisplayPage = lazy(() =>
+  import("@/routes/display").then((m) => ({ default: m.DisplayPage })),
+);
+const SublimationPage = lazy(() =>
+  import("@/routes/sublimation").then((m) => ({ default: m.SublimationPage })),
+);
+const CataloguesPage = lazy(() =>
+  import("@/routes/catalogues").then((m) => ({ default: m.CataloguesPage })),
+);
+const BlogRedirectPage = lazy(() =>
+  import("@/routes/redirect").then((m) => ({ default: m.BlogRedirectPage })),
+);
+const BofuPagePublic = lazy(() =>
+  import("@/routes/bofu").then((m) => ({ default: m.BofuPagePublic })),
+);
+const SportsKitsPage = lazy(() =>
+  import("@/routes/sports-kits").then((m) => ({ default: m.SportsKitsPage })),
+);
+const CheckoutPage = lazy(() =>
+  import("@/routes/checkout").then((m) => ({ default: m.CheckoutPage })),
+);
+const CheckoutSuccessPage = lazy(() =>
+  import("@/routes/checkout.success").then((m) => ({ default: m.CheckoutSuccessPage })),
+);
+const CheckoutCancelledPage = lazy(() =>
+  import("@/routes/checkout.cancelled").then((m) => ({ default: m.CheckoutCancelledPage })),
+);
+const OAuthConsentPage = lazy(() =>
+  import("@/routes/oauth.consent").then((m) => ({ default: m.OAuthConsentPage })),
+);
 
 const queryClient = new QueryClient();
-
 
 const SITE_URL = "https://blank2branded.co.za";
 
@@ -45,11 +80,11 @@ const pageMeta: Record<
 > = {
   "/": {
     focusKeyword: "DTF printing South Africa",
-    title: "DTF Printing South Africa | Blank T-Shirts & Transfers | Blank2Branded",
+    title: "DTF Printing, Blank Apparel & Custom Clothing South Africa | Blank2Branded",
     description:
-      "Buy DTF transfers and blank t-shirts in South Africa. Gang sheets from A6 to 10m, blank tees, golf shirts & hoodies. Courier nationwide from Mbombela.",
+      "Shop DTF transfers and blank apparel, or order custom sublimated workwear and sportswear. Blank2Branded supplies South Africa from Mbombela with nationwide delivery.",
     keywords:
-      "DTF printing South Africa, DTF transfers South Africa, DTF prints near me, blank t-shirts South Africa, blank apparel suppliers South Africa, gang sheet printing, custom t-shirt printing South Africa, DTF Mbombela, DTF Mpumalanga, DTF Johannesburg, DTF Pretoria, DTF Cape Town, DTF Durban",
+      "DTF printing South Africa, DTF transfers South Africa, blank apparel suppliers South Africa, custom apparel South Africa, custom clothing printing South Africa, branded clothing South Africa, sublimation printing South Africa, DTF printing Mbombela, blank t-shirts South Africa, custom sublimated clothing, corporate workwear South Africa, custom sportswear South Africa, branded golf shirts South Africa",
   },
   "/about": {
     focusKeyword: "DTF supplier South Africa",
@@ -148,11 +183,11 @@ const pageMeta: Record<
   },
   "/sublimation": {
     focusKeyword: "sublimation printing South Africa",
-    title: "Sublimation Printing South Africa | Custom Golf Shirts, Jerseys, Tees | Blank2Branded",
+    title: "Sublimation Printing South Africa | Custom Clothing & Sportswear",
     description:
-      "All-over sublimation printed apparel for Mens, Ladies and Kids — custom golf shirts, rugby jerseys, t-shirts, vests, skirts and sets. Edge-to-edge full-colour print. Request a quote.",
+      "Custom sublimated clothing and sportswear from Blank2Branded. Custom designs for schools, sports teams and businesses. Based in Mbombela, delivering nationwide.",
     keywords:
-      "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
+      "sublimation printing South Africa, custom sublimated clothing, custom sublimated sportswear, sublimated sports kits, sublimation printing Mbombela, custom sublimated golf shirts, sublimated rugby jerseys, custom netball dresses, custom soccer kits",
   },
   "/catalogues": {
     focusKeyword: "branded gifts catalogue South Africa",
@@ -164,9 +199,9 @@ const pageMeta: Record<
   },
   "/sports-kits": {
     focusKeyword: "sublimated sports kits",
-    title: "Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded",
+    title: "Sublimated Sports Kits South Africa | Custom Rugby, Netball & Soccer Kits",
     description:
-      "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
+      "Custom sublimated sports kits for rugby, soccer, netball, cricket and hockey teams. Discuss your design requirements and request a quote from Blank2Branded, based in Mbombela and serving South Africa.",
     keywords:
       "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
   },
@@ -269,7 +304,6 @@ function AppContent() {
       <Toaster />
     </>
   );
-
 }
 
 function NotFoundPage() {

@@ -24,11 +24,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON) {
 const BASE_URL = "https://blank2branded.co.za";
 
 const esc = (s: string) =>
-  s
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const absolutize = (u: string | null | undefined) => {
   if (!u) return "";
@@ -46,11 +42,13 @@ const canonicalUrlForPath = (path: string) => {
 type RouteMeta = {
   path: string; // "/shop", "/products/foo"
   title: string;
+  h1?: string;
   description: string;
   keywords?: string;
   image?: string;
   ogType?: "website" | "article" | "product";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  bodyHtml?: string;
 };
 
 // ---- Static routes -----------------------------------------------------------
@@ -116,17 +114,117 @@ const staticRoutes: RouteMeta[] = [
   },
   {
     path: "/sublimation",
-    title:
-      "Sublimation Printing South Africa | Custom Golf Shirts, Jerseys, Tees | Blank2Branded",
+    title: "Sublimation Printing South Africa | Custom Clothing & Sportswear",
+    h1: "Custom Sublimation Printing & Clothing in South Africa",
     description:
-      "All-over sublimation printed apparel for Mens, Ladies and Kids — custom golf shirts, rugby jerseys, t-shirts, vests, skirts and sets. Edge-to-edge full-colour print. Request a quote.",
+      "Custom sublimated clothing and sportswear from Blank2Branded. Custom designs for schools, sports teams and businesses. Based in Mbombela, delivering nationwide.",
     keywords:
-      "sublimation printing South Africa, custom golf shirts, custom rugby jerseys, sublimated t-shirts, all over print apparel, custom team kits South Africa, sublimation Mbombela, kids sports kits, ladies golf shirts custom",
+      "sublimation printing South Africa, custom sublimated clothing, custom sublimated sportswear, sublimated sports kits, sublimation printing Mbombela, custom sublimated golf shirts, sublimated rugby jerseys, custom netball dresses, custom soccer kits",
+    bodyHtml: `
+      <p>Blank2Branded creates custom sublimated clothing and sportswear for schools, sports clubs, businesses, teams and organisations. We are based in Mbombela, Mpumalanga, and serve customers throughout South Africa.</p>
+      <h2>Professional Sublimation Printing for Custom Clothing</h2>
+      <p>Sublimation printing transfers a full-colour design into suitable polyester-based fabric using heat. The design becomes part of the fabric rather than a separate print layer on its surface. Fabric choice matters: not every fabric is suitable, and options vary by garment.</p>
+      <h2>Custom Sublimated Sportswear</h2>
+      <p>The supplied catalogue includes t-shirts, golf shirts, rugby jerseys, hooded t-shirts, shorts, dresses, skirts and other sportswear styles. Our <a href="/sports-kits/">sports kits page</a> also covers soccer and netball teamwear. Availability and fabric options vary by style; contact us to discuss your requirements.</p>
+      <h2>Sublimation Clothing for Schools, Clubs &amp; Businesses</h2>
+      <p>Discuss coordinated garments with colours and branding incorporated into the design for school teams, clubs, businesses and organisations. Blank2Branded is based in Mbombela, Mpumalanga, and serves customers throughout South Africa.</p>
+      <h2>Why Choose Sublimation Printing?</h2>
+      <ul><li>Full-colour designs and detailed graphics</li><li>Team colours and branding can be incorporated into an appropriate garment design</li><li>On suitable polyester-based fabric, the design is transferred into the fabric rather than applied as a separate surface print</li></ul>
+      <h2>How the Sublimation Process Works</h2>
+      <ol><li>Share your garment style, quantity, sizes, colours and artwork requirements.</li><li>Discuss material options and confirm the design requirements with us.</li><li>Once the design and order details are agreed, sublimation production proceeds; contact us to discuss delivery arrangements.</li></ol>
+      <h2>Ordering Custom Sublimated Clothing</h2>
+      <p>Send us the garment style, quantity, size range and design details you are considering. You can share existing artwork or discuss your design requirements with our team. <a href="https://wa.me/27698384045">Request a quotation on WhatsApp</a> or use our <a href="/contact/">contact page</a>.</p>
+      <p>Browse our <a href="/blanks/">blank apparel</a> or see our <a href="/dtf/">DTF printing service</a> if you are considering a different print method.</p>
+      <h2>Frequently Asked Questions</h2>
+      <h3>What is sublimation printing and how does it work?</h3>
+      <p>Sublimation printing uses heat to transfer a full-colour design into a suitable polyester-based fabric. The design becomes part of the fabric rather than a separate print layer on its surface.</p>
+      <h3>What garments are available for custom sublimation?</h3>
+      <p>The sublimation catalogue includes t-shirts, golf shirts, rugby jerseys, hooded t-shirts, shorts, dresses, skirts and other sportswear styles. Browse the catalogue or contact us to discuss a garment and its options.</p>
+      <h3>Can any fabric be sublimated?</h3>
+      <p>No. Sublimation is suited to appropriate polyester-based fabrics, and fabric suitability varies by garment. Tell us which style you are considering so we can discuss its material options.</p>
+      <h3>Can we include team colours, logos and detailed artwork?</h3>
+      <p>Custom artwork can be incorporated into the garment design. Share your logo, colours, artwork and garment requirements when you enquire, and we can discuss the design with you.</p>
+      <h3>How do I request a quote?</h3>
+      <p>Contact Blank2Branded with the garment style, quantity, sizes and design requirements you have in mind. You can enquire through WhatsApp or our contact page, and we will discuss the available options with you.</p>
+      <h3>Where does Blank2Branded deliver?</h3>
+      <p>Blank2Branded is based in Mbombela, Mpumalanga, and serves customers throughout South Africa. Contact us with your location and requirements to discuss delivery for your order.</p>
+    `,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: "Custom Sublimation Printing & Clothing",
+        serviceType: "Sublimation printing for custom clothing and sportswear",
+        provider: {
+          "@type": "Organization",
+          name: "Blank2Branded",
+          url: "https://blank2branded.co.za/",
+        },
+        areaServed: [
+          { "@type": "City", name: "Mbombela" },
+          { "@type": "Country", name: "South Africa" },
+        ],
+        url: "https://blank2branded.co.za/sublimation/",
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "What is sublimation printing and how does it work?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Sublimation printing uses heat to transfer a full-colour design into a suitable polyester-based fabric. The design becomes part of the fabric rather than a separate print layer on its surface.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What garments are available for custom sublimation?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "The sublimation catalogue includes t-shirts, golf shirts, rugby jerseys, hooded t-shirts, shorts, dresses, skirts and other sportswear styles. Browse the catalogue or contact us to discuss a garment and its options.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Can any fabric be sublimated?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "No. Sublimation is suited to appropriate polyester-based fabrics, and fabric suitability varies by garment. Tell us which style you are considering so we can discuss its material options.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Can we include team colours, logos and detailed artwork?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Custom artwork can be incorporated into the garment design. Share your logo, colours, artwork and garment requirements when you enquire, and we can discuss the design with you.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How do I request a quote?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Contact Blank2Branded with the garment style, quantity, sizes and design requirements you have in mind. You can enquire through WhatsApp or our contact page, and we will discuss the available options with you.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Where does Blank2Branded deliver?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Blank2Branded is based in Mbombela, Mpumalanga, and serves customers throughout South Africa. Contact us with your location and requirements to discuss delivery for your order.",
+            },
+          },
+        ],
+      },
+    ],
   },
   {
     path: "/catalogues",
-    title:
-      "Catalogues | Branded Gifts, Bags & Corporate Gifting South Africa | Blank2Branded",
+    title: "Catalogues | Branded Gifts, Bags & Corporate Gifting South Africa | Blank2Branded",
     description:
       "Browse our digital catalogues for branded gifts, bags, drinkware and corporate gifting in South Africa. Request a quote with print and embroidery options.",
     keywords:
@@ -148,11 +246,23 @@ const staticRoutes: RouteMeta[] = [
   },
   {
     path: "/sports-kits",
-    title: "Sublimated Sports Kits South Africa | Custom Team Kits | Blank2Branded",
+    title: "Sublimated Sports Kits South Africa | Custom Rugby, Netball & Soccer Kits",
+    h1: "Custom Sublimated Sports Kits & Teamwear — South Africa",
     description:
-      "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics in South Africa. Team colours, numbers and sponsors baked into the fabric. Nationwide courier from Mbombela.",
+      "Custom sublimated sports kits for rugby, soccer, netball, cricket and hockey teams. Discuss your design requirements and request a quote from Blank2Branded, based in Mbombela and serving South Africa.",
     keywords:
       "sublimated sports kits, sublimated sports kits South Africa, custom sports kits, sublimated jerseys, sublimated rugby jerseys, sublimated soccer kits, sublimated netball dresses, custom team kits South Africa, custom sports uniforms, school sports kits South Africa",
+    bodyHtml: `
+      <p>Custom sublimated team uniforms and club kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics. We work with schools and teams to print names, numbers and sponsors into the fabric, then courier nationwide from Mbombela.</p>
+      <h2><a href="/blog/sublimated-sports-kits/">Sublimated Sports Kits: A Guide</a></h2>
+      <p>Read our guide to custom sublimated sports kits for an overview of kit design and key considerations. Contact us to discuss the requirements for your sport and team.</p>
+      <h2>Design your own kit in 3 steps</h2>
+      <ol>
+        <li>Send your design or logo, team colours, sizes and quantity.</li>
+        <li>We prepare a mock-up for approval and provide a quote.</li>
+        <li>We print your approved kit and arrange nationwide delivery.</li>
+      </ol>
+    `,
   },
 ];
 
@@ -232,7 +342,10 @@ function productRoute(p: CatalogueProduct): RouteMeta {
   const title = `${baseTitle} | Blank2Branded South Africa`;
   const description = (
     p.meta_description ||
-    (p.description || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+    (p.description || "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
   ).slice(0, 300);
   const image = p.image?.url || "";
   const jsonLd: Record<string, unknown> = {
@@ -257,8 +370,18 @@ function productRoute(p: CatalogueProduct): RouteMeta {
               shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
               deliveryTime: {
                 "@type": "ShippingDeliveryTime",
-                handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
-                transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
+                handlingTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 1,
+                  maxValue: 3,
+                  unitCode: "DAY",
+                },
+                transitTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 2,
+                  maxValue: 5,
+                  unitCode: "DAY",
+                },
               },
             },
             hasMerchantReturnPolicy: {
@@ -273,7 +396,6 @@ function productRoute(p: CatalogueProduct): RouteMeta {
           },
         }
       : {}),
-
   };
   return {
     path,
@@ -287,7 +409,6 @@ function productRoute(p: CatalogueProduct): RouteMeta {
     jsonLd,
   };
 }
-
 
 // ---- Template rewrite --------------------------------------------------------
 
@@ -347,10 +468,7 @@ function rewriteHead(template: string, r: RouteMeta): string {
   if (r.jsonLd) {
     const arr = Array.isArray(r.jsonLd) ? r.jsonLd : [r.jsonLd];
     const scripts = arr
-      .map(
-        (obj) =>
-          `<script type="application/ld+json">${JSON.stringify(obj)}</script>`,
-      )
+      .map((obj) => `<script type="application/ld+json">${JSON.stringify(obj)}</script>`)
       .join("\n    ");
     html = html.replace(/<\/head>/i, `    ${scripts}\n  </head>`);
   }
@@ -363,7 +481,8 @@ function rewriteHead(template: string, r: RouteMeta): string {
 /** Inject prerendered <main> content into the React root so no-JS crawlers see
  *  real body text. React hydrates over this for real users. */
 function injectBody(html: string, bodyHtml: string): string {
-  const rootWithChildren = /(<div\s+id="(?:root|app)"[^>]*>)[\s\S]*?(<\/div>)(?=\s*(?:<script|<\/body>))/i;
+  const rootWithChildren =
+    /(<div\s+id="(?:root|app)"[^>]*>)[\s\S]*?(<\/div>)(?=\s*(?:<script|<\/body>))/i;
   if (rootWithChildren.test(html)) {
     return html.replace(rootWithChildren, (_m, open, close) => `${open}${bodyHtml}${close}`);
   }
@@ -371,7 +490,10 @@ function injectBody(html: string, bodyHtml: string): string {
   if (emptyRoot.test(html)) {
     return html.replace(emptyRoot, (m) => m.replace(/>\s*<\/div>/i, `>${bodyHtml}</div>`));
   }
-  return html.replace(/<\/body>/i, `<div id="prerender-fallback" hidden>${bodyHtml}</div>\n  </body>`);
+  return html.replace(
+    /<\/body>/i,
+    `<div id="prerender-fallback" hidden>${bodyHtml}</div>\n  </body>`,
+  );
 }
 
 const SITE_NAV_LINKS: Array<{ path: string; label: string }> = [
@@ -395,11 +517,10 @@ function renderNav(currentPath: string): string {
 }
 
 function renderStaticBody(r: RouteMeta): string {
-  const h1 = r.title.split("|")[0].trim();
-  return `
-    <main>
-      <article>
-        <h1>${esc(h1)}</h1>
+  const h1 = r.h1 ?? r.title.split("|")[0].trim();
+  const articleContent =
+    r.bodyHtml ??
+    `
         <p>${esc(r.description)}</p>
         ${r.keywords ? `<p><strong>Topics:</strong> ${esc(r.keywords)}</p>` : ""}
         <p>
@@ -411,7 +532,12 @@ function renderStaticBody(r: RouteMeta): string {
         <p>
           <a href="/contact/">Contact us</a> for a quote, or browse the
           <a href="/shop/">online shop</a>.
-        </p>
+        </p>`;
+  return `
+    <main>
+      <article>
+        <h1>${esc(h1)}</h1>
+        ${articleContent}
       </article>
       ${renderNav(r.path)}
     </main>`;
@@ -420,8 +546,13 @@ function renderStaticBody(r: RouteMeta): string {
 function renderProductBody(p: CatalogueProduct, r: RouteMeta): string {
   const image = p.image?.url || "";
   const alt = p.image?.alt || p.title;
-  const priceStr = p.base_price ? `${p.currency_code || "ZAR"} ${Number(p.base_price).toFixed(2)}` : "";
-  const desc = ((p.description || r.description || "").replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
+  const priceStr = p.base_price
+    ? `${p.currency_code || "ZAR"} ${Number(p.base_price).toFixed(2)}`
+    : "";
+  const desc = (p.description || r.description || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   return `
     <main>
       <article>
@@ -457,9 +588,12 @@ async function fetchRouteOverrides(): Promise<Record<string, OverrideRow>> {
     return {};
   }
   try {
-    const res = await fetch(`${url}/rest/v1/route_meta?select=slug,title,description,canonical,og_image`, {
-      headers: { apikey: key, Authorization: `Bearer ${key}` },
-    });
+    const res = await fetch(
+      `${url}/rest/v1/route_meta?select=slug,title,description,canonical,og_image`,
+      {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      },
+    );
     if (!res.ok) {
       console.warn("prerender-routes: route_meta fetch failed", res.status);
       return {};
@@ -476,6 +610,9 @@ async function fetchRouteOverrides(): Promise<Record<string, OverrideRow>> {
 
 function applyOverride(r: RouteMeta, o?: OverrideRow): RouteMeta {
   if (!o) return r;
+  if (r.path === "/" || r.path === "/sublimation") {
+    return { ...r, image: o.og_image || r.image };
+  }
   return {
     ...r,
     title: o.title || r.title,
@@ -505,12 +642,21 @@ async function fetchBofuPages(): Promise<BofuPage[]> {
   const key = SUPABASE_ANON;
   if (!url || !key) return [];
   try {
-    const res = await fetch(`${url}/rest/v1/bofu_pages?select=slug,template,title,meta_description,h1,intro,body_html,video_embed_html,video_url,faq_json,city&status=eq.published`, {
-      headers: { apikey: key, Authorization: `Bearer ${key}` },
-    });
-    if (!res.ok) { console.warn("prerender-routes: bofu fetch failed", res.status); return []; }
+    const res = await fetch(
+      `${url}/rest/v1/bofu_pages?select=slug,template,title,meta_description,h1,intro,body_html,video_embed_html,video_url,faq_json,city&status=eq.published`,
+      {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      },
+    );
+    if (!res.ok) {
+      console.warn("prerender-routes: bofu fetch failed", res.status);
+      return [];
+    }
     return (await res.json()) as BofuPage[];
-  } catch (err) { console.warn("prerender-routes: bofu fetch error", err); return []; }
+  } catch (err) {
+    console.warn("prerender-routes: bofu fetch error", err);
+    return [];
+  }
 }
 
 function renderBofuBody(b: BofuPage): string {
@@ -530,19 +676,25 @@ function renderBofuBody(b: BofuPage): string {
 
 function buildBofuJsonLd(b: BofuPage, path: string): Record<string, unknown>[] {
   const url = `${BASE_URL}${path}/`;
-  const out: Record<string, unknown>[] = [{
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: b.title,
-    description: b.meta_description || "",
-    url,
-  }];
+  const out: Record<string, unknown>[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: b.title,
+      description: b.meta_description || "",
+      url,
+    },
+  ];
   const faq = Array.isArray(b.faq_json) ? b.faq_json : [];
   if (faq.length > 0) {
     out.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+      mainEntity: faq.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
     });
   }
   if (b.video_url) {
@@ -565,9 +717,7 @@ async function main() {
   const distDir = resolve("dist");
   const templatePath = resolve(distDir, "index.html");
   if (!existsSync(templatePath)) {
-    console.warn(
-      "prerender-routes: dist/index.html not found — skipping (run after vite build)",
-    );
+    console.warn("prerender-routes: dist/index.html not found — skipping (run after vite build)");
     return;
   }
   const template = readFileSync(templatePath, "utf8");
@@ -577,16 +727,33 @@ async function main() {
   const rootRoute: RouteMeta = applyOverride(
     {
       path: "/",
-      title:
-        "DTF Printing South Africa | Blank T-Shirts & Transfers | Blank2Branded",
+      title: "DTF Printing, Blank Apparel & Custom Clothing South Africa | Blank2Branded",
+      h1: "Custom Apparel, DTF Printing & Branding Solutions in South Africa",
       description:
-        "Buy DTF transfers and blank t-shirts in South Africa. Gang sheets from A6 to 10m, blank tees, golf shirts & hoodies. Courier nationwide from Mbombela.",
+        "Shop DTF transfers and blank apparel, or order custom sublimated workwear and sportswear. Blank2Branded supplies South Africa from Mbombela with nationwide delivery.",
       keywords:
-        "DTF printing South Africa, DTF transfers South Africa, DTF prints near me, blank t-shirts South Africa, blank apparel suppliers South Africa, gang sheet printing, custom t-shirt printing South Africa, DTF Mbombela, DTF Mpumalanga, DTF Johannesburg, DTF Pretoria, DTF Cape Town, DTF Durban",
+        "DTF printing South Africa, DTF transfers South Africa, blank apparel suppliers South Africa, custom apparel South Africa, custom clothing printing South Africa, branded clothing South Africa, sublimation printing South Africa, DTF printing Mbombela, blank t-shirts South Africa, custom sublimated clothing, corporate workwear South Africa, custom sportswear South Africa, branded golf shirts South Africa",
+      bodyHtml: `
+        <p>Blank2Branded is an apparel, printing and branding supplier based in Mbombela, Mpumalanga, serving customers throughout South Africa. We support clothing brands, businesses, schools, sports teams, resellers and individuals.</p>
+        <h2>DTF Transfers</h2>
+        <p>We produce DTF transfers in-house to your requirements. Standalone transfers can be ordered by the metre or by individual image, with no minimum quantity. Courier delivery is available at the customer's expense. <a href="/dtf/">Explore DTF printing</a>.</p>
+        <h2>Blank Apparel</h2>
+        <p>Browse available blank T-shirts, golf shirts, hoodies, sweatshirts and other apparel in our product ranges and <a href="/shop/">online shop</a>.</p>
+        <h2>Custom Sublimation Printing</h2>
+        <p>Explore custom sublimated golf shirts, work T-shirts, rugby jerseys, soccer kits, netball dresses and other suitable polyester-based apparel for businesses, schools, clubs, teams and organisations. Fabric suitability varies by garment. <a href="/sublimation/">Explore custom sublimated clothing and sportswear</a>.</p>
+        <h2>Corporate Branding &amp; Display</h2>
+        <p>Explore branded apparel, corporate gifts, promotional products, display and signage solutions. Browse <a href="/catalogues/">corporate catalogues</a> or <a href="/display/">display and signage</a>.</p>
+        <h2>How It Works</h2>
+        <ol><li>Choose a product or service.</li><li>Send your requirements and artwork.</li><li>Review and approve the quotation and artwork.</li><li>Production and delivery arrangements follow.</li></ol>
+        <p>For teamwear, explore our <a href="/sports-kits/">sports kits</a>. <a href="/contact/">Contact us</a> or <a href="https://wa.me/27698384045">request a quote on WhatsApp</a>.</p>
+      `,
     },
     overrides["/"],
   );
-  writeFileSync(templatePath, injectBody(rewriteHead(template, rootRoute), renderStaticBody(rootRoute)));
+  writeFileSync(
+    templatePath,
+    injectBody(rewriteHead(template, rootRoute), renderStaticBody(rootRoute)),
+  );
 
   let written = 1;
 
@@ -614,13 +781,14 @@ async function main() {
   const bofuPages = await fetchBofuPages();
   for (const b of bofuPages) {
     const isNational = (b.city || "").trim().toLowerCase() === "south africa";
-    const path = b.template === "local"
-      ? isNational
-        ? `/${b.slug}`
-        : b.city
-          ? `/local/${b.city.toLowerCase().replace(/\s+/g, "-")}/${b.slug}`
-          : `/local/${b.slug}`
-      : `/${b.template === "versus" ? "vs" : b.template}/${b.slug}`;
+    const path =
+      b.template === "local"
+        ? isNational
+          ? `/${b.slug}`
+          : b.city
+            ? `/local/${b.city.toLowerCase().replace(/\s+/g, "-")}/${b.slug}`
+            : `/local/${b.slug}`
+        : `/${b.template === "versus" ? "vs" : b.template}/${b.slug}`;
     const r: RouteMeta = {
       path,
       title: b.title,
@@ -643,4 +811,3 @@ async function main() {
 main().catch((e) => {
   console.error("prerender-routes failed:", e);
 });
-

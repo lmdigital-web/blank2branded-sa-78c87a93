@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Link } from "@/lib/static-router";
-import { ArrowRight, MessageCircle, CheckCircle2, Truck, Palette, Clock, Ruler, Shirt } from "lucide-react";
+import { ArrowRight, MessageCircle, CheckCircle2, Truck, Palette, Clock, Shirt } from "lucide-react";
 import sportsKitsHeroBg from "@/assets/sports-kits-hero-bg.jpg";
 
 import rugbyJersey from "@/assets/sports-kits/rugby-jersey.jpg";
@@ -29,12 +29,6 @@ const SPORTS: { sport: string; image: string; blurb: string }[] = [
   { sport: "Athletics", image: athleticsVest, blurb: "Running vests, singlets and school athletics kits — light and breathable." },
 ];
 
-const KIT_TIERS = [
-  { size: "10 – 24 kits", note: "Ideal for junior teams and squads" },
-  { size: "25 – 49 kits", note: "Best value for full club sides" },
-  { size: "50+ kits", note: "Wholesale pricing — schools & academies" },
-];
-
 const FAQ: { q: string; a: string }[] = [
   {
     q: "What is a sublimated sports kit?",
@@ -42,11 +36,11 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "How long does it take to make a custom sports kit?",
-    a: "Standard turnaround for sublimated sports kits is 10 – 15 working days from artwork approval, plus courier delivery. Rush production is possible on request — get in touch for lead times on tight deadlines.",
+    a: "Production and courier timing depend on your order requirements. Contact us to discuss the expected timing for your order.",
   },
   {
     q: "What is the minimum order for sublimated kits?",
-    a: "Our minimum order is 10 units per kit type. There's no maximum — we regularly produce full club sides, school teams and multi-sport orders for 100+ athletes.",
+    a: "Order requirements depend on the garment and design. Contact us to discuss the quantity you have in mind.",
   },
   {
     q: "Do you deliver sports kits nationwide in South Africa?",
@@ -62,7 +56,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "How much does a sublimated sports kit cost in South Africa?",
-    a: "Pricing depends on the item (jersey vs full set), fabric weight, quantity and whether shorts/socks are included. Request a quote via WhatsApp with your quantity and we'll price it same-day.",
+    a: "Pricing depends on the item (jersey vs full set), fabric weight, quantity and whether shorts or socks are included. Request a quote via WhatsApp with your requirements.",
   },
   {
     q: "Are the kits durable and colour-fast?",
@@ -87,13 +81,6 @@ export function SportsKitsPage() {
     description:
       "Custom sublimated sports kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics teams across South Africa.",
     brand: { "@type": "Brand", name: "Blank2Branded" },
-    offers: {
-      "@type": "AggregateOffer",
-      priceCurrency: "ZAR",
-      lowPrice: "180",
-      offerCount: 8,
-      availability: "https://schema.org/InStock",
-    },
   };
 
   return (
@@ -122,12 +109,12 @@ export function SportsKitsPage() {
         <div className="relative mx-auto max-w-7xl px-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">Sublimated Sports Kits</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Sublimated Sports Kits <span className="text-gradient-dtf">South Africa</span>
+            Custom Sublimated Sports Kits &amp; Teamwear — South Africa
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
-            Full-colour custom kits for rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics — team
-            names, numbers and sponsor logos dyed into the fabric. Delivered nationwide from Mbombela in 10–15 working
-            days.
+            Custom sublimated team uniforms and club kits for rugby, soccer, netball, hockey, cricket, basketball,
+            cycling and athletics. We work with schools and teams to print names, numbers and sponsors into the fabric,
+            then courier nationwide from Mbombela.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
@@ -149,13 +136,45 @@ export function SportsKitsPage() {
         </div>
       </section>
 
+      <section className="border-b border-border bg-muted/30 py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Sports kit guide</p>
+            <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
+              Learn about custom sublimated sports kits
+            </h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                title: "Sublimated Sports Kits: A Guide",
+                href: "/blog/sublimated-sports-kits/",
+                copy: "Read our guide to custom sublimated sports kits for an overview of kit design and key considerations. Contact us to discuss the requirements for your sport and team.",
+              },
+            ].map((sport) => (
+              <article
+                key={sport.href}
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+              >
+                <h2 className="text-xl font-black text-charcoal">
+                  <Link to={sport.href} className="transition-colors hover:text-primary">
+                    {sport.title}
+                  </Link>
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{sport.copy}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* BENEFITS */}
       <section className="border-b border-border py-14 md:py-16">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { icon: Palette, title: "Full-colour design", copy: "Unlimited colours, gradients, photos and sponsor logos — no setup fees per colour." },
             { icon: Shirt, title: "Never cracks or peels", copy: "The design is dyed into polyester fibres, not printed on top. Colour-fast through hundreds of washes." },
-            { icon: Clock, title: "10 – 15 day turnaround", copy: "From artwork approval to courier collection. Rush production available on request." },
+            { icon: Clock, title: "Production planning", copy: "We discuss artwork approval and expected production timing before your order proceeds." },
             { icon: Truck, title: "Nationwide courier", copy: "Delivered to Johannesburg, Cape Town, Pretoria, Durban and everywhere in between." },
           ].map((b) => (
             <div key={b.title} className="rounded-2xl border border-border bg-card p-6">
@@ -236,15 +255,26 @@ export function SportsKitsPage() {
           <div className="mb-10 max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">How Sublimation Works</p>
             <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
-              From artwork to finished kit
+              Design your own kit in 3 steps
             </h2>
           </div>
-          <ol className="grid gap-6 md:grid-cols-4">
+          <ol className="grid gap-6 md:grid-cols-3">
             {[
-              { step: "1", title: "Send your brief", copy: "Team colours, sponsor logos, player names and numbers, quantity and sizes." },
-              { step: "2", title: "Supply artwork", copy: "Send us your print-ready artwork. Need design help? We offer it as a paid service — contact us for a design fee quote." },
-              { step: "3", title: "Sublimation print", copy: "Design is dyed into polyester panels using heat and pressure — bonded permanently to the fabric." },
-              { step: "4", title: "Cut, sew & courier", copy: "Panels are cut and sewn into finished garments and couriered nationwide within 10–15 days." },
+              {
+                step: "1",
+                title: "Send your design or logo",
+                copy: "Share your artwork, logo, team colours, sizes and quantity. If you need design help, ask us for a separate design-service quote.",
+              },
+              {
+                step: "2",
+                title: "We mock it up and quote",
+                copy: "We prepare a kit mock-up for your approval and confirm pricing and expected production timing before you place the order.",
+              },
+              {
+                step: "3",
+                title: "We print and deliver",
+                copy: "Once the artwork is approved, we produce your sublimated kit and arrange nationwide courier delivery.",
+              },
             ].map((s) => (
               <li key={s.step} className="rounded-2xl border border-border bg-card p-6">
                 <div className="text-3xl font-black text-primary">{s.step}</div>
@@ -256,34 +286,25 @@ export function SportsKitsPage() {
         </div>
       </section>
 
-      {/* PRICING TIERS */}
+      {/* PRICING */}
       <section className="border-b border-border py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Pricing & MOQ</p>
-            <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">Volume tiers</h2>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Pricing</p>
+            <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">Request a kit quote</h2>
             <p className="mt-3 text-base text-muted-foreground">
-              Minimum 10 kits per style. The more you order, the lower the per-kit price. Request a quote for exact
-              pricing on your quantity and item mix.
+              Share the garment styles, quantities, sizes and design details you have in mind. We will discuss your
+              requirements and provide a quote.
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {KIT_TIERS.map((t) => (
-              <div key={t.size} className="rounded-2xl border border-border bg-card p-6">
-                <Ruler className="h-8 w-8 text-primary" />
-                <h3 className="mt-4 text-xl font-black text-charcoal">{t.size}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{t.note}</p>
-                <a
-                  href={waQuote("sports")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary"
-                >
-                  Get pricing <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-            ))}
-          </div>
+          <a
+            href={waQuote("sports")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-dtf px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.03]"
+          >
+            <MessageCircle className="h-4 w-4" /> Request a Kit Quote
+          </a>
         </div>
       </section>
 
@@ -317,8 +338,8 @@ export function SportsKitsPage() {
             Ready to kit out your team?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Send us your team colours, quantity and print-ready artwork — we'll come back with pricing and a delivery date within
-            4 business hours. Design services available on request for an additional fee.
+            Send us your team colours, quantity and print-ready artwork to discuss pricing and delivery arrangements.
+            Design services are available on request for an additional fee.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a

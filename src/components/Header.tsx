@@ -55,7 +55,12 @@ export function Header({ variant = "overlay" }: HeaderProps) {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          <Link to="/" className={linkCls} activeOptions={{ exact: true }} activeProps={{ className: "text-primary" }}>
+          <Link
+            to="/"
+            className={linkCls}
+            activeOptions={{ exact: true }}
+            activeProps={{ className: "text-primary" }}
+          >
             Home
           </Link>
           <Link to="/about" className={linkCls} activeProps={{ className: "text-primary" }}>
@@ -67,9 +72,11 @@ export function Header({ variant = "overlay" }: HeaderProps) {
           <Link to="/blanks" className={linkCls} activeProps={{ className: "text-primary" }}>
             Blanks
           </Link>
-          <Link to="/display" className={linkCls} activeProps={{ className: "text-primary" }}>
-            Display
-          </Link>
+          <div className="group relative">
+            <Link to="/display" className={linkCls} activeProps={{ className: "text-primary" }}>
+              Display
+            </Link>
+          </div>
           <Link to="/sublimation" className={linkCls} activeProps={{ className: "text-primary" }}>
             Sublimation
           </Link>
@@ -101,7 +108,11 @@ export function Header({ variant = "overlay" }: HeaderProps) {
             aria-controls="mobile-nav"
             className="inline-flex h-11 w-11 items-center justify-center rounded-md text-charcoal hover:bg-charcoal/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            {open ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+            {open ? (
+              <X className="h-6 w-6" aria-hidden="true" />
+            ) : (
+              <Menu className="h-6 w-6" aria-hidden="true" />
+            )}
           </button>
         </div>
       </div>
@@ -109,15 +120,33 @@ export function Header({ variant = "overlay" }: HeaderProps) {
       {open && (
         <div id="mobile-nav" className="border-t border-border bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4">
-            <Link to="/" className={linkCls} onClick={() => setOpen(false)}>Home</Link>
-            <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>About</Link>
-            <Link to="/dtf" className={linkCls} onClick={() => setOpen(false)}>DTF Prints</Link>
-            <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>Blanks</Link>
-            <Link to="/display" className={linkCls} onClick={() => setOpen(false)}>Display</Link>
-            <Link to="/sublimation" className={linkCls} onClick={() => setOpen(false)}>Sublimation</Link>
-            <Link to="/catalogues" className={linkCls} onClick={() => setOpen(false)}>Catalogues</Link>
-            <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>Blog</Link>
-            <Link to="/contact" className={linkCls} onClick={() => setOpen(false)}>Contact</Link>
+            <Link to="/" className={linkCls} onClick={() => setOpen(false)}>
+              Home
+            </Link>
+            <Link to="/about" className={linkCls} onClick={() => setOpen(false)}>
+              About
+            </Link>
+            <Link to="/dtf" className={linkCls} onClick={() => setOpen(false)}>
+              DTF Prints
+            </Link>
+            <Link to="/blanks" className={linkCls} onClick={() => setOpen(false)}>
+              Blanks
+            </Link>
+            <Link to="/display" className={linkCls} onClick={() => setOpen(false)}>
+              Display
+            </Link>
+            <Link to="/sublimation" className={linkCls} onClick={() => setOpen(false)}>
+              Sublimation
+            </Link>
+            <Link to="/catalogues" className={linkCls} onClick={() => setOpen(false)}>
+              Catalogues
+            </Link>
+            <Link to="/blog" className={linkCls} onClick={() => setOpen(false)}>
+              Blog
+            </Link>
+            <Link to="/contact" className={linkCls} onClick={() => setOpen(false)}>
+              Contact
+            </Link>
             <Link
               to="/shop"
               onClick={() => setOpen(false)}

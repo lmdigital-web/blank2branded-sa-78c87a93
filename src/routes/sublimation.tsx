@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Link } from "@/lib/static-router";
 
 const WHATSAPP_NUMBER = "27698384045";
 
@@ -97,6 +98,66 @@ const materialOptions = [
   "Drop Needle Square 130G",
 ];
 
+const SUBLIMATION_FAQ = [
+  {
+    question: "What is sublimation printing and how does it work?",
+    answer:
+      "Sublimation printing uses heat to transfer a full-colour design into a suitable polyester-based fabric. The design becomes part of the fabric rather than a separate print layer on its surface.",
+  },
+  {
+    question: "What garments are available for custom sublimation?",
+    answer:
+      "The sublimation catalogue includes t-shirts, golf shirts, rugby jerseys, hooded t-shirts, shorts, dresses, skirts and other sportswear styles. Browse the catalogue or contact us to discuss a garment and its options.",
+  },
+  {
+    question: "Can any fabric be sublimated?",
+    answer:
+      "No. Sublimation is suited to appropriate polyester-based fabrics, and fabric suitability varies by garment. Tell us which style you are considering so we can discuss its material options.",
+  },
+  {
+    question: "Can we include team colours, logos and detailed artwork?",
+    answer:
+      "Custom artwork can be incorporated into the garment design. Share your logo, colours, artwork and garment requirements when you enquire, and we can discuss the design with you.",
+  },
+  {
+    question: "How do I request a quote?",
+    answer:
+      "Contact Blank2Branded with the garment style, quantity, sizes and design requirements you have in mind. You can enquire through WhatsApp or our contact page, and we will discuss the available options with you.",
+  },
+  {
+    question: "Where does Blank2Branded deliver?",
+    answer:
+      "Blank2Branded is based in Mbombela, Mpumalanga, and serves customers throughout South Africa. Contact us with your location and requirements to discuss delivery for your order.",
+  },
+];
+
+const sublimationFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: SUBLIMATION_FAQ.map(({ question, answer }) => ({
+    "@type": "Question",
+    name: question,
+    acceptedAnswer: { "@type": "Answer", text: answer },
+  })),
+};
+
+const sublimationServiceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Custom Sublimation Printing & Clothing",
+  serviceType: "Sublimation printing for custom clothing and sportswear",
+  provider: {
+    "@type": "Organization",
+    name: "Blank2Branded",
+    url: "https://blank2branded.co.za/",
+  },
+  areaServed: [
+    { "@type": "City", name: "Mbombela" },
+    { "@type": "Country", name: "South Africa" },
+  ],
+  url: "https://blank2branded.co.za/sublimation/",
+};
+
 const quoteLink = (product?: string) => {
   const message = product
     ? `Hi, I would like a quote for Dye Sublimation ${product}.`
@@ -117,7 +178,7 @@ function CataloguePageCard({ page }: { page: (typeof cataloguePages)[number] }) 
         <div className="relative aspect-[595/842] overflow-hidden">
           <img
             src={`/sublimation-catalogue/pages/page-${page.page}.webp`}
-            alt={`${page.title} —  Dye Sublimation Catalogue 2025, page ${page.page}`}
+            alt={`${page.title} — Dye Sublimation Catalogue 2025, page ${page.page}`}
             className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
             loading="lazy"
           />
@@ -150,6 +211,14 @@ function CataloguePageCard({ page }: { page: (typeof cataloguePages)[number] }) 
 export function SublimationPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(sublimationFaqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(sublimationServiceSchema) }}
+      />
       <section className="relative min-h-[560px] overflow-hidden bg-black">
         <img
           src="/sublimation-catalogue/cover.webp"
@@ -165,21 +234,22 @@ export function SublimationPage() {
           <div className="max-w-4xl text-charcoal">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-charcoal/10 bg-white/75 px-4 py-2 text-sm font-semibold backdrop-blur">
               <Sparkles className="h-4 w-4" />
-               Dye Sublimation Catalogue 2025
+              Sublimation printing from Mbombela, nationwide
             </div>
             <h1 className="max-w-4xl text-4xl font-black tracking-tight text-charcoal sm:text-5xl lg:text-7xl">
-              Custom Dye Sublimation Apparel
+              Custom Sublimation Printing &amp; Clothing in South Africa
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-charcoal/80 sm:text-xl">
-              Browse the actual product pages from the  Dye Sublimation Catalogue 2025.
-              No substitute product artwork — the catalogue pages below are the reference material.
+              Blank2Branded creates custom sublimated clothing and sportswear for schools, sports
+              clubs, businesses, teams and organisations. We are based in Mbombela, Mpumalanga, and
+              serve customers throughout South Africa.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#catalogue"
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground shadow-lg transition hover:opacity-90"
               >
-                Browse the catalogue
+                Explore garment styles
                 <ArrowRight className="h-5 w-5" />
               </a>
               <a
@@ -191,33 +261,334 @@ export function SublimationPage() {
                 <MessageCircle className="h-5 w-5" />
                 Request a quote
               </a>
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 rounded-xl border border-charcoal/15 bg-white/75 px-6 py-3.5 font-bold text-charcoal backdrop-blur transition hover:bg-white"
+              >
+                Discuss your design
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
       <main>
+        <section className="border-b border-border bg-background py-16 md:py-20">
+          <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Custom apparel, made to your brief
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Professional Sublimation Printing for Custom Clothing
+              </h2>
+              <p className="mt-5 leading-7 text-muted-foreground">
+                Sublimation printing transfers a full-colour design into suitable polyester-based
+                fabric using heat. Instead of sitting as a separate surface print, the design is
+                incorporated into the fabric. It is a useful option for custom clothing where
+                detailed graphics, patterns and garment-wide branding are part of the design.
+              </p>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                Fabric choice matters: not every fabric is suitable for sublimation. We can discuss
+                the material specifications shown for each catalogue style and help you identify
+                appropriate options for your project.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-muted/40 p-6 sm:p-8">
+              <h3 className="text-xl font-black text-charcoal">A good fit for team designs</h3>
+              <p className="mt-3 leading-7 text-muted-foreground">
+                Bring your colours, logos, artwork and garment requirements together in one custom
+                design. We work with organisations to discuss the style and material options before
+                preparing a quote.
+              </p>
+              <a
+                href={quoteLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 font-bold text-primary-foreground transition hover:opacity-90"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Enquire on WhatsApp
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-muted/30 py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Made for teams and organisations
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Custom Sublimated Sportswear
+              </h2>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                Explore custom sublimated sportswear for school teams, clubs and organisations.
+                Styles in our catalogue include golf shirts, rugby jerseys, t-shirts, shorts and
+                ladies' sport dresses. Our sports kits page also covers soccer and netball teamwear.
+                Availability and fabric options vary by style, so get in touch to confirm what suits
+                your requirements.
+              </p>
+            </div>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: "Custom sublimated golf shirts",
+                  copy: "Men's and ladies' golf shirt styles appear in the catalogue.",
+                },
+                {
+                  title: "Sublimated rugby jerseys",
+                  copy: "Browse the men's rugby jersey styles and discuss a custom design.",
+                },
+                {
+                  title: "Custom netball dresses",
+                  copy: "Ask us about suitable dress and teamwear options for your squad.",
+                },
+                {
+                  title: "Custom soccer kits",
+                  copy: "Explore teamwear options through our sports kits page.",
+                },
+              ].map((item) => (
+                <article key={item.title} className="rounded-2xl border border-border bg-card p-5">
+                  <h3 className="font-bold text-charcoal">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.copy}</p>
+                </article>
+              ))}
+            </div>
+            <Link
+              to="/sports-kits"
+              className="mt-7 inline-flex items-center gap-2 font-bold text-primary underline"
+            >
+              Explore custom sports kits <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-background py-16 md:py-20">
+          <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                For businesses and staff teams
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Custom Sublimated Corporate Clothing &amp; Workwear
+              </h2>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                Give your team a consistent, professional look with custom sublimated work T-shirts,
+                corporate golf shirts and other suitable polyester apparel. Add your company colours,
+                logo and artwork to create clothing that reflects your brand.
+              </p>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                Whether you need branded staff clothing, golf shirts for your business or custom
+                polyester garments for an event, share your requirements with us. Garment styles and
+                fabric suitability vary, so we will discuss the available options before quoting.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={quoteLink("corporate workwear and golf shirts")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 font-bold text-primary-foreground transition hover:opacity-90"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Enquire about workwear
+                </a>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 font-bold text-charcoal transition hover:border-primary"
+                >
+                  Discuss your requirements <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-border bg-muted/40 p-6 sm:p-8">
+              <h3 className="text-xl font-black text-charcoal">Corporate apparel options</h3>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  Custom sublimated work T-shirts
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  Branded corporate golf shirts
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  Staff clothing and team apparel
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  Custom polyester clothing for businesses and events
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-background py-16 md:py-20">
+          <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Local expertise, nationwide service
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Sublimation Clothing for Schools, Clubs &amp; Businesses
+              </h2>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                From school sports teams and community clubs to business teams and organisations, we
+                can discuss coordinated garments with colours and branding incorporated into the
+                design. Blank2Branded is based in Mbombela, Mpumalanga, and works with customers
+                throughout South Africa.
+              </p>
+            </div>
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground transition hover:opacity-90"
+            >
+              Contact us about your project <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-muted/30 py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Built around your artwork
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Why Choose Sublimation Printing?
+              </h2>
+            </div>
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: "Full-colour designs",
+                  copy: "Bring multiple colours together in a unified garment design.",
+                },
+                {
+                  title: "Detailed graphics",
+                  copy: "Use detailed artwork, patterns and design elements across appropriate styles.",
+                },
+                {
+                  title: "Integrated branding",
+                  copy: "Discuss incorporating team colours, logos and other branding into the design.",
+                },
+                {
+                  title: "Design part of the fabric",
+                  copy: "On suitable polyester-based fabric, the design is transferred into the fabric rather than applied as a separate surface print.",
+                },
+              ].map((item) => (
+                <article key={item.title} className="rounded-2xl border border-border bg-card p-6">
+                  <Palette className="h-7 w-7 text-primary" aria-hidden="true" />
+                  <h3 className="mt-4 font-black text-charcoal">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-background py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                From artwork to garment
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                How the Sublimation Process Works
+              </h2>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                We guide you through the design and garment choices so the proposed material is
+                appropriate for the sublimation process.
+              </p>
+            </div>
+            <ol className="mt-8 grid gap-5 md:grid-cols-3">
+              {[
+                {
+                  step: "1",
+                  title: "Share your brief",
+                  copy: "Tell us the garment or teamwear style, quantity, sizes, colours and artwork you have in mind.",
+                },
+                {
+                  step: "2",
+                  title: "Confirm the design and fabric",
+                  copy: "Discuss the garment's material options and design requirements with us before proceeding.",
+                },
+                {
+                  step: "3",
+                  title: "Approve and proceed",
+                  copy: "Once the design and order details are agreed, the garment is produced using sublimation. We will discuss next steps and delivery arrangements with you.",
+                },
+              ].map((item) => (
+                <li key={item.step} className="rounded-2xl border border-border bg-card p-6">
+                  <span className="text-3xl font-black text-primary">{item.step}</span>
+                  <h3 className="mt-3 text-lg font-black text-charcoal">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.copy}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-muted/30 py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Start your enquiry
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Ordering Custom Sublimated Clothing
+              </h2>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                Send us the garment style, quantity, size range and design details you are
+                considering. You can share existing artwork or discuss your design requirements with
+                our team. We will help you confirm suitable options and prepare a quotation.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={quoteLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground transition hover:opacity-90"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  Request a quotation
+                </a>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 font-bold text-charcoal transition hover:border-primary"
+                >
+                  Contact Blank2Branded <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="border-b border-border bg-background py-16">
           <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-3 lg:px-8">
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <BookOpen className="mb-4 h-8 w-8 text-primary" />
-              <h2 className="text-xl font-bold text-charcoal">The actual catalogue</h2>
+              <h3 className="text-xl font-bold text-charcoal">Verified garment styles</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Each product card uses a page rendered directly from the supplied 2025 catalogue.
+                Browse styles and specifications shown in the supplied sublimation catalogue.
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <Palette className="mb-4 h-8 w-8 text-primary" />
-              <h2 className="text-xl font-bold text-charcoal">Custom designs</h2>
+              <h3 className="text-xl font-bold text-charcoal">Designs for your brief</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                The catalogue notes that garments are produced using client-approved designs.
+                Share your artwork and requirements so we can discuss a suitable custom garment
+                design.
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <Trophy className="mb-4 h-8 w-8 text-primary" />
-              <h2 className="text-xl font-bold text-charcoal">Sport & lifestyle</h2>
+              <h3 className="text-xl font-bold text-charcoal">Sportswear and more</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                The range covers tops, hooded styles, bottoms and accessories across the catalogue sections.
+                The catalogue includes tops, hooded styles, bottoms, dresses and accessories.
               </p>
             </div>
           </div>
@@ -226,17 +597,24 @@ export function SublimationPage() {
         <section className="bg-muted/40 py-16">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="max-w-3xl">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">Catalogue materials</p>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Catalogue materials
+              </p>
               <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
                 Material options shown throughout the range
               </h2>
               <p className="mt-4 text-muted-foreground">
-                The catalogue uses several material specifications depending on the garment. The options below are among the core materials shown across the range.
+                The catalogue lists different material specifications by garment. These examples are
+                catalogue options; fabric suitability for sublimation varies by style and should be
+                confirmed before ordering.
               </p>
             </div>
             <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {materialOptions.map((material) => (
-                <div key={material} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
+                <div
+                  key={material}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card p-4"
+                >
                   <Check className="h-5 w-5 shrink-0 text-primary" />
                   <span className="font-semibold text-charcoal">{material}</span>
                 </div>
@@ -245,15 +623,52 @@ export function SublimationPage() {
           </div>
         </section>
 
+        <section className="border-y border-border bg-background py-16 md:py-20">
+          <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-3 lg:px-8">
+            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <Shirt className="mb-4 h-8 w-8 text-primary" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-charcoal">Browse custom clothing</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                Explore catalogue-listed t-shirts, golf shirts, rugby jerseys, hooded t-shirts,
+                sportswear and more. See the{" "}
+                <Link to="/blanks" className="font-semibold text-primary underline">
+                  blank apparel range
+                </Link>{" "}
+                for other apparel options.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <Sparkles className="mb-4 h-8 w-8 text-primary" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-charcoal">Quotations &amp; Order Details</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                Pricing and order requirements depend on the garment, design and quantity. Contact
+                us with your brief so we can prepare a quotation for the styles you are considering.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <Trophy className="mb-4 h-8 w-8 text-primary" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-charcoal">Delivery Across South Africa</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                Blank2Branded is based in Mbombela, Mpumalanga, and serves customers throughout
+                South Africa. Contact us to discuss delivery arrangements for your order.
+              </p>
+            </article>
+          </div>
+        </section>
+
         <section id="catalogue" className="scroll-mt-20 py-20">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="max-w-3xl">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">Dye Sublimation Catalogue 2025</p>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                Dye Sublimation Catalogue 2025
+              </p>
               <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-5xl">
-                Browse the catalogue pages
+                Browse the Sublimation Catalogue
               </h2>
               <p className="mt-5 text-lg leading-8 text-muted-foreground">
-                Every image below is a rendered page from the supplied dye sublimation catalogue. Open any page for a larger view of the original product imagery, specifications and sizing.
+                These images show pages from the supplied dye sublimation catalogue. Open a page to
+                view the listed garment imagery and specifications, then tell us which styles you
+                would like to discuss.
               </p>
             </div>
 
@@ -284,7 +699,9 @@ export function SublimationPage() {
                   <section key={group.id} id={group.id} className="scroll-mt-20">
                     <div className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                       <div>
-                        <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">{group.description}</p>
+                        <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
+                          {group.description}
+                        </p>
                         <h3 className="mt-1 text-3xl font-black text-charcoal">{group.title}</h3>
                       </div>
                       <div className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -308,10 +725,15 @@ export function SublimationPage() {
         <section className="bg-charcoal py-16 text-white">
           <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
             <div className="max-w-3xl">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/60">Ready to order?</p>
-              <h2 className="mt-2 text-3xl font-black sm:text-4xl">Tell us which catalogue style you want quoted.</h2>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/60">
+                Ready to order?
+              </p>
+              <h2 className="mt-2 text-3xl font-black sm:text-4xl">
+                Tell us about your custom clothing requirements.
+              </h2>
               <p className="mt-4 leading-7 text-white/70">
-                Send us the catalogue page or product name and we can take it from there.
+                Share a catalogue page or garment name, quantity, sizes and artwork. We will discuss
+                the design requirements and prepare a quotation.
               </p>
             </div>
             <a
@@ -323,13 +745,65 @@ export function SublimationPage() {
               <MessageCircle className="h-5 w-5" />
               Request a quote
             </a>
+            <Link
+              to="/contact"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-white/30 px-7 py-4 font-bold text-white transition hover:bg-white/10"
+            >
+              Contact us
+            </Link>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-muted/30 py-16 md:py-20">
+          <div className="mx-auto max-w-4xl px-6">
+            <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+              Frequently Asked Questions
+            </h2>
+            <div className="mt-8 space-y-4">
+              {SUBLIMATION_FAQ.map(({ question, answer }) => (
+                <details
+                  key={question}
+                  className="group rounded-2xl border border-border bg-card p-6 [&_summary::-webkit-details-marker]:hidden"
+                >
+                  <summary className="flex cursor-pointer items-start justify-between gap-4">
+                    <h3 className="text-base font-black text-charcoal md:text-lg">{question}</h3>
+                    <span className="mt-1 text-primary transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <p className="mt-3 text-sm leading-6 text-charcoal/85 md:text-base">{answer}</p>
+                </details>
+              ))}
+            </div>
+            <p className="mt-8 leading-7 text-charcoal/80">
+              Need a different print method? See our{" "}
+              <Link to="/dtf" className="font-semibold text-primary underline">
+                DTF printing service
+              </Link>
+              , or browse{" "}
+              <Link to="/blanks" className="font-semibold text-primary underline">
+                blank apparel
+              </Link>
+              . For teamwear, explore our{" "}
+              <Link to="/sports-kits" className="font-semibold text-primary underline">
+                sports kits
+              </Link>
+              . If you are ready to discuss a project, visit our{" "}
+              <Link to="/contact" className="font-semibold text-primary underline">
+                contact page
+              </Link>
+              .
+            </p>
           </div>
         </section>
 
         <section className="border-t border-border bg-background py-10">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <p className="text-sm leading-6 text-muted-foreground">
-              Product imagery and specifications are reproduced from the dye sublimation catalogue supplied for this website. Images are illustrative, actual products may vary, and designs shown are visual references only; garments are produced using client-approved designs.
+              Product imagery and specifications are reproduced from the dye sublimation catalogue
+              supplied for this website. Images are illustrative, actual products may vary, and
+              designs shown are visual references only; garments are produced using client-approved
+              designs.
             </p>
           </div>
         </section>

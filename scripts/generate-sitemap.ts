@@ -39,7 +39,6 @@ const staticEntries: SitemapEntry[] = [
 ];
 
 async function fetchBlogPosts(): Promise<SitemapEntry[]> {
-
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/posts?select=slug,updated_at&status=eq.published&order=published_at.desc`,
@@ -66,7 +65,6 @@ async function fetchBlogPosts(): Promise<SitemapEntry[]> {
 }
 
 async function fetchBofuPages(): Promise<SitemapEntry[]> {
-
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/bofu_pages?select=slug,template,city,updated_at&status=eq.published`,
@@ -76,7 +74,8 @@ async function fetchBofuPages(): Promise<SitemapEntry[]> {
       console.warn("Failed to fetch BOFU pages for sitemap:", res.status);
       return [];
     }
-    const rows: { slug: string; template: string; city: string | null; updated_at: string }[] = await res.json();
+    const rows: { slug: string; template: string; city: string | null; updated_at: string }[] =
+      await res.json();
     const seen = new Set<string>();
     const entries: SitemapEntry[] = [];
     for (const r of rows) {
@@ -106,7 +105,6 @@ async function fetchBofuPages(): Promise<SitemapEntry[]> {
 }
 
 async function fetchCatalogueProducts(): Promise<SitemapEntry[]> {
-
   const out: SitemapEntry[] = [];
   try {
     // Page through so large catalogues aren't truncated by PostgREST's row cap.
@@ -138,7 +136,6 @@ async function fetchCatalogueProducts(): Promise<SitemapEntry[]> {
   }
 }
 
-
 function generateSitemap(entries: SitemapEntry[]) {
   const urls = entries.map((e) =>
     [
@@ -150,7 +147,7 @@ function generateSitemap(entries: SitemapEntry[]) {
       `  </url>`,
     ]
       .filter(Boolean)
-      .join("\n")
+      .join("\n"),
   );
 
   return [
@@ -178,6 +175,3 @@ async function main() {
 }
 
 main();
-
-
-
