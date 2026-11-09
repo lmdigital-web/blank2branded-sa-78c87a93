@@ -1,6 +1,7 @@
 // Returns keywords ranking on page 2 (positions 11-25) with decent impressions,
 // grouped into topical clusters by shared stem tokens.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getGoogleAccessToken } from "../_shared/gsc-auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,7 +10,6 @@ const corsHeaders = {
 };
 
 const SITE_URL = "sc-domain:blank2branded.co.za";
-const GATEWAY = "https://connector-gateway.lovable.dev/google_search_console";
 
 function daysAgo(n: number) {
   const d = new Date();
@@ -76,13 +76,13 @@ Deno.serve(async (req) => {
     const startDate = daysAgo(90);
     const endDate = daysAgo(2);
 
+    const token = await getGoogleAccessToken();
     const r = await fetch(
-      `${GATEWAY}/webmasters/v3/sites/${encodeURIComponent(SITE_URL)}/searchAnalytics/query`,
+      `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(SITE_URL)}/searchAnalytics/query`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
-          "X-Connection-Api-Key": Deno.env.get("GOOGLE_SEARCH_CONSOLE_API_KEY") ?? "",
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ startDate, endDate, dimensions: ["query"], rowLimit: 1000, dataState: "all" }),

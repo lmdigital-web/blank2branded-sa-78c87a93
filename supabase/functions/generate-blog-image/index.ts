@@ -8,9 +8,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const key = Deno.env.get("LOVABLE_API_KEY");
+    const key = Deno.env.get("OPENAI_API_KEY");
     if (!key) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+      return new Response(JSON.stringify({ error: "OPENAI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -26,14 +26,14 @@ Deno.serve(async (req) => {
 
     const finalPrompt = `${prompt.trim()}. ${STYLE_SUFFIX}`;
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+    const aiRes = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-image-2",
+        model: "gpt-image-1",
         prompt: finalPrompt,
         size,
         quality: "low",
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
         });
       }
       if (aiRes.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please top up in Lovable settings." }), {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please check your OpenAI billing." }), {
           status: 402,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });

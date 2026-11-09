@@ -1,10 +1,10 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (!LOVABLE_API_KEY) return json({ error: "Missing LOVABLE_API_KEY" }, 500);
+  if (!OPENAI_API_KEY) return json({ error: "Missing OPENAI_API_KEY" }, 500);
 
   try {
     const { template, keyword, competitor, city } = await req.json();
@@ -33,20 +33,23 @@ Return STRICT JSON with these exact keys (no markdown, no code fence):
   "faq_json": [{"q":"...","a":"..."}, ... at least 6 real People-Also-Ask style questions with concise answers]
 }`;
 
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${LOVABLE_API_KEY}` },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
       body: JSON.stringify({
-        model: "google/gemini-3.5-flash",
-        messages: [{ role: "user", content: prompt }],
+        model: "gpt-5-mini",
+        messages: [
+          { role: "system", content: "You are an expert SEO copywriter. Always output valid JSON only. Do not wrap the JSON in markdown fences." },
+          { role: "user", content: prompt },
+        ],
         response_format: { type: "json_object" },
       }),
     });
 
     if (!resp.ok) {
       const t = await resp.text();
-      console.error("AI Gateway error", resp.status, t);
-      return json({ error: `AI Gateway ${resp.status}`, details: t }, resp.status);
+      console.error("OpenAI error", resp.status, t);
+      return json({ error: `OpenAI ${resp.status}`, details: t }, resp.status);
     }
     const j = await resp.json();
     const content = j.choices?.[0]?.message?.content ?? "{}";

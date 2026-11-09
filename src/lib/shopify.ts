@@ -22,7 +22,9 @@ export interface ShopifyProduct {
     priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
     images: { edges: Array<{ node: { url: string; altText: string | null } }> };
     variants: { edges: Array<{ node: ShopifyVariant }> };
-    options: Array<{ name: string; values: string[] }>;
+    // valueHex maps an option value to its supplier hex code (colour options
+    // only). Optional so the legacy Shopify-shaped callers still satisfy it.
+    options: Array<{ name: string; values: string[]; valueHex?: Record<string, string> }>;
   };
 }
 

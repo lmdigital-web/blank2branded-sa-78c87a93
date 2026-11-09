@@ -1,7 +1,18 @@
+import {
+  ArrowRight,
+  MessageCircle,
+  CheckCircle2,
+  Truck,
+  Palette,
+  Clock,
+  Ruler,
+  Shirt,
+  ClipboardList,
+  PenTool,
+} from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Link } from "@/lib/static-router";
-import { ArrowRight, MessageCircle, CheckCircle2, Truck, Palette, Clock, Shirt } from "lucide-react";
 import sportsKitsHeroBg from "@/assets/sports-kits-hero-bg.jpg";
 
 import rugbyJersey from "@/assets/sports-kits/rugby-jersey.jpg";
@@ -15,6 +26,14 @@ import athleticsVest from "@/assets/sports-kits/athletics-vest.jpg";
 import juniorRugby from "@/assets/sports-kits/junior-rugby.jpg";
 
 const WA_NUMBER = "27698384045";
+
+// Internal links verified to exist (HTTP 200 / in sitemap.xml).
+const INTERNAL = {
+  sublimation: { to: "/sublimation", label: "browsing the full sublimation range" },
+  contact: { to: "/contact", label: "contact page" },
+  blogGuide: { to: "/blog/sublimated-sports-kits/", label: "sublimated sports kits guide" },
+} as const;
+
 const waQuote = (topic: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Hi Blank2Branded, I'd like a quote for a sublimated ${topic} kit. Please send pricing and turnaround.`)}`;
 
@@ -32,7 +51,7 @@ const SPORTS: { sport: string; image: string; blurb: string }[] = [
 const FAQ: { q: string; a: string }[] = [
   {
     q: "What is a sublimated sports kit?",
-    a: "A sublimated sports kit is apparel where the design, team colours, sponsor logos, names and numbers are dyed directly into the polyester fabric using heat and pressure. Unlike vinyl or screen print, the design becomes part of the fabric — it never cracks, peels or fades.",
+    a: "A sublimated sports kit uses a full-colour design incorporated into suitable polyester-based fabric using heat. Team colours, logos, names and numbers can be included in the garment design; fabric suitability varies by style.",
   },
   {
     q: "How long does it take to make a custom sports kit?",
@@ -52,15 +71,15 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "What sports do you make kits for?",
-    a: "Rugby, soccer, netball, hockey, cricket, basketball, cycling, athletics and general team apparel. If you need something we haven't listed, ask — if it can be sewn from polyester, we can sublimate it.",
+    a: "The range shown includes rugby, soccer, netball, hockey, cricket, basketball, cycling and athletics styles. Ask us about other garment styles; suitability depends on the fabric.",
   },
   {
     q: "How much does a sublimated sports kit cost in South Africa?",
     a: "Pricing depends on the item (jersey vs full set), fabric weight, quantity and whether shorts or socks are included. Request a quote via WhatsApp with your requirements.",
   },
   {
-    q: "Are the kits durable and colour-fast?",
-    a: "Yes. Because the ink is bonded into the polyester fibres, sublimated kits retain their colour through hundreds of wash cycles. There's no printed layer to crack, so the design lasts as long as the fabric.",
+    q: "How does sublimation differ from a surface print?",
+    a: "On suitable fabric, the design is transferred into the material rather than applied as a separate surface print. Fabric and garment suitability varies by style, so contact us to discuss a specific option.",
   },
 ];
 
@@ -109,7 +128,8 @@ export function SportsKitsPage() {
         <div className="relative mx-auto max-w-7xl px-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">Sublimated Sports Kits</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-charcoal md:text-6xl">
-            Custom Sublimated Sports Kits &amp; Teamwear — South Africa
+            Custom Sublimated Sports Kits &amp; Teamwear{" "}
+            <span className="text-gradient-dtf">South Africa</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-charcoal/85">
             Custom sublimated team uniforms and club kits for rugby, soccer, netball, hockey, cricket, basketball,
@@ -172,8 +192,8 @@ export function SportsKitsPage() {
       <section className="border-b border-border py-14 md:py-16">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: Palette, title: "Full-colour design", copy: "Unlimited colours, gradients, photos and sponsor logos — no setup fees per colour." },
-            { icon: Shirt, title: "Never cracks or peels", copy: "The design is dyed into polyester fibres, not printed on top. Colour-fast through hundreds of washes." },
+            { icon: Palette, title: "Full-colour design", copy: "Full-colour designs can include gradients, photographs and sponsor logos as part of the garment design; options depend on the style." },
+            { icon: Shirt, title: "Design part of the fabric", copy: "On suitable polyester-based fabric, the design is transferred into the material rather than applied as a separate surface print. Fabric suitability varies by style." },
             { icon: Clock, title: "Production planning", copy: "We discuss artwork approval and expected production timing before your order proceeds." },
             { icon: Truck, title: "Nationwide courier", copy: "Delivered to Johannesburg, Cape Town, Pretoria, Durban and everywhere in between." },
           ].map((b) => (
@@ -308,6 +328,119 @@ export function SportsKitsPage() {
         </div>
       </section>
 
+      {/* CUSTOMISATION */}
+      <section className="border-b border-border py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Customisation</p>
+            <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
+              Making the kit yours
+            </h2>
+            <p className="mt-3 text-base text-muted-foreground">
+              Everything on a sublimated kit is part of the design, so nearly anything you can
+              describe can go onto the garment.
+            </p>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                icon: Palette,
+                title: "Team colours & layouts",
+                copy: "Discuss stripes, hoops, panels, fades or full-bleed patterns as part of your team's design.",
+              },
+              {
+                icon: Shirt,
+                title: "Names & numbers",
+                copy: "Player names and numbers can be included in the design. Share the details with us when requesting a quote.",
+              },
+              {
+                icon: PenTool,
+                title: "Sponsors & logos",
+                copy: "Club crests and sponsor logos placed where you want them — front, back, sleeves or shorts. Print-ready artwork should be supplied by you.",
+              },
+            ].map((c) => (
+              <div key={c.title} className="rounded-2xl border border-border bg-card p-6">
+                <c.icon className="h-8 w-8 text-primary" />
+                <h3 className="mt-4 text-lg font-black text-charcoal">{c.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{c.copy}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 max-w-3xl text-sm text-muted-foreground">
+            For a look at every garment the sublimation process can carry — golf shirts, tees,
+            hooded styles, skirts and accessories beyond team kits — see{" "}
+            <Link to={INTERNAL.sublimation.to} className="font-semibold text-primary hover:underline">
+              {INTERNAL.sublimation.label}
+            </Link>
+            . Junior and school sizing runs across the range, so one design can cover a whole
+            school squad — see{" "}
+            <Link to={INTERNAL.blogGuide.to} className="font-semibold text-primary hover:underline">
+              {INTERNAL.blogGuide.label}
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
+      {/* HOW TO ORDER / WHAT TO INCLUDE */}
+      <section className="border-b border-border bg-muted/30 py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">How to order</p>
+            <h2 className="mt-2 text-4xl font-black tracking-tight text-charcoal md:text-5xl">
+              Enquiring for your club, school or team
+            </h2>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <ClipboardList className="h-8 w-8 text-primary" />
+              <h3 className="mt-4 text-lg font-black text-charcoal">What to include in your quote request</h3>
+              <p className="mt-2 text-sm text-muted-foreground">The more you tell us up front, the faster and more accurate the quote:</p>
+              <ul className="mt-4 space-y-2 text-sm text-charcoal/85">
+                {[
+                  "The sport and the pieces you need — jersey only, or full set with shorts and socks",
+                  "Mens, ladies or junior sizes — and a rough size split for the squad",
+                  "Team colours and any existing crest or logo files",
+                  "Player names and number assignments, if you want personalisation",
+                  "Quantity per style, and when you need the kit by",
+                ].map((li) => (
+                  <li key={li} className="flex gap-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                    <span>{li}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Print-ready artwork (vector or high-resolution files preferred) should be supplied
+                with the order — design help is offered as a paid service, quoted before production.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h3 className="text-lg font-black text-charcoal">Where to send it</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Use any of the WhatsApp quote buttons on this page, or send everything through the{" "}
+                <Link to={INTERNAL.contact.to} className="font-semibold text-primary hover:underline">
+                  {INTERNAL.contact.label}
+                </Link>
+                . We'll confirm pricing, artwork and the production schedule with you before anything
+                goes to print — you approve the design proof first.
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Finished kits are couriered nationwide from our Mbombela base — Johannesburg,
+                Pretoria, Cape Town, Durban and beyond.
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Planning a kit order? Read our{" "}
+                <Link to={INTERNAL.blogGuide.to} className="font-semibold text-primary hover:underline">
+                  {INTERNAL.blogGuide.label}
+                </Link>{" "}
+                for general design considerations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="border-b border-border bg-muted/30 py-16 md:py-20">
         <div className="mx-auto max-w-4xl px-6">
@@ -357,6 +490,11 @@ export function SportsKitsPage() {
               Browse Sublimation Range <CheckCircle2 className="h-4 w-4" />
             </Link>
           </div>
+          <p className="mx-auto mt-6 max-w-2xl text-sm text-muted-foreground">
+            Not sure where to start with artwork, sizes or quantities? See{" "}
+            <Link to={INTERNAL.blogGuide.to} className="font-semibold text-primary hover:underline">{INTERNAL.blogGuide.label}</Link>{" "}
+            for general design considerations, or just ask us — we'll walk you through it.
+          </p>
         </div>
       </section>
 

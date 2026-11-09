@@ -151,22 +151,24 @@ PRIMARY KEYWORD: ${keyword}
 SEARCH INTENT: ${intent}
 TONE: ${tone}
 AUDIENCE: ${audience}
-TARGET LENGTH: ${wordCount} words
+TARGET LENGTH: ${wordCount} words. The article body MUST be at least 1100 words — treat this as a hard floor. If you are short on material, deepen sections with practical detail, worked examples, comparison lists and the FAQs; never pad with filler.
 
 SEO/content rules:
 
 - Use en-ZA spelling and South African context where relevant.
 - Be specific and practical.
 - Do not invent prices, certifications, guarantees, statistics, suppliers or product specifications.
-- Use the primary keyword naturally; never force it into every heading.
-- Create a compelling 40-70 character title.
+- Create a compelling 40-70 character title that contains the primary keyword.
 - Create a 30-60 character meta title containing the primary keyword.
 - Create a 120-160 character meta description containing the primary keyword and a natural CTA.
-- Create a clean lowercase URL slug.
-- Use a clear H2/H3 structure.
+- Create a clean lowercase URL slug that contains the primary keyword.
+- The FIRST paragraph MUST contain the exact phrase "${keyword}" naturally.
+- Keyword density: use the exact phrase "${keyword}" roughly 8-15 times across the article (about 1%). Never below 0.5% or above 2.5%. Count carefully.
+- Use a clear H2/H3 structure: at least 3 H2 sections and at least 2 H3 subheadings.
 - Use lists where useful.
 - Include a helpful conclusion.
 - Include a soft CTA to a relevant Blank2Branded page.
+- Include EXACTLY ONE external link, and it MUST point to a real, relevant English Wikipedia article using the format https://en.wikipedia.org/wiki/Topic_Name — choose a topic you are certain has an article (e.g. Direct-to-garment_printing, Screen_printing, Promotional_merchandise). Do not invent any other external URLs.
 - Only use the internal URLs supplied below.
 - Never invent routes.
 - ${
@@ -184,6 +186,8 @@ Allowed internal URLs:
 ${INTERNAL_LINKS.map(
   (x) => `${x.url} — ${x.label}`,
 ).join("\n")}
+
+"experience_notes": a 100-200 character practical insight written from the perspective of the Blank2Branded team's day-to-day experience serving South African customers (e.g. common questions buyers ask, mistakes seen with artwork or fabric choices, what works in the local market). No invented statistics.
 
 Return VALID JSON ONLY with exactly this shape:
 
@@ -206,6 +210,7 @@ Return VALID JSON ONLY with exactly this shape:
   ],
   "featured_image_prompt": "",
   "featured_image_alt": "",
+  "experience_notes": "",
   "faq": [
     {
       "question": "",
@@ -467,6 +472,12 @@ Return VALID JSON ONLY with exactly this shape:
     )
       .trim()
       .slice(0, 160),
+
+    experience_notes: String(
+      parsed.experience_notes ?? "",
+    )
+      .trim()
+      .slice(0, 400),
 
     faq:
       includeFaq &&

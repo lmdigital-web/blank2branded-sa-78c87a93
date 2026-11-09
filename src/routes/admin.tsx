@@ -26,6 +26,7 @@ import {
   Megaphone,
   Package,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AuthorsPanel } from "@/components/admin/AuthorsPanel";
@@ -53,7 +54,11 @@ type Post = {
   keywords: string | null;
   social_ping_status: string | null;
   social_ping_error: string | null;
+  author_id: string | null;
+  experience_notes: string | null;
 };
+
+type AuthorLite = { id: string; name: string | null; credentials: string | null };
 
 type View = {
   post_id: string;
@@ -80,6 +85,7 @@ export function AdminPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [views, setViews] = useState<View[]>([]);
+  const [authors, setAuthors] = useState<AuthorLite[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
   const [range, setRange] = useState<Range>("30");
@@ -89,6 +95,10 @@ export function AdminPage() {
   const [blogTab, setBlogTab] = useState<
     "published" | "scheduled" | "draft"
   >("published");
+
+  const [sharingPostId, setSharingPostId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     if (loading) return;
@@ -121,11 +131,11 @@ export function AdminPage() {
       });
     }
 
-    const [postsRes, viewsRes] = await Promise.all([
+    const [postsRes, viewsRes, authorsRes] = await Promise.all([
       supabase
         .from("posts")
         .select(
-          "id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords,social_ping_status,social_ping_error",
+          "id,slug,title,status,published_at,updated_at,excerpt,content,cover_image_url,meta_title,meta_description,keywords,social_ping_status,social_ping_error,author_id,experience_notes",
         )
         .order("updated_at", { ascending: false }),
 
@@ -134,6 +144,8 @@ export function AdminPage() {
         .select("post_id,viewed_at,referrer,country")
         .order("viewed_at", { ascending: false })
         .limit(10000),
+
+      supabase.from("authors").select("id,name,credentials"),
     ]);
 
     if (postsRes.error) {
@@ -146,6 +158,7 @@ export function AdminPage() {
 
     setPosts((postsRes.data as Post[]) ?? []);
     setViews((viewsRes.data as View[]) ?? []);
+    setAuthors((authorsRes.data as AuthorLite[]) ?? []);
     setLoadingData(false);
   }
 
@@ -241,6 +254,52 @@ export function AdminPage() {
       toast.error(error.message);
     } else {
       toast.success("Post deleted");
+      void loadData();
+    }
+  }
+
+  async function onShare(p: Post) {
+    if (p.status !== "published") {
+      toast.error("Only published posts can be shared");
+      return;
+    }
+
+    setSharingPostId(p.id);
+
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "social-webhook-dispatch",
+        {
+          body: { post_id: p.id, force: true },
+        },
+      );
+
+      if (error) {
+        toast.error(`Social share failed: ${error.message}`);
+        return;
+      }
+
+      const d = data as {
+        status?: string;
+        skipped?: boolean;
+        error?: string | null;
+      } | null;
+
+      if (d?.status === "sent") {
+        toast.success(
+          "Shared to your social channels (Facebook, Pinterest…)",
+        );
+      } else if (d?.status === "failed") {
+        toast.error(
+          `Social share failed: ${d.error ?? "unknown"}`,
+        );
+      } else if (d?.skipped) {
+        toast.message(
+          "Auto-posting is off — enable it under Social Integrations",
+        );
+      }
+    } finally {
+      setSharingPostId(null);
       void loadData();
     }
   }
@@ -635,6 +694,10 @@ export function AdminPage() {
                             const count =
                               viewsByPost.get(p.id) ?? 0;
 
+                            const author = p.author_id
+                              ? authors.find((a) => a.id === p.author_id)
+                              : undefined;
+
                             const seo = computeSeoScore({
                               title: p.title || "",
                               slug: p.slug || "",
@@ -647,6 +710,11 @@ export function AdminPage() {
                               meta_description:
                                 p.meta_description || "",
                               keywords: p.keywords || "",
+                              author_name: author?.name || "",
+                              author_credentials:
+                                author?.credentials || "",
+                              experience_notes:
+                                p.experience_notes || "",
                             });
 
                             const badge = seoBadge(seo.score);
@@ -758,6 +826,26 @@ export function AdminPage() {
                                           <ExternalLink className="h-4 w-4" />
                                         </Button>
                                       </Link>
+                                    )}
+
+                                    {p.status === "published" && (
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        title="Share now to your social channels"
+                                        onClick={() =>
+                                          void onShare(p)
+                                        }
+                                        disabled={
+                                          sharingPostId === p.id
+                                        }
+                                      >
+                                        {sharingPostId === p.id ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <Share2 className="h-4 w-4" />
+                                        )}
+                                      </Button>
                                     )}
 
                                     <Link

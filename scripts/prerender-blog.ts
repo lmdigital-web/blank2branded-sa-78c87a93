@@ -90,6 +90,18 @@ function renderArticle(post: Post, authorName: string | null): string {
     : "";
   const excerpt = post.excerpt || "";
   const content = post.content ? absolutizeContent(post.content) : "";
+  // Posts covering sublimation/teamwear topics also funnel to the two primary
+  // landing pages so crawlers see the topical link from content to money page.
+  const relatedBlock =
+    /sublimat|sports kit|teamwear|jersey|soccer|rugby|netball\b|kit\b/i.test(content)
+      ? `
+      <p><strong>Related pages:</strong>
+        <a href="${BASE_URL}/sublimation/">custom sublimated clothing &amp; sportswear</a> —
+        the full dye-sublimation range with catalogue pages — and
+        <a href="${BASE_URL}/sports-kits/">custom sports kits &amp; teamwear</a>
+        for complete kits with numbers, names and sponsors.
+      </p>`
+      : "";
 
   return `
     <article>
@@ -98,6 +110,7 @@ function renderArticle(post: Post, authorName: string | null): string {
       ${image ? `<p><img src="${esc(image)}" alt="${esc(title)}" /></p>` : ""}
       ${excerpt ? `<p><em>${esc(excerpt)}</em></p>` : ""}
       ${content}
+      ${relatedBlock}
       <p><a href="${esc(url)}">Read the original post on Blank2Branded</a></p>
     </article>`;
 }
@@ -119,7 +132,7 @@ function renderArticleJsonLd(post: Post, authorName: string | null): string {
     publisher: {
       "@type": "Organization",
       name: "Blank2Branded",
-      logo: { "@type": "ImageObject", url: `${BASE_URL}/og-default.jpg` },
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/og-default.png` },
     },
   };
   return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
@@ -189,7 +202,7 @@ function rewriteHead(template: string, post: Post): string {
     post.excerpt ||
     `Read ${post.title} on the Blank2Branded blog — DTF prints & blank apparel insights from South Africa.`;
   const url = `${BASE_URL}/blog/${post.slug}/`;
-  const image = absolutize(post.cover_image_url) || `${BASE_URL}/og-default.jpg`;
+  const image = absolutize(post.cover_image_url) || `${BASE_URL}/og-default.png`;
 
   let html = template;
 
@@ -212,6 +225,15 @@ function rewriteHead(template: string, post: Post): string {
     `<meta property="og:url" content="${esc(url)}" />`,
     `<meta property="og:image" content="${esc(image)}" />`,
     `<meta property="og:image:secure_url" content="${esc(image)}" />`,
+    `<meta property="og:image:alt" content="${esc(title)}" />`,
+    // Dimensions only when the generated 1200x630 fallback is used; real blog
+    // covers vary in size.
+    ...(image.endsWith("/og-default.png")
+      ? [
+          `<meta property="og:image:width" content="1200" />`,
+          `<meta property="og:image:height" content="630" />`,
+        ]
+      : []),
     `<meta property="og:site_name" content="Blank2Branded" />`,
     `<meta property="og:locale" content="en_ZA" />`,
     post.published_at
@@ -261,7 +283,7 @@ function rewriteBlogIndexHead(template: string): string {
   const desc =
     "Guides, tips and news on DTF printing, blank apparel and custom t-shirt printing in South Africa. From the Blank2Branded team in Mbombela.";
   const url = `${BASE_URL}/blog/`;
-  const image = `${BASE_URL}/og-default.jpg`;
+  const image = `${BASE_URL}/og-default.png`;
 
   let html = template;
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
@@ -281,6 +303,9 @@ function rewriteBlogIndexHead(template: string): string {
     `<meta property="og:url" content="${esc(url)}" />`,
     `<meta property="og:image" content="${esc(image)}" />`,
     `<meta property="og:image:secure_url" content="${esc(image)}" />`,
+    `<meta property="og:image:alt" content="${esc(title)}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
     `<meta property="og:site_name" content="Blank2Branded" />`,
     `<meta property="og:locale" content="en_ZA" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,

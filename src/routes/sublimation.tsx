@@ -8,9 +8,9 @@ import {
   Sparkles,
   Trophy,
 } from "lucide-react";
+import { Link } from "@/lib/static-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Link } from "@/lib/static-router";
 
 const WHATSAPP_NUMBER = "27698384045";
 
@@ -157,6 +157,69 @@ const sublimationServiceSchema = {
   ],
   url: "https://blank2branded.co.za/sublimation/",
 };
+// Linked internal URLs verified to exist on the site (see sitemap.xml).
+const INTERNAL_LINKS = {
+  sportsKits: { to: "/sports-kits", label: "sublimated sports kits for every major code" },
+  blanks: { to: "/blanks", label: "blank apparel range" },
+  dtf: { to: "/dtf", label: "DTF transfers" },
+  contact: { to: "/contact", label: "request a quote" },
+} as const;
+
+const RANGE_SECTIONS = [
+  {
+    id: "golf-shirts-tees",
+    icon: Shirt,
+    title: "Custom sublimated golf shirts and T-shirts",
+    copy: [
+      "The range includes sublimated golfers for men and ladies in fitted, raglan and ringer sleeve styles, plus crew-neck and V-neck sublimated T-shirts. Hooded T-shirts — including a full dye-sublimation hooded style and designs with a neck warmer — round out the tops.",
+      "Golf shirts and tees can be designed with full-colour artwork, team colours and branding incorporated into the garment design.",
+    ],
+    items: [
+      {
+        h3: "All-over print hoodies and hooded tees",
+        text: "Catalogue-listed hooded styles include a full dye-sublimation option and designs with a neck warmer. Ask us to confirm the fabric and design options for the garment you are considering.",
+      },
+    ],
+  },
+  {
+    id: "sports-kits-teamwear",
+    icon: Trophy,
+    title: "Custom sublimated sports kits and teamwear",
+    copy: [
+      "Beyond shirts, the range covers teamwear: rugby jerseys in scoop-neck and insert-collar styles, rugby shorts in 4-panel and 9-panel cuts, netball and sports dresses, skorts, running tops, cycling-ready styles, arm sleeves, athletic shorts and cricket pants.",
+      "Schools, clubs and teams can discuss coordinated jerseys, shorts and accessories with colours, names and sponsor branding included in the design.",
+    ],
+    items: [
+      {
+        h3: "Sublimated soccer and rugby jerseys",
+        text: "Discuss the placement of sponsor logos, names, numbers and club colours as part of the garment design. Fabric suitability varies by style.",
+      },
+      {
+        h3: "Netball dresses, skorts and athletics kit",
+        text: "Netball and sports dresses are cut and sewn from printed panels, so the design follows the garment shape rather than sitting on a flat chest print. Skorts, running tops and athletic shorts carry the same design across the full kit.",
+      },
+    ],
+  },
+] as const;
+
+const PROCESS_STEPS = [
+  {
+    title: "Choose your style",
+    copy: "Browse the catalogue pages below and pick the garment that suits your team or brand — golfers, tees, hoodies, jerseys, bottoms and accessories are all listed with their catalogue page.",
+  },
+  {
+    title: "Share your design",
+    copy: "Send us your artwork, logos, colours and any names or numbers. Garments are produced using client-approved designs, so nothing goes to production until you have approved the layout.",
+  },
+  {
+    title: "Sublimation printing",
+    copy: "On suitable polyester-based fabric, heat transfers the design into the material rather than applying a separate print layer to its surface. Fabric suitability varies by garment.",
+  },
+  {
+    title: "Cut, sew and finish",
+    copy: "Printed fabric panels are cut and sewn into finished garments, then prepared for collection or courier. Every panel is printed before assembly, which is what allows edge-to-edge, all-over coverage.",
+  },
+] as const;
 
 const quoteLink = (product?: string) => {
   const message = product
@@ -242,7 +305,8 @@ export function SublimationPage() {
             <p className="mt-6 max-w-3xl text-lg leading-8 text-charcoal/80 sm:text-xl">
               Blank2Branded creates custom sublimated clothing and sportswear for schools, sports
               clubs, businesses, teams and organisations. We are based in Mbombela, Mpumalanga, and
-              serve customers throughout South Africa.
+              serve customers throughout South Africa. Browse the catalogue below to review listed
+              garment styles and specifications.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -268,6 +332,13 @@ export function SublimationPage() {
                 Discuss your design
               </Link>
             </div>
+            <p className="mt-6 text-sm text-charcoal/75">
+              Also explore our{" "}
+              <Link to={INTERNAL_LINKS.dtf.to} className="font-semibold underline hover:text-primary">{INTERNAL_LINKS.dtf.label}</Link>{" "}
+              for cotton garments, or our{" "}
+              <Link to={INTERNAL_LINKS.blanks.to} className="font-semibold underline hover:text-primary">{INTERNAL_LINKS.blanks.label}</Link>{" "}
+              for plain tee and hoodie staples you can brand any way you like.
+            </p>
           </div>
         </div>
       </section>
@@ -623,36 +694,92 @@ export function SublimationPage() {
           </div>
         </section>
 
-        <section className="border-y border-border bg-background py-16 md:py-20">
-          <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-3 lg:px-8">
-            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <Shirt className="mb-4 h-8 w-8 text-primary" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-charcoal">Browse custom clothing</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Explore catalogue-listed t-shirts, golf shirts, rugby jerseys, hooded t-shirts,
-                sportswear and more. See the{" "}
-                <Link to="/blanks" className="font-semibold text-primary underline">
-                  blank apparel range
-                </Link>{" "}
-                for other apparel options.
+        <section id="range" className="scroll-mt-20 border-t border-border py-16">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">The range</p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                Custom sublimated clothing for teams, clubs and brands
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                The 2025 catalogue covers branded sublimation apparel for men and ladies across tops,
+                hooded styles, bottoms and accessories. Here is how the range breaks down and what each
+                category is typically used for.
               </p>
-            </article>
-            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <Sparkles className="mb-4 h-8 w-8 text-primary" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-charcoal">Quotations &amp; Order Details</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Pricing and order requirements depend on the garment, design and quantity. Contact
-                us with your brief so we can prepare a quotation for the styles you are considering.
+            </div>
+            <div className="mt-10 grid gap-6 md:grid-cols-2">
+              {RANGE_SECTIONS.map((s) => (
+                <div key={s.id} id={s.id} className="scroll-mt-24 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                  <s.icon className="h-8 w-8 text-primary" />
+                  <h3 className="mt-4 text-xl font-bold text-charcoal">{s.title}</h3>
+                  {s.copy.map((para) => (
+                    <p key={para.slice(0, 24)} className="mt-3 text-sm leading-6 text-muted-foreground">{para}</p>
+                  ))}
+                  {("items" in s && s.items) && s.items.map((item) => (
+                    <div key={item.h3} className="mt-4 border-l-2 border-primary/30 pl-4">
+                      <h3 className="text-base font-bold text-charcoal">{item.h3}</h3>
+                      <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-charcoal">Ordering custom sportswear in South Africa</h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Every garment is made to your design, so an order normally starts with the style,
+                  the colour way and your artwork — then the quantity and size split. Browse the
+                  catalogue pages below and enquire with the style, quantity and deadline, and we
+                  will confirm options for your run. Design work is produced only once you have
+                  approved the final design.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-charcoal">Mens, ladies and kids sizing</h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  The catalogue includes mens and ladies cut designs — fitted, raglan and ringer sleeve
+                  options across golfers and tees — plus bottoms from shorts and skorts to knee-length
+                  tights. Kiddies sizing is available in parts of the range, which makes it a practical
+                  choice for schools ordering full squads in one design.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-charcoal">Full team kits, one design</h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Looking to kit out a whole side? We produce{" "}
+                  <Link to={INTERNAL_LINKS.sportsKits.to} className="font-semibold text-primary hover:underline">
+                    {INTERNAL_LINKS.sportsKits.label}
+                  </Link>{" "}
+                  — soccer, rugby, netball, hockey, cricket and more — where jerseys, shorts and socks
+                  all carry the same colours, numbers and sponsor branding in one coordinated design.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="sublimation-process" className="scroll-mt-20 border-t border-border bg-background py-16">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">How it works</p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-charcoal sm:text-4xl">
+                How the sublimation printing process works
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                Dye sublimation prints your design edge-to-edge into the garment itself, not onto it.
+                Here is how a custom order moves from idea to finished clothing.
               </p>
-            </article>
-            <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <Trophy className="mb-4 h-8 w-8 text-primary" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-charcoal">Delivery Across South Africa</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Blank2Branded is based in Mbombela, Mpumalanga, and serves customers throughout
-                South Africa. Contact us to discuss delivery arrangements for your order.
-              </p>
-            </article>
+            </div>
+            <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {PROCESS_STEPS.map((step, i) => (
+                <li key={step.title} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                  <div className="text-3xl font-black text-primary">{i + 1}</div>
+                  <h3 className="mt-3 text-lg font-bold text-charcoal">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.copy}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
@@ -804,6 +931,15 @@ export function SublimationPage() {
               supplied for this website. Images are illustrative, actual products may vary, and
               designs shown are visual references only; garments are produced using client-approved
               designs.
+            </p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Planning a full team order? See our{" "}
+              <Link to={INTERNAL_LINKS.sportsKits.to} className="font-semibold text-primary hover:underline">sports kits page</Link>,{" "}
+              browse{" "}
+              <Link to={INTERNAL_LINKS.blanks.to} className="font-semibold text-primary hover:underline">blank apparel</Link> for{" "}
+              cotton styles, or{" "}
+              <Link to={INTERNAL_LINKS.contact.to} className="font-semibold text-primary hover:underline">get in touch</Link> for{" "}
+              help choosing the right production method.
             </p>
           </div>
         </section>

@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useState } from "react";
-import { MessageCircle, Mail, Clock, MapPin, Upload, Send, Loader2 } from "lucide-react";
+import { MessageCircle, Mail, Clock, MapPin, Upload, Send, Loader2, Car, Footprints, Bus, Navigation } from "lucide-react";
 import contactHeroBg from "@/assets/contact-hero-bg.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -184,7 +184,7 @@ export function ContactPage() {
                   { icon: MessageCircle, color: "lime", label: "WhatsApp Business", value: "+27 69 838 4045", href: "https://wa.me/27698384045" },
                   { icon: Mail, color: "cyan", label: "Email", value: "hello@blank2branded.co.za", href: "mailto:hello@blank2branded.co.za" },
                   { icon: Clock, color: "magenta", label: "Hours", value: "Mon–Fri · 8am–4pm" },
-                  { icon: MapPin, color: "primary", label: "Location", value: "Mbombela, SA", sub: "Courier nationwide" },
+                  { icon: MapPin, color: "primary", label: "Location", value: "16 Waterblom Street, Nelspruit, 1211", sub: "Courier nationwide" },
                 ].map((item) => (
                   <li key={item.label} className="flex items-start gap-4">
                     <div
@@ -211,14 +211,52 @@ export function ContactPage() {
 
             <div className="mt-6 overflow-hidden rounded-lg border border-border">
               <iframe
-                title="Mbombela map"
-                src="https://www.google.com/maps?q=Mbombela,+South+Africa&output=embed"
+                title="Blank2Branded workshop map — 16 Waterblom Street, Nelspruit"
+                src="https://www.google.com/maps?q=16+Waterblom+Street,+Nelspruit,+1211,+South+Africa&output=embed"
                 width="100%"
                 height="280"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 style={{ border: 0 }}
               />
+            </div>
+
+            {/* DIRECTIONS — keyless deep links into Google Maps; Google shows the
+                live estimated travel time and distance for the chosen mode. */}
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+              <h2 className="text-lg font-bold text-charcoal">Plan your visit</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Collection by arrangement — check with us first, then let Google Maps handle the
+                route. Tap a travel mode and it will show the estimated travel time and distance
+                from where you are.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {[
+                  { icon: Car, mode: "driving", label: "Driving" },
+                  { icon: Bus, mode: "transit", label: "Public transport" },
+                  { icon: Footprints, mode: "walking", label: "Walking" },
+                ].map((m) => (
+                  <a
+                    key={m.mode}
+                    href={`https://www.google.com/maps/dir/?api=1&destination=16+Waterblom+Street,+Nelspruit,+1211,+South+Africa&travelmode=${m.mode}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition hover:border-primary hover:text-primary"
+                  >
+                    <m.icon className="h-4 w-4" />
+                    {m.label}
+                  </a>
+                ))}
+              </div>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=16+Waterblom+Street,+Nelspruit,+1211,+South+Africa"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+              >
+                <Navigation className="h-4 w-4" />
+                Find us on Google Maps
+              </a>
             </div>
           </div>
         </div>

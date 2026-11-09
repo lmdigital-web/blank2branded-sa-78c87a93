@@ -231,6 +231,78 @@ export function Home() {
         </div>
       </section>
 
+      {/* IN THE WORKSHOP */}
+      <section className="border-b border-border py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Inside the Operation
+            </p>
+            <h2 className="mt-3 text-4xl font-bold tracking-tight text-charcoal md:text-5xl">
+              Real prints. Real stock. Ready to ship.
+            </h2>
+          </div>
+
+          <div className="mt-14 grid gap-8 md:grid-cols-2">
+            <div className="group relative overflow-hidden rounded-lg border border-border bg-card">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={dtfPrintingImg}
+                  alt="Vivid DTF transfer prints rolling off the printer in the Blank2Branded workshop"
+                  width={1280}
+                  height={960}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                  DTF Production
+                </p>
+                <h3 className="mt-3 text-2xl font-bold text-charcoal">
+                  Vibrant prints, pressed to last.
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-charcoal/85">
+                  High-density DTF transfers with rich colour, soft hand-feel,
+                  and durable wash performance — printed in-house and dispatched
+                  within 48 hours.
+                </p>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-lg border border-border bg-card">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={blankApparelImg}
+                  alt="Stacked premium blank t-shirts in the warehouse, ready for printing"
+                  width={1280}
+                  height={960}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                  Blank Apparel
+                </p>
+                <h3 className="mt-3 text-2xl font-bold text-charcoal">
+                  Stocked, sorted, ready to ship.
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-charcoal/85">
+                  Premium tees, polos, hoodies and more — held in stock at our
+                  Mbombela facility and couriered nationwide. For full designs
+                  dyed edge-to-edge into sportswear and team kits, see our{" "}
+                  <Link to="/sublimation" className="font-semibold underline hover:text-primary">sublimated clothing range</Link>.
+                </p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DIFFERENTIATION */}
+
       <section className="border-y border-border bg-charcoal py-16 text-background md:py-20">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div>

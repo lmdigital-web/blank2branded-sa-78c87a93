@@ -4,9 +4,10 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useCurrentPath } from "@/lib/static-router";
-import { buildJsonLd, type BofuTemplate } from "@/lib/bofu-templates";
+import { buildJsonLd, bofuUrl, type BofuTemplate } from "@/lib/bofu-templates";
 import { Button } from "@/components/ui/button";
 import { setNoindex } from "@/lib/robots-meta";
+import { setRouteSeo } from "@/lib/seo-head";
 
 const sanitize = (html: string) =>
   DOMPurify.sanitize(html, {
@@ -69,9 +70,13 @@ export function BofuPagePublic() {
       // so Google drops the URL instead of reporting a Soft 404.
       setNoindex(!data);
       if (data) {
-        document.title = (data as BofuPage).title;
-        const desc = document.querySelector('meta[name="description"]');
-        if (desc) desc.setAttribute("content", (data as BofuPage).meta_description || "");
+        const bp = data as BofuPage;
+        setRouteSeo({
+          title: bp.title,
+          description: bp.meta_description || "",
+          keywords: bp.keyword,
+          url: `${SITE_URL}${bofuUrl(bp.template, bp.slug, bp.city)}`,
+        });
         // JSON-LD
         document.querySelectorAll('script[data-bofu-ld]').forEach((s) => s.remove());
         const scripts = buildJsonLd(data as BofuPage, SITE_URL);

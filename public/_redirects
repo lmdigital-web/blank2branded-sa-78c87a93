@@ -22,5 +22,46 @@
 /products/dtf-print-a4 /dtf/ 301
 /products/dtf-print-1-meter-20cm-wide /dtf/ 301
 
+# Retired catalogue SKUs, confirmed still indexed by Google but no longer in
+# shop_products. Without these they fall through to the SPA fallback and return
+# 200 + the homepage canonical, which Google reads as "duplicate of homepage".
+# Audit the full list any time with: node scripts/audit-canonicals.mjs
+/products/brt-crossover-jogger-mens-spo-10-zz-18888b /shop/ 301
+/products/lola-flare-skirt-ladies-cor-02-er /shop/ 301
+/products/pilot-case-with-4-wheels-new-line-bag-20-ms /shop/ 301
+/products/tosca-classic-lrg-trolley-70cm-bag-20-mw /shop/ 301
+/products/woven-lanyard-with-plastic-buckle-gft-07-mf /shop/ 301
+/products/150g-long-sleeve-safety-t-shirt-hvi-14-ia /shop/ 301
+/products/2-pack-cell-lanyard-wrist-and-neck-set-gft-19-ks /shop/ 301
+/products/3-in-1-powerbank-with-speaker-gft-08-ez /shop/ 301
+/products/6-panel-podium-cap-hwr-09-kl /shop/ 301
+/products/6-piece-barbeque-set-in-apron-gft-06-eu /shop/ 301
+/products/a4-folder-with-african-animal-trim-gft-06-sl /shop/ 301
+/products/bag-chidel-bag-16-ix /shop/ 301
+/products/chef-baggy-pants-bot-03-xj /shop/ 301
+/products/clifford-6-panel-cap-hwr-16-xw /shop/ 301
+/products/conwood-vector-55cm-100-pc-carry-on-trolley-case-bag-20-ly /shop/ 301
+/products/conwood-vector-75cm-100-pc-trolley-case-bag-20-ma /shop/ 301
+/products/countess-4400-serving-spoon-cly-17-sk /shop/ 301
+/products/denim-shirt-short-sleeve-mens-shi-02-ib /shop/ 301
+/products/flat-top-stylus-ballpoint-pen-gft-08-zg /shop/ 301
+/products/hard-shell-cooler-bag-19-kb /shop/ 301
+/products/highland-backpack-bag-14-cl /shop/ 301
+/products/ind-portable-bluetooth-speaker-gft-15-8h /shop/ 301
+/products/ivy-tunic-gft-11-rj /shop/ 301
+/products/koguel-a5-notebook-gft-07-hq /shop/ 301
+/products/medium-sports-bag-bag-03-ni /shop/ 301
+
+# Retired SEO/content pages. The bofu_pages table is empty, so these were
+# indexed while they existed and now serve the homepage canonical at 200.
+# Point each at the closest live equivalent to transfer the ranking signal.
+#
+# NOTE: /best/sublimated-sports-kits-south-africa and
+# /sublimated-soccer-kits-south-africa are deliberately NOT redirected. They
+# rank for "sublimated sports kits" (position 23) and "sublimated soccer kits",
+# which are the highest-value keywords on the site. They are being left free to
+# be rebuilt as live bofu_pages rows instead of being redirected away.
+/blog/dtf-prints-south-africa-complete-guide /dtf/ 301
+
 # SPA fallback
 /* /index.html 200

@@ -3,6 +3,20 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { ShopifyProduct, ShopifyVariant } from "@/lib/shopify";
 
+/**
+ * Tidy a supplier hex code into a `#rrggbb` string the browser can render.
+ * Some rows carry stray whitespace or uppercase; a few carry 3-digit hex.
+ * Returns "" for anything we can't safely use, so callers can fall back.
+ */
+export function normalizeHex(raw: string | null | undefined): string {
+  if (!raw) return "";
+  let hex = String(raw).trim().replace(/^#/, "").toLowerCase();
+  if (!/^[0-9a-f]+$/.test(hex)) return "";
+  if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+  if (hex.length !== 6) return "";
+  return `#${hex}`;
+}
+
 export type DbCategory = {
   id: string;
   name: string;
@@ -33,6 +47,9 @@ export type DbProductRow = {
     sku: string | null;
     available: boolean;
     position: number;
+    // Supplier-supplied swatch colour. Authoritative — prefer it over any
+    // name-based guess so swatches render the real garment colour.
+    hex_code: string | null;
   }>;
   shop_product_images: Array<{
     id: string;
@@ -55,14 +72,26 @@ function selectedOptionsFromRow(v: DbProductRow["shop_product_variants"][number]
 }
 
 function optionsFromVariants(variants: DbProductRow["shop_product_variants"]) {
-  const map = new Map<string, Set<string>>();
+  // option name -> (value -> hex). hex_code describes the garment colour, so
+  // it only attaches to colour-named options; every value is still recorded so
+  // an option with no hex supplied never loses its swatch.
+  const map = new Map<string, Map<string, string>>();
   for (const v of variants) {
     for (const p of selectedOptionsFromRow(v)) {
-      if (!map.has(p.name)) map.set(p.name, new Set());
-      map.get(p.name)!.add(p.value);
+      if (!map.has(p.name)) map.set(p.name, new Map());
+      const slot = map.get(p.name)!;
+      const hex = /colou?r/i.test(p.name) ? normalizeHex(v.hex_code) : "";
+      // First variant for this value wins, so later duplicates can't blank out
+      // a hex that an earlier variant supplied.
+      if (!slot.has(p.value) || (!slot.get(p.value) && hex)) slot.set(p.value, hex);
     }
   }
-  return [...map.entries()].map(([name, values]) => ({ name, values: [...values] }));
+  return [...map.entries()].map(([name, values]) => ({
+    name,
+    values: [...values.keys()],
+    // valueHex[value] is "" when the option isn't a colour or has no hex.
+    valueHex: Object.fromEntries(values),
+  }));
 }
 
 export function toShopifyShape(row: DbProductRow): ShopifyProduct & {
@@ -113,7 +142,7 @@ export function toShopifyShape(row: DbProductRow): ShopifyProduct & {
 
 const PRODUCT_SELECT = `
   id, title, handle, description, status, base_price, currency_code, category_id, position, meta_title, meta_description,
-  shop_product_variants ( id, option1_name, option1_value, option2_name, option2_value, option3_name, option3_value, price, currency_code, sku, available, position ),
+  shop_product_variants ( id, option1_name, option1_value, option2_name, option2_value, option3_name, option3_value, price, currency_code, sku, available, position, hex_code ),
   shop_product_images ( id, url, alt, position )
 `;
 
